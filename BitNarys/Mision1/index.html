@@ -236,7 +236,7 @@
 <!-- Pantalla del Juego -->
 <div id="gameScreen">
   <div id="hud">
-    <div id="hudTitle">Desafío 1 - Jugador: <span id="playerDisplayName"></span></div>
+    <div id="hudTitle">Desafío 1 - Almirante: <span id="playerDisplayName"></span></div>
     <div id="clock"></div>
     <div>Puntos: <span id="points">0</span></div>
     <div id="livesBar"><div id="livesFill"></div></div>
@@ -305,7 +305,7 @@ startButton.addEventListener('click', () => {
     return;
   }
   playerDisplayName.textContent = playerName;
-  document.getElementById('storyTitle').textContent = `Bienvenido Almirante ${playerName}`;
+  document.getElementById('storyTitle').textContent = `Bienvenido Cadete ${playerName}`;
   startScreen.style.display = 'none';
   storyScreen.style.display = 'flex';
 });
