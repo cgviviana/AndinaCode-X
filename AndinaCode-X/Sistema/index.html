@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Portal Galáctico - Areandina</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background-image: url('fondo.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 3em;
+      text-shadow: 2px 2px 10px black;
+    }
+
+    #comandante {
+      font-size: 1.8em;
+      margin-top: 10px;
+      color: #fff;
+    }
+
+    .contenedor-planetas {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      padding: 60px 30px;
+      flex-wrap: wrap;
+    }
+
+    .planeta {
+      background: rgba(255, 255, 255, 0.4);
+      padding: 20px;
+      border-radius: 20px;
+      width: 266px;
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    .planeta:hover {
+      transform: scale(1.05);
+    }
+
+    .planeta p {
+      margin-bottom: 15px;
+      font-size: 1.2em;
+      color: black;
+    }
+
+    .planeta img {
+      width: 100%;
+      height: auto;
+      border-radius: 15px;
+    }
+
+    /* ✨ EFECTO LUMINOSO LETRA POR LETRA */
+    .efecto span {
+      display: inline-block;
+      opacity: 0;
+      animation: iluminar 0.5s forwards;
+    }
+
+    @keyframes iluminar {
+      to {
+        opacity: 1;
+        text-shadow: 0 0 8px #00f0ff, 0 0 16px #00f0ff;
+        color: #ffffff;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Constelación Areandina</h1>
+  <h2 id="comandante" class="efecto"></h2>
+
+  <div class="contenedor-planetas">
+    <div class="planeta" onclick="viajar('Planeta 1', 'https://cgviviana.github.io/Juego_Prueba/Proyecto/Planeta1/')">
+      <p>Planeta 1</p>
+      <img src="p1.png" alt="Planeta 1">
+    </div>
+    <div class="planeta" onclick="viajar('Planeta 2', 'planeta2.html')">
+      <p>Planeta 2</p>
+      <img src="2.png" alt="Planeta 2">
+    </div>
+    <div class="planeta" onclick="viajar('Planeta 3', 'planeta3.html')">
+      <p>Planeta 3</p>
+      <img src="P3.png" alt="Planeta 3">
+    </div>
+  </div>
+
+  <!-- 🔊 SONIDO GALÁCTICO -->
+  <audio id="sonidoBienvenida" src="sonido-galactico.mp3" preload="auto"></audio>
+
+  <script>
+    // ✨ Escribir texto con efecto brillante y espacios correctos
+    function escribirConEfecto(texto, contenedorId, callback) {
+      const contenedor = document.getElementById(contenedorId);
+      contenedor.innerHTML = '';
+      [...texto].forEach((letra, i) => {
+        const span = document.createElement('span');
+        span.innerHTML = (letra === ' ') ? '&nbsp;' : letra;
+        span.style.animationDelay = `${i * 0.05}s`;
+        contenedor.appendChild(span);
+      });
+
+      // Ejecutar sonido después de completar escritura
+      const duracionTotal = texto.length * 50; // 50ms por letra
+      setTimeout(() => {
+        if (callback) callback();
+      }, duracionTotal + 300);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const nombre = params.get("nombre");
+
+    if (nombre) {
+      const mensaje = "Bienvenido comandante " + nombre;
+      escribirConEfecto(mensaje, "comandante", () => {
+        const sonido = document.getElementById("sonidoBienvenida");
+        sonido.play();
+      });
+    }
+
+    function viajar(nombre, enlace) {
+      alert("🪐 Estás viajando al " + nombre + "… ¡Prepárate para el salto estelar!");
+      window.location.href = enlace;
+    }
+  </script>
+</body>
+</html>
