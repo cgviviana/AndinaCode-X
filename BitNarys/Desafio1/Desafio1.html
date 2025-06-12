@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Desafío 1 - Reconstruir el Saber</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffff;
+    background: #000;
+    overflow: hidden;
+  }
+  .pantalla { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .pantalla.activa { display: flex; }
+  
+  /* PANTALLA 1 */
+  #bienvenida { background: #000; text-align: center; }
+  #bienvenida p { margin-bottom: 20px; text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; font-size: 20px; }
+  #bienvenida input { font-size: 18px; padding: 10px; margin: 15px; border: 2px solid #00ffff; background: #111; color: #00ffff; border-radius: 8px; }
+  #bienvenida button { padding: 12px 24px; font-size: 18px; background: transparent; border: 2px solid #00ffff; color: #00ffff; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; text-shadow: 0 0 10px #00ffff; }
+  #bienvenida button:hover { background: #00ffff; color: #000; }
+  
+  /* PANTALLA 2 */
+  #instrucciones { background: #000; flex-direction: column; align-items: center; padding: 40px; text-align: justify; line-height: 1.6; color: #00ffff; font-size: 18px; }
+  #instrucciones h1 { text-align: center; margin-bottom: 20px; text-shadow: 0 0 10px #00ffff; }
+  .parrafo { margin-bottom: 20px; min-height: 80px; }
+  #instrucciones button { padding: 12px 24px; font-size: 18px; background: transparent; border: 2px solid #00ffff; color: #00ffff; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; text-shadow: 0 0 10px #00ffff; margin-top: 20px; display:none; }
+  #instrucciones button:hover { background: #00ffff; color: #000; }
+  /* PANTALLA 3 */
+  #juego { background: url('CP.png') no-repeat center center fixed; background-size: cover; flex-direction: column; align-items: center; justify-content: center; }
+  #panel-top { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; width: auto; padding: 5px 10px; font-size: 14px; background-color: rgba(0, 0, 0, 0.5); color: #00ffff; text-shadow: 0 0 10px #00ffff; border: 2px solid #00ffff; border-radius: 8px; position: absolute; top: 15px; left: 15px; z-index: 10; }
+  #titulo-desafio { font-size: 16px; font-weight: bold; margin-bottom: 3px; }
+  #vidas, #puntos { font-size: 14px; margin-top: 5px; }
+  #progresoContainer { width: 200px; background: #111; border: 2px solid #00ffff; border-radius: 10px; overflow: hidden; margin-top: 5px; }
+  #barraProgreso { height: 20px; width: 0%; background: #00ffff; transition: width 0.5s ease; }
+
+  #panel-juego { display: flex; justify-content: space-around; align-items: center; width: 100%; flex: 1; padding: 20px; margin-top: 100px; }
+  #imagen-epoca { width: 400px; height: 300px; border: 3px solid #00ffff; border-radius: 12px; background: #111 center center no-repeat; background-size: contain; box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; }
+  #texto-epoca { width: 400px; height: 300px; padding: 10px; border: 3px solid #00ffff; border-radius: 12px; overflow-y: auto; background: rgba(0, 0, 0, 0.6); font-size: 16px; text-align: justify; color: #00ffff; box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; }
+  #botones-decadas { display: flex; flex-direction: column; gap: 10px; }
+  #botones-decadas button { padding: 10px 20px; background: transparent; border: 2px solid #00ffff; color: #00ffff; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.3s ease; text-shadow: 0 0 10px #00ffff; }
+  #botones-decadas button:hover { background: #00ffff; color: #000; }
+  /* PANTALLA 4 */
+  #final { background: url('CP2.png') no-repeat center center fixed; background-size: cover; flex-direction: column; text-align: center; color: #00ffff; padding: 20px; text-shadow: 0 0 10px #00ffff; overflow-x: auto; overflow-y: auto; }
+  #horaFinal { margin-bottom: 20px; }
+  #linea-tiempo-final { width: 90%; margin: 20px auto; display: flex; align-items: flex-start; justify-content: flex-start; overflow-x: auto; border-top: 3px solid #00ffff; padding-top: 20px; position: relative; }
+  #linea-tiempo-final::before { content: ""; position: absolute; top: 0; left: 0; height: 3px; width: 100%; background: #00ffff; }
+  .slot { text-align: center; margin: 0 20px; opacity: 0; transition: opacity 0.5s ease; }
+  .slot.aparecer { opacity: 1; }
+  .slot img { width: 60px; height: 60px; display: block; margin: 5px auto; border-radius: 8px; box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; }
+  .slotFecha { font-size: 14px; margin-bottom: 5px; text-shadow: 0 0 5px #00ffff; }
+  #final button { padding: 12px 24px; font-size: 18px; background: transparent; border: 2px solid #00ffff; color: #00ffff; border-radius: 8px; cursor: pointer; margin-top: 20px; text-shadow: 0 0 10px #00ffff; transition: all 0.3s ease; display:none; }
+  #final button:hover { background: #00ffff; color: #000; }
+</style>
+</head>
+<body>
+
+<!-- Pantalla 1 -->
+<div id="bienvenida" class="pantalla activa">
+  <p>Ingresa tu nombre para iniciar el desafío:</p>
+  <input type="text" id="nombreCadete" placeholder="Nombre del Cadete">
+  <button onclick="iniciarMision()">INICIAR</button>
+</div>
+
+<!-- Pantalla 2 -->
+<div id="instrucciones" class="pantalla">
+  <h1>Bienvenido Cadete <span id="nombreCadeteInstrucciones"></span></h1>
+  <div id="parrafo1" class="parrafo"></div>
+  <div id="parrafo2" class="parrafo"></div>
+  <div id="parrafo3" class="parrafo"></div>
+  <button id="botonIniciarJuego" onclick="iniciarJuego()">Iniciar Desafío</button>
+</div>
+
+<!-- Pantalla 3 -->
+<div id="juego" class="pantalla">
+  <div id="panel-top">
+    <div id="titulo-desafio">Desafío 1 - Cadete: <span id="nombreCadeteJuego"></span></div>
+    <div id="vidas">Vidas: 3</div>
+    <div id="puntos">Puntos: 0</div>
+    <div id="progresoContainer"><div id="barraProgreso"></div></div>
+  </div>
+
+  <div id="panel-juego">
+    <div id="imagen-epoca"></div>
+    <div id="texto-epoca"></div>
+    <div id="botones-decadas">
+      <button onclick="seleccionarDecada(0)">1960-1970</button>
+      <button onclick="seleccionarDecada(1)">1970-1980</button>
+      <button onclick="seleccionarDecada(2)">1980-1990</button>
+      <button onclick="seleccionarDecada(3)">1990-2000</button>
+      <button onclick="seleccionarDecada(4)">2000-2010</button>
+      <button onclick="seleccionarDecada(5)">2010-2020</button>
+      <button onclick="seleccionarDecada(6)">2020-Actual</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pantalla 4 -->
+<div id="final" class="pantalla">
+  <div id="horaFinal"></div>
+  <div id="linea-tiempo-final"></div>
+  <button id="continuarBtn" onclick="continuarMision2()">Continuar al Desafío II</button>
+</div>
+
+<script>
+const successSound = new Audio('success.mp3');
+const errorSound = new Audio('error.mp3');
+const countdownSound = new Audio('countdown.mp3');
+countdownSound.loop = true;
+countdownSound.volume = 0.2;
+
+const fragmentosOriginales = [
+  { img: '1960.png', texto: 'Surgimiento del concepto de sociedad "post industrial"...', clave: 'Post-industrial', decada: 0, fechaTexto: '1960-1970' },
+  { img: '1970.png', texto: 'Evolución del computador personal...', clave: 'Computador personal', decada: 1, fechaTexto: '1970-1980' },
+  { img: '1980.png', texto: 'Introducción del Internet...', clave: 'Internet', decada: 2, fechaTexto: '1980-1990' },
+  { img: '1990.png', texto: 'Popularización de redes sociales...', clave: 'Redes sociales', decada: 3, fechaTexto: '1990-2000' },
+  { img: '2000.png', texto: 'Expansión del internet en educación...', clave: 'Educación digital', decada: 4, fechaTexto: '2000-2010' },
+  { img: '2010.png', texto: 'Big Data...', clave: 'Big Data', decada: 5, fechaTexto: '2010-2020' },
+  { img: '2020.png', texto: 'Protección de datos...', clave: 'Protección digital', decada: 6, fechaTexto: '2020-Actual' }
+];
+
+let fragmentosPendientes = [...fragmentosOriginales].sort(() => Math.random() - 0.5);
+let fragmentosAcertados = [];
+let fragmentoActual = null;
+let puntos = 0;
+let vidas = 3;
+
+const parrafos = [
+`Tras un misterioso apagón, los antiguos servidores de la base militar de Bitnarys han sufrido un colapso masivo. Archivos vitales sobre la evolución de las sociedades de la información y el conocimiento han quedado corruptos.`,
+`Sin estos registros, el sistema central no puede validar los protocolos de defensa ni generar inteligencia táctica. En la pantalla de Registros Históricos te mostrará fragmentos corruptos de la línea de tiempo de la evolución de la información.`,
+`Debes identificar la fecha correcta de cada hito histórico. Si te equivocas 3 veces, el sistema de seguridad bloqueará el acceso temporalmente. Al completar correctamente la línea de tiempo, se desbloqueará la ruta hacia la Sala de Procesamiento.`
+];
+
+function animarParrafos(index) {
+  if (index >= parrafos.length) {
+    document.getElementById('botonIniciarJuego').style.display = 'block';
+    return;
+  }
+  const elemento = document.getElementById('parrafo' + (index+1));
+  let palabras = parrafos[index].split(' ');
+  let i = 0;
+  elemento.innerHTML = '';
+  const intervalo = setInterval(() => {
+    if (i < palabras.length) {
+      elemento.innerHTML += palabras[i] + ' ';
+      i++;
+    } else {
+      clearInterval(intervalo);
+      setTimeout(() => animarParrafos(index+1), 500);
+    }
+  }, 150);
+}
+
+function iniciarMision() {
+  const nombre = document.getElementById('nombreCadete').value.trim();
+  if (!nombre) return;
+  localStorage.setItem('nombreCadete', nombre);
+  document.getElementById('bienvenida').classList.remove('activa');
+  document.getElementById('instrucciones').classList.add('activa');
+  document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
+  animarParrafos(0);
+}
+
+function iniciarJuego() {
+  document.getElementById('instrucciones').classList.remove('activa');
+  document.getElementById('juego').classList.add('activa');
+  countdownSound.play();
+  const nombre = localStorage.getItem('nombreCadete');
+  document.getElementById('nombreCadeteJuego').textContent = nombre;
+  mostrarSiguienteFragmento();
+}
+
+function mostrarSiguienteFragmento() {
+  if (fragmentosPendientes.length === 0) {
+    countdownSound.pause();
+    mostrarLineaTiempoFinal();
+    return;
+  }
+  fragmentoActual = fragmentosPendientes.pop();
+  document.getElementById('imagen-epoca').style.backgroundImage = `url('${fragmentoActual.img}')`;
+  document.getElementById('texto-epoca').textContent = fragmentoActual.texto;
+  actualizarProgreso();
+}
+
+function seleccionarDecada(index) {
+  if (fragmentoActual && index === fragmentoActual.decada) {
+    successSound.play();
+    puntos += 10;
+    document.getElementById('puntos').textContent = `Puntos: ${puntos}`;
+    fragmentosAcertados.push(fragmentoActual);
+    mostrarSiguienteFragmento();
+  } else {
+    vidas--;
+    errorSound.play();
+    document.getElementById('vidas').textContent = `Vidas: ${vidas}`;
+    if (vidas <= 0) {
+      countdownSound.pause();
+      alert('Has fallado 3 veces. Reinicia el desafío.');
+      location.reload();
+    }
+  }
+}
+
+function actualizarProgreso() {
+  const porcentaje = (fragmentosAcertados.length / fragmentosOriginales.length) * 100;
+  document.getElementById('barraProgreso').style.width = porcentaje + '%';
+}
+
+function mostrarLineaTiempoFinal() {
+  document.getElementById('juego').classList.remove('activa');
+  document.getElementById('final').classList.add('activa');
+
+  const lineaFinal = document.getElementById('linea-tiempo-final');
+  lineaFinal.innerHTML = '';
+  let index = 0;
+
+  const now = new Date();
+  const fecha = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+  const horas = String(now.getHours()).padStart(2, '0');
+  const minutos = String(now.getMinutes()).padStart(2, '0');
+  const segundos = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('horaFinal').textContent = `Hora y fecha de terminación: ${horas}:${minutos}:${segundos} - ${fecha}`;
+
+  const intervalo = setInterval(() => {
+    if (index < fragmentosAcertados.length) {
+      const frag = fragmentosAcertados[index];
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.innerHTML = `<div class="slotFecha">${frag.fechaTexto}</div><img src='${frag.img}'><div>${frag.clave}</div>`;
+      lineaFinal.appendChild(slot);
+
+      setTimeout(() => {
+        slot.classList.add('aparecer');
+      }, 10);
+
+      index++;
+    } else {
+      clearInterval(intervalo);
+      document.getElementById('continuarBtn').style.display = 'inline-block';
+    }
+  }, 1000);
+}
+
+function continuarMision2() {
+  const nombre = localStorage.getItem('nombreCadete');
+  window.location.href = `https://cgviviana.github.io/AndinaCode-X/BitNarys/Mision1/?nombre=${encodeURIComponent(nombre)}`;
+}
+</script>
+</body>
+</html>
+
+
