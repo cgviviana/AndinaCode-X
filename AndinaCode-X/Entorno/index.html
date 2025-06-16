@@ -1,1 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Portal Galáctico - Areandina</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background-image: url('Img/XSistema.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 3em;
+      text-shadow: 2px 2px 10px black;
+    }
+
+    #comandante {
+      font-size: 1.8em;
+      margin-top: 10px;
+      color: #fff;
+    }
+
+    .contenedor-planetas {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      padding: 60px 30px;
+      flex-wrap: wrap;
+    }
+
+    .planeta {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 20px;
+      border-radius: 20px;
+      width: 266px;
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    .planeta:hover {
+      transform: scale(1.05);
+    }
+
+    .planeta p {
+      margin-bottom: 15px;
+      font-size: 1.2em;
+      color: #00f0ff;
+    }
+
+    .planeta img {
+      width: 100%;
+      height: auto;
+      border-radius: 15px;
+      box-shadow: 0 0 25px #00f0ff;
+    }
+
+    .efecto span {
+      display: inline-block;
+      opacity: 0;
+      animation: iluminar 0.5s forwards;
+    }
+
+    @keyframes iluminar {
+      to {
+        opacity: 1;
+        text-shadow: 0 0 8px #00f0ff, 0 0 16px #00f0ff;
+        color: #ffffff;
+      }
+    }
+
+    .estrella, .estrella-grande, .estrella-gira, .estrella-mov {
+      position: absolute;
+      border-radius: 50%;
+      background: #00f0ff;
+      opacity: 0.4;
+    }
+
+    .estrella {
+      width: 4px; height: 4px;
+      animation: parpadeo 2s infinite alternate ease-in-out;
+    }
+
+    .estrella-grande {
+      width: 12px; height: 12px;
+      animation: brillar 1.5s infinite alternate ease-in-out;
+    }
+
+    .estrella-gira {
+      width: 6px; height: 6px;
+      animation: rotar 2s linear infinite;
+    }
+
+    .estrella-mov {
+      width: 8px; height: 8px;
+      animation: mover 5s infinite alternate ease-in-out;
+    }
+
+    @keyframes parpadeo {
+      0% { opacity: 0.2; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.5); }
+    }
+
+    @keyframes brillar {
+      0% { opacity: 0.2; box-shadow: 0 0 5px #00f0ff; }
+      100% { opacity: 1; box-shadow: 0 0 20px #00f0ff; }
+    }
+
+    @keyframes rotar {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes mover {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(100px, -100px); }
+    }
+
+    #acceso {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+      display: none;
+    }
+
+    #acceso img {
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+
+    #acceso input {
+      font-size: 1.2em;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+    }
+  </style>
+</head>
+<body onclick="activarSonidoFondo()">
+  <h1 id="titulo-galaxia"></h1>
+  <h2 id="comandante" class="efecto"></h2>
+
+  <div class="contenedor-planetas">
+    <div class="planeta" onclick="solicitarAcceso('https://cgviviana.github.io/Juego_Prueba/Proyecto/Planeta1/')">
+      <p>Planeta Bitnarys</p>
+      <img src="Img/Bitnarys.png" alt="Bitnarys">
+    </div>
+    <div class="planeta" onclick="mostrarDenegado()">
+      <p>Planeta Codara</p>
+      <img src="Img/Codara.png" alt="Codara">
+    </div>
+    <div class="planeta" onclick="mostrarDenegado()">
+      <p>Planeta Tekron</p>
+      <img src="Img/Tekron.png" alt="Tekron">
+    </div>
+  </div>
+
+  <div id="acceso">
+    <img id="imagenAcceso" src="" alt="Acceso">
+    <input type="text" id="nombreCadete" placeholder="Ingresa tu nombre" onkeydown="if(event.key==='Enter') continuar()">
+  </div>
+
+  <audio id="fondo" src="Audio/Space.mp3" preload="auto" loop></audio>
+  <audio id="viaje" src="Audio/Viaje.mp3" preload="auto"></audio>
+  <audio id="texto" src="Audio/Texto.mp3" preload="auto"></audio>
+
+  <script>
+    let sonidoActivado = false;
+
+    function activarSonidoFondo() {
+      if (!sonidoActivado) {
+        document.getElementById("fondo").volume = 0.4;
+        document.getElementById("fondo").play();
+        sonidoActivado = true;
+      }
+    }
+
+    function escribirConEfecto(texto, contenedorId) {
+      const contenedor = document.getElementById(contenedorId);
+      contenedor.innerHTML = '';
+      [...texto].forEach((letra, i) => {
+        const span = document.createElement('span');
+        span.innerHTML = (letra === ' ') ? '&nbsp;' : letra;
+        span.style.animationDelay = `${i * 0.05}s`;
+        contenedor.appendChild(span);
+      });
+    }
+
+    function escribirTitulo(texto, elementoId, delay = 150) {
+      const contenedor = document.getElementById(elementoId);
+      const audio = document.getElementById("texto");
+      let i = 0;
+
+      function escribir() {
+        if (i < texto.length) {
+          contenedor.innerHTML += texto[i] === ' ' ? '&nbsp;' : texto[i];
+          audio.currentTime = 0;
+          audio.play();
+          i++;
+          setTimeout(escribir, delay);
+        }
+      }
+
+      escribir();
+    }
+
+    escribirTitulo("Galaxia AndinaCode X", "titulo-galaxia");
+
+    function solicitarAcceso(enlace) {
+      document.getElementById("imagenAcceso").src = "Img/AccesoSi.png";
+      document.getElementById("acceso").style.display = "flex";
+      document.getElementById("nombreCadete").style.display = "block";
+      document.getElementById("nombreCadete").focus();
+      window._nextLink = enlace;
+    }
+
+    function mostrarDenegado() {
+      document.getElementById("imagenAcceso").src = "Img/AccesoNo.png";
+      document.getElementById("acceso").style.display = "flex";
+      document.getElementById("nombreCadete").style.display = "none";
+      setTimeout(() => {
+        document.getElementById("acceso").style.display = "none";
+      }, 2000);
+    }
+
+    function continuar() {
+      const nombre = document.getElementById("nombreCadete").value.trim();
+      if (!nombre) return;
+      document.getElementById("viaje").play();
+      document.getElementById("fondo").pause();
+      document.getElementById("fondo").currentTime = 0;
+      setTimeout(() => {
+        window.location.href = window._nextLink + "?nombre=" + encodeURIComponent(nombre);
+      }, 2500);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const nombre = params.get("nombre");
+    if (nombre) escribirConEfecto("Bienvenido comandante " + nombre, "comandante");
+
+    for (let i = 0; i < 40; i++) {
+      const estrella = document.createElement('div');
+      estrella.className = 'estrella';
+      estrella.style.left = Math.random() * 100 + 'vw';
+      estrella.style.top = Math.random() * 100 + 'vh';
+      estrella.style.animationDuration = (1 + Math.random() * 2) + 's';
+      document.body.appendChild(estrella);
+    }
+
+    for (let i = 0; i < 2; i++) {
+      const grande = document.createElement('div');
+      grande.className = 'estrella-grande';
+      grande.style.left = Math.random() * 100 + 'vw';
+      grande.style.top = Math.random() * 100 + 'vh';
+      document.body.appendChild(grande);
+    }
+
+    const giratoria = document.createElement('div');
+    giratoria.className = 'estrella-gira';
+    giratoria.style.left = "50vw";
+    giratoria.style.top = "30vh";
+    document.body.appendChild(giratoria);
+
+    for (let i = 0; i < 2; i++) {
+      const mov = document.createElement('div');
+      mov.className = 'estrella-mov';
+      mov.style.left = Math.random() * 100 + 'vw';
+      mov.style.top = Math.random() * 100 + 'vh';
+      document.body.appendChild(mov);
+    }
+  </script>
+</body>
+</html>
 
