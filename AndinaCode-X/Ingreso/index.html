@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -42,14 +40,10 @@
     }
 
     @media (min-width: 768px) {
-      .contenedor {
-        flex-direction: row;
-      }
+      .contenedor { flex-direction: row; }
     }
 
-    .historia, .panel-misiones {
-      padding: 30px;
-    }
+    .historia, .panel-misiones { padding: 30px; }
 
     .historia {
       flex: 2;
@@ -57,10 +51,10 @@
     }
 
     .historia p {
-  font-size: 1.1em;
-  line-height: 1.6;
-  text-align: justify;
-}
+      font-size: 1.1em;
+      line-height: 1.6;
+      text-align: justify;
+    }
 
     .panel-misiones {
       flex: 1;
@@ -89,11 +83,11 @@
     }
 
     #tablero-estrellas img {
-  width: 40px;
-  height: 40px;
-  visibility: hidden;
-  animation: aparecerEstrella 0.5s ease-in-out;
-}
+      width: 40px;
+      height: 40px;
+      visibility: hidden;
+      animation: aparecerEstrella 0.5s ease-in-out;
+    }
 
     .panel-misiones ul {
       list-style: none;
@@ -127,43 +121,39 @@
     }
 
     #comandante {
-  font-size: 1.8em;
-  color: #00f0ff;
-  margin-bottom: 20px;
-  text-shadow: 0 0 8px #00f0ff;
-  text-align: center;
-  margin-top: 0;
-}
+      font-size: 1.8em;
+      color: #00f0ff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px #00f0ff;
+      text-align: center;
+      margin-top: 0;
+    }
 
     #insignia {
-  text-align: center;
-  margin-top: 20px;
-  display: none;
-  animation: aparecer 1s ease-in-out forwards;
-}
-  @keyframes aparecer {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
-}
-  to { opacity: 1; transform: scale(1); }
-}
-  to { opacity: 1; transform: scale(1); }
-}
-  to { opacity: 1; transform: scale(1); }
-}
-@keyframes aparecerEstrella {
-  0% { transform: scale(0.5); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-  100% { transform: scale(1); opacity: 1; }
-}
-</style>
+      text-align: center;
+      margin-top: 20px;
+      display: none;
+      animation: aparecer 1s ease-in-out forwards;
+    }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes aparecerEstrella {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
 </head>
 <body>
-  <header>Bitnarys: Misión Reconstrucción del Saber</header>
+  <audio id="musicaFondo" src="Audio/Mision.mp3" autoplay loop></audio>
+
+  <header>Misión:  "Reconstrucción del Saber"</header>
   <div class="contenedor">
     <div class="historia">
-      <h2 id="comandante" style="text-align:center; margin-top:0; color:#00ffff;">Bienvenido Comandante</h2>
+      <h2 id="comandante">Bienvenido comandante</h2>
       <p>Has aterrizado en el misterioso Planeta Bitnarys, donde una energía antigua mantiene la vida a salvo. Sin embargo, este mundo está en peligro: 
          una sombra cósmica amenaza con extinguir la luz estelar. Para salvar el planeta, debes completar 4 misiones clave que te otorgarán las 4 Estrellas
          Sagradas. Solo quien las reúna todas, podrá restaurar el equilibrio del universo y evitar la catástrofe.</p>
@@ -176,11 +166,11 @@
         <img id="estrella3" src="" alt="">
         <img id="estrella4" src="" alt="">
       </div>
-      <h2 style="text-align:center; color:#00ffff;">Misiones</h2>
+      <h2>Misiones</h2>
       <ul>
-        <li id="m1" onclick="completarMision(1)">Misión 1</li>
+        <li id="m1">Misión 1</li>
         <li id="m2" onclick="completarMision(2)">Misión 2</li>
-        <li id="m3" onclick="completarMision(3)">Misión 3</li>
+        <li id="m3">Misión 3</li>
         <li id="m4" onclick="completarMision(4)">Misión 4</li>
       </ul>
       <div id="insignia">
@@ -191,55 +181,81 @@
       </div>
     </div>
   </div>
+
   <script>
-  let nombre = "";
-  let misionesCompletadas = 0;
+    let nombre = "";
+    let misionesCompletadas = 0;
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const params = new URLSearchParams(window.location.search);
-    nombre = params.get("nombre");
-    if (nombre) {
-      document.getElementById("comandante").textContent = "Bienvenido comandante " + nombre;
-    }
-  });
+    document.addEventListener("DOMContentLoaded", () => {
+      // Volumen de música
+      const audio = document.getElementById("musicaFondo");
+      audio.volume = 0.2;
 
-  function completarMision(num) {
-    const mision = document.getElementById("m" + num);
-    if (!mision.classList.contains("completado")) {
-      const estrella = document.getElementById("estrella" + num);
-      estrella.src = "estrella.png";
-      estrella.style.visibility = "visible";
-      mision.classList.add("completado");
-      misionesCompletadas++;
-      alert("Desafío " + num + " completado. Has ganado una estrella.");
-    } else {
-      alert("¡Ya has completado esta misión!");
-    }
-
-    if (misionesCompletadas >= 4) {
+      const params = new URLSearchParams(window.location.search);
+      nombre = params.get("nombre");
       if (nombre) {
-        document.getElementById("comandante").textContent = "Bienvenido Almirante " + nombre;
-        document.getElementById("nombreAlmirante").textContent = nombre;
+        document.getElementById("comandante").textContent = "Bienvenido Comandante " + nombre;
       }
-      const tablero = document.getElementById("tablero-estrellas");
-      tablero.innerHTML = "";
-      const insigniaImg = document.createElement("img");
-      insigniaImg.src = "insignia.jpg";
-      insigniaImg.alt = "Insignia del Planeta 1";
-      insigniaImg.style.width = "80px";
-      tablero.appendChild(insigniaImg);
-      document.getElementById("insignia").style.display = "block";
-      alert("✨ Has completado todas las misiones. ¡Has ascendido de Comandante a Almirante! ✨");
 
-      setTimeout(() => {
-        document.body.style.transition = "opacity 2s ease";
-        document.body.style.opacity = "0";
-        setTimeout(() => {
-          window.location.href = "../Proyecto";
-        }, 2000);
-      }, 10000);
+      // Misiones especiales
+      document.getElementById("m1").onclick = () => abrirVentanaConRedireccion(
+        "https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision1/MOT1",
+        "https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision1/Desafio1"
+      );
+
+      document.getElementById("m3").onclick = () => abrirVentanaConRedireccion(
+        "https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision2/MOT2",
+        "https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision2"
+      );
+    });
+
+    function abrirVentanaConRedireccion(urlEmergente, urlFinal) {
+      const ventana = window.open(urlEmergente, "_blank", "width=900,height=600");
+      const chequeo = setInterval(() => {
+        if (ventana.closed) {
+          clearInterval(chequeo);
+          window.location.href = urlFinal;
+        }
+      }, 1000);
     }
-  }
-</script>
+
+    function completarMision(num) {
+      const mision = document.getElementById("m" + num);
+      if (!mision.classList.contains("completado")) {
+        const estrella = document.getElementById("estrella" + num);
+        estrella.src = "estrella.png";
+        estrella.style.visibility = "visible";
+        mision.classList.add("completado");
+        misionesCompletadas++;
+        alert("Desafío " + num + " completado. Has ganado una estrella.");
+      } else {
+        alert("¡Ya has completado esta misión!");
+      }
+
+      if (misionesCompletadas >= 4) {
+        if (nombre) {
+          document.getElementById("comandante").textContent = "Bienvenido Almirante " + nombre;
+          document.getElementById("nombreAlmirante").textContent = nombre;
+        }
+        const tablero = document.getElementById("tablero-estrellas");
+        tablero.innerHTML = "";
+        const insigniaImg = document.createElement("img");
+        insigniaImg.src = "insignia.jpg";
+        insigniaImg.alt = "Insignia del Planeta 1";
+        insigniaImg.style.width = "80px";
+        tablero.appendChild(insigniaImg);
+        document.getElementById("insignia").style.display = "block";
+        alert("✨ Has completado todas las misiones. ¡Has ascendido de Comandante a Almirante! ✨");
+
+        setTimeout(() => {
+          document.body.style.transition = "opacity 2s ease";
+          document.body.style.opacity = "0";
+          setTimeout(() => {
+            window.location.href = "../Proyecto";
+          }, 2000);
+        }, 10000);
+      }
+    }
+  </script>
 </body>
 </html>
