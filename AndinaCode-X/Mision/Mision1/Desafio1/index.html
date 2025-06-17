@@ -49,7 +49,7 @@
   #final { background: url('Img/CP2.png') no-repeat center center fixed; background-size: cover; flex-direction: column; text-align: center; color: #00ffff; padding: 20px; text-shadow: 0 0 10px #00ffff; overflow-x: auto; overflow-y: auto; }
   #horaFinal { margin-bottom: 20px; }
   #linea-tiempo-final { width: 90%; margin: 20px auto; display: flex; align-items: flex-start; justify-content: flex-start; overflow-x: auto; position: relative; border-top: 3px solid #00ffff; padding-top: 40px; }
-  #linea-tiempo-final::before { content: ""; position: absolute; top: 30px; left: 0; height: 3px; width: 100%; background: #00ffff; z-index: 0; }
+
   .slot { text-align: center; margin: 0 20px; opacity: 0; transition: opacity 0.5s ease; position: relative; z-index: 1; }
   .slot.aparecer { opacity: 1; }
   .slotFecha { font-size: 14px; margin-bottom: 10px; text-shadow: 0 0 5px #00ffff; }
@@ -107,10 +107,11 @@
 </div>
 
 <!-- Pantalla 4 -->
-<div id="final" class="pantalla">
-  <div id="horaFinal"></div>
+  <div id="final" class="pantalla">
   <div id="linea-tiempo-final"></div>
   <div id="mensajeFelicitacion"></div>
+  <div id="horaFinal"></div>
+
   <button id="continuarBtn" onclick="continuarMision2()">Continuar al Desafío II</button>
 </div>
 
@@ -163,13 +164,15 @@ function escribirParrafo(parrafoIndex, elementoId, callback) {
 
 function animarParrafos() {
   escribirParrafo(0, 'parrafo1', () => {
+    document.getElementById('botonIniciarJuego').style.display = 'block'; // Mostrar botón al inicio del segundo párrafo
     escribirParrafo(1, 'parrafo2', () => {
-      escribirParrafo(2, 'parrafo3', () => {
-        document.getElementById('botonIniciarJuego').style.display = 'block';
-      });
+      escribirParrafo(2, 'parrafo3');
     });
   });
 }
+
+
+
 
 function iniciarMision() {
   const nombre = document.getElementById('nombreCadete').value.trim();
