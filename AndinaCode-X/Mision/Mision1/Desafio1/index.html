@@ -144,20 +144,21 @@ const parrafos = [
 ];
 
 function escribirParrafo(parrafoIndex, elementoId, callback) {
-  const texto = parrafos[parrafoIndex];
+   const texto = parrafos[parrafoIndex];
   const elemento = document.getElementById(elementoId);
   elemento.innerHTML = '';
-  let i = texto.length - 1;
+  let i = 0;
 
   const intervalo = setInterval(() => {
-    if (i >= 0) {
-      elemento.innerHTML = texto[i] + elemento.innerHTML;
-      i--;
+    if (i < texto.length) {
+      elemento.innerHTML += texto[i];
+      i++;
     } else {
       clearInterval(intervalo);
       if (callback) setTimeout(callback, 500);
     }
-  }, 80); // velocidad escritura
+  }, 80);
+
 }
 
 function animarParrafos() {
