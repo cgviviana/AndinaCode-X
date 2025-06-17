@@ -31,7 +31,7 @@
   #instrucciones button { padding: 12px 24px; font-size: 18px; background: transparent; border: 2px solid #00ffff; color: #00ffff; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; text-shadow: 0 0 10px #00ffff; margin-top: 20px; display:none; }
   #instrucciones button:hover { background: #00ffff; color: #000; }
   /* PANTALLA 3 */
-  #juego { background: url('CP.png') no-repeat center center fixed; background-size: cover; flex-direction: column; align-items: center; justify-content: center; }
+  #juego { background: url('Img/CP.png') no-repeat center center fixed; background-size: cover; flex-direction: column; align-items: center; justify-content: center; }
   #panel-top { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; width: auto; padding: 5px 10px; font-size: 14px; background-color: rgba(0, 0, 0, 0.5); color: #00ffff; text-shadow: 0 0 10px #00ffff; border: 2px solid #00ffff; border-radius: 8px; position: absolute; top: 15px; left: 15px; z-index: 10; }
   #titulo-desafio { font-size: 16px; font-weight: bold; margin-bottom: 3px; }
   #vidas, #puntos { font-size: 14px; margin-top: 5px; }
@@ -46,7 +46,7 @@
   #botones-decadas button:hover { background: #00ffff; color: #000; }
 
   /* PANTALLA 4 */
-  #final { background: url('CP2.png') no-repeat center center fixed; background-size: cover; flex-direction: column; text-align: center; color: #00ffff; padding: 20px; text-shadow: 0 0 10px #00ffff; overflow-x: auto; overflow-y: auto; }
+  #final { background: url('Img/CP2.png') no-repeat center center fixed; background-size: cover; flex-direction: column; text-align: center; color: #00ffff; padding: 20px; text-shadow: 0 0 10px #00ffff; overflow-x: auto; overflow-y: auto; }
   #horaFinal { margin-bottom: 20px; }
   #linea-tiempo-final { width: 90%; margin: 20px auto; display: flex; align-items: flex-start; justify-content: flex-start; overflow-x: auto; position: relative; border-top: 3px solid #00ffff; padding-top: 40px; }
   #linea-tiempo-final::before { content: ""; position: absolute; top: 30px; left: 0; height: 3px; width: 100%; background: #00ffff; z-index: 0; }
@@ -115,20 +115,20 @@
 </div>
 
 <script>
-const successSound = new Audio('success.mp3');
-const errorSound = new Audio('error.mp3');
-const countdownSound = new Audio('countdown.mp3');
+const successSound = new Audio('Audio/success.mp3');
+const errorSound = new Audio('Audio/error.mp3');
+const countdownSound = new Audio('Audio/countdown.mp3');
 countdownSound.loop = true;
 countdownSound.volume = 0.05; // volumen bien bajo
 
 const fragmentosOriginales = [
-  { img: '1960.png', texto: 'Surgimiento del concepto de sociedad "post industrial"...', clave: 'Post-industrial', decada: 0, fechaTexto: '1960-1970' },
-  { img: '1970.png', texto: 'Evolución del computador personal...', clave: 'Computador personal', decada: 1, fechaTexto: '1970-1980' },
-  { img: '1980.png', texto: 'Introducción del Internet...', clave: 'Internet', decada: 2, fechaTexto: '1980-1990' },
-  { img: '1990.png', texto: 'Popularización de redes sociales...', clave: 'Redes sociales', decada: 3, fechaTexto: '1990-2000' },
-  { img: '2000.png', texto: 'Expansión del internet en educación...', clave: 'Educación digital', decada: 4, fechaTexto: '2000-2010' },
-  { img: '2010.png', texto: 'Big Data...', clave: 'Big Data', decada: 5, fechaTexto: '2010-2020' },
-  { img: '2020.png', texto: 'Protección de datos...', clave: 'Protección digital', decada: 6, fechaTexto: '2020-Actual' }
+  { img: 'Img/1960.png', texto: 'Surgimiento del concepto de sociedad "post industrial"...', clave: 'Post-industrial', decada: 0, fechaTexto: '1960-1970' },
+  { img: 'Img/1970.png', texto: 'Evolución del computador personal...', clave: 'Computador personal', decada: 1, fechaTexto: '1970-1980' },
+  { img: 'Img/1980.png', texto: 'Introducción del Internet...', clave: 'Internet', decada: 2, fechaTexto: '1980-1990' },
+  { img: 'Img/1990.png', texto: 'Popularización de redes sociales...', clave: 'Redes sociales', decada: 3, fechaTexto: '1990-2000' },
+  { img: 'Img/2000.png', texto: 'Expansión del internet en educación...', clave: 'Educación digital', decada: 4, fechaTexto: '2000-2010' },
+  { img: 'Img/2010.png', texto: 'Big Data...', clave: 'Big Data', decada: 5, fechaTexto: '2010-2020' },
+  { img: 'Img/2020.png', texto: 'Protección de datos...', clave: 'Protección digital', decada: 6, fechaTexto: '2020-Actual' }
 ];
 
 let fragmentosPendientes = [...fragmentosOriginales].sort(() => Math.random() - 0.5);
@@ -268,9 +268,8 @@ function mostrarLineaTiempoFinal() {
 
 function continuarMision2() {
   const nombre = localStorage.getItem('nombreCadete');
-  window.location.href = `https://cgviviana.github.io/AndinaCode-X/BitNarys/Mision1/?nombre=${encodeURIComponent(nombre)}`;
+  window.location.href = `https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Ingreso/?nombre=${encodeURIComponent(nombre)}`;
 }
 </script>
 </body>
 </html>
-
