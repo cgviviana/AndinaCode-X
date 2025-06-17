@@ -1,1 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Desafío 3 - Bitmarys</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      background-color: #000;
+      color: #00f0ff;
+    }
+    .pantalla {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    .contenedor {
+      width: 70%;
+      padding: 2em;
+      background-color: rgba(0, 0, 0, 0.9);
+      border: 2px solid #00f0ff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #00f0ff;
+      text-align: justify;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    h1 { text-align: center; margin-bottom: 1em; }
+    .bloque { margin-top: 1em; line-height: 1.8em; }
+    .boton {
+      display: block;
+      margin: 2em auto 0;
+      padding: 0.5em 1.5em;
+      border: 1px solid #00f0ff;
+      background-color: transparent;
+      color: #00f0ff;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    #hoja2, #hoja3 {
+      background-image: url('SalaE.png');
+      background-repeat: no-repeat;
+      background-position: top center;
+      background-size: 100% 100%;
+    }
+    .panel-info {
+      position: absolute;
+      top: 1em;
+      left: 1em;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #00f0ff;
+      border-radius: 10px;
+      padding: 1em;
+      width: 230px;
+      font-size: 0.85em;
+      box-shadow: 0 0 12px #00f0ff;
+    }
+    .barra {
+      margin-top: 0.5em;
+      background: #111;
+      border: 1px solid #0ff;
+      border-radius: 5px;
+      overflow: hidden;
+      height: 10px;
+    }
+    .progreso {
+      height: 10px;
+      background-color: #00f0ff;
+      width: 0%;
+    }
+    .pregunta, .resultadoFinal {
+      width: 60%;
+      margin: 6em auto;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00f0ff;
+      border-radius: 10px;
+      padding: 2em;
+      text-align: center;
+      animation: brillo 2s infinite alternate;
+    }
+    @keyframes brillo {
+      from { box-shadow: 0 0 10px #00f0ff; }
+      to { box-shadow: 0 0 25px #00f0ff; }
+    }
+    .opcion {
+      display: block;
+      margin: 0.5em auto;
+      padding: 0.4em;
+      width: 70%;
+      border: 1px solid #00f0ff;
+      border-radius: 6px;
+      background-color: transparent;
+      color: #00f0ff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="pantalla" id="hoja1">
+    <div class="contenedor">
+      <h1>Bienvenido Cadete <span id="cadeteNombre"></span></h1>
+      <p class="bloque" id="bloque1"></p>
+      <p class="bloque" id="bloque2"></p>
+      <p class="bloque" id="bloque3"></p>
+      <button id="btnIniciar" class="boton" style="display:none;" onclick="iniciarJuego()">Iniciar Desafío</button>
+    </div>
+    <audio id="audioInicio" src="countdown.mp3" autoplay loop></audio>
+  </div>
+
+  <div class="pantalla" id="hoja2">
+    <div class="panel-info">
+      <p>Cadete: <span id="cadeteLabel"></span></p>
+      <p>Vidas: <span id="vidas">3</span></p>
+      <p>Puntos: <span id="puntos">0</span></p>
+      <div class="barra"><div class="progreso" id="progreso"></div></div>
+    </div>
+    <div class="pregunta" id="preguntaContainer">
+      <p id="textoPregunta"></p>
+      <div id="opciones"></div>
+    </div>
+    <audio id="audioSuccess" src="success.mp3"></audio>
+    <audio id="audioError" src="error.mp3"></audio>
+  </div>
+
+  <div class="pantalla" id="hoja3">
+    <div class="resultadoFinal" id="resultadoFinal"></div>
+    <audio id="audioFin" src="fin.mp3"></audio>
+  </div>
+
+  <script>
+    const cadete = new URLSearchParams(window.location.search).get("cadete") || "Cadete";
+    document.getElementById("cadeteNombre").textContent = cadete;
+    document.getElementById("cadeteLabel").textContent = cadete;
+
+    const texto1 = "Te damos la bienvenida al Desafío 3, Cadete. Los antiguos servidores del conocimiento han sido saboteados y los protocolos de ética están en peligro.";
+    const texto2 = "Tu misión será tomar decisiones críticas que reflejen los principios de ética informacional en contextos reales, demostrando tu dignidad como Centinela del Conocimiento.";
+    const texto3 = "Lee con atención cada dilema que aparecerá en pantalla y elige con sabiduría. Sólo los más íntegros logran restaurar el equilibrio.";
+
+    function escribirTexto(id, texto, callback) {
+      let i = 0;
+      const intervalo = setInterval(() => {
+        document.getElementById(id).textContent += texto[i];
+        i++;
+        if (i === texto.length) {
+          clearInterval(intervalo);
+          if (callback) callback();
+        }
+      }, 40);
+    }
+
+    window.onload = function() {
+      document.getElementById("hoja1").style.display = "block";
+      document.getElementById("audioInicio").volume = 0.1;
+      escribirTexto("bloque1", texto1, () => {
+        escribirTexto("bloque2", texto2, () => {
+          escribirTexto("bloque3", texto3, () => {
+            document.getElementById("btnIniciar").style.display = "block";
+          });
+        });
+      });
+    };
+
+    function iniciarJuego() {
+      document.getElementById("hoja1").style.display = "none";
+      document.getElementById("audioInicio").pause();
+      document.getElementById("hoja2").style.display = "block";
+      mostrarPregunta();
+    }
+
+    const preguntas = [
+      { texto: "Detectas una brecha de seguridad. ¿Qué haces?", opciones: ["Ignorarla", "Reportarla", "Compartirla", "Publicarla"], correcta: 1 },
+      { texto: "Te llega información dudosa. ¿Qué haces?", opciones: ["Verificarla antes de compartirla", "Reenviarla", "Ignorar el origen", "Inventar más"], correcta: 0 },
+      { texto: "Una compañera sufre ciberacoso. ¿Qué haces?", opciones: ["Unirte", "Ignorar", "Reportarlo", "Reírse"], correcta: 2 },
+      { texto: "¿Qué representa la empatía en el entorno digital?", opciones: ["Reírse de los errores", "Aceptar discursos de odio", "Evitar lenguaje ofensivo", "Compartir rumores"], correcta: 2 },
+      { texto: "¿Qué hacer con la autoría de un contenido creado con IA?", opciones: ["No decir nada", "Atribuir correctamente", "Plagiarlo", "Decir que es propio"], correcta: 1 },
+      { texto: "¿Qué actitud representa justicia digital?", opciones: ["Excluir opiniones", "Reconocer méritos y respetar derechos", "Imponer ideas", "No compartir recursos"], correcta: 1 },
+      { texto: "¿Cómo proteger la privacidad digital?", opciones: ["Usar contraseñas fáciles", "Compartir datos de colegas", "Controlar información personal", "Ignorar políticas"], correcta: 2 },
+      { texto: "¿Qué refleja responsabilidad digital?", opciones: ["Negar errores", "Asumir fallas y corregir", "Evadir normas", "Difundir errores"], correcta: 1 },
+      { texto: "¿Qué implica veracidad?", opciones: ["Verificar la fuente", "Difundir sin leer", "Especular", "Editar la información"], correcta: 0 },
+      { texto: "¿Qué hacer si usas contenido ajeno?", opciones: ["Copiar y pegar", "Citar fuente", "Ignorar autoría", "Apropiarse"], correcta: 1 }
+    ];
+
+    let indice = 0, vidas = 3, puntos = 0;
+
+    function mostrarPregunta() {
+      if (indice >= preguntas.length || vidas <= 0) {
+        mostrarResultado();
+        return;
+      }
+      const q = preguntas[indice];
+      document.getElementById("textoPregunta").textContent = q.texto;
+      const opcionesDiv = document.getElementById("opciones");
+      opcionesDiv.innerHTML = "";
+      q.opciones.forEach((op, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = op;
+        btn.className = "opcion";
+        btn.onclick = () => responder(idx);
+        opcionesDiv.appendChild(btn);
+      });
+    }
+
+    function responder(idx) {
+      const correcta = preguntas[indice].correcta;
+      if (idx === correcta) {
+        puntos++;
+        document.getElementById("audioSuccess").play();
+      } else {
+        vidas--;
+        document.getElementById("audioError").play();
+      }
+      indice++;
+      document.getElementById("vidas").textContent = vidas;
+      document.getElementById("puntos").textContent = puntos;
+      document.getElementById("progreso").style.width = (indice / preguntas.length * 100) + "%";
+      setTimeout(mostrarPregunta, 1000);
+    }
+
+    function mostrarResultado() {
+      document.getElementById("hoja2").style.display = "none";
+      document.getElementById("hoja3").style.display = "flex";
+      document.getElementById("audioFin").play();
+      const mensaje = (vidas > 0)
+        ? `¡Felicitaciones Cadete ${cadete}! Has completado la prueba con éxito. Puntaje: ${puntos}/${preguntas.length}`
+        : `Cadete ${cadete}, has perdido tus 3 vidas. Debes reiniciar la prueba.`;
+      document.getElementById("resultadoFinal").textContent = mensaje;
+    }
+  </script>
+</body>
+</html>
 
