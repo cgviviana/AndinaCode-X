@@ -1,1 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Probando 4 M4 - Protocolo Centinela</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffff;
+      background: #000;
+      overflow: hidden;
+    }
+    .pantalla {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .pantalla.activa {
+      display: flex;
+    }
+    #bienvenida, #instrucciones {
+      background: #000;
+      text-align: center;
+    }
+    #bienvenida h1, #bienvenida p, #instrucciones h1 {
+      text-shadow: 0 0 10px #00ffff;
+    }
+    #bienvenida h1 { font-size: 36px; margin-bottom: 20px; }
+    #bienvenida p { font-size: 20px; margin-bottom: 20px; }
+    #bienvenida input, #bienvenida button, #instrucciones button {
+      font-size: 18px;
+      padding: 10px;
+      margin: 15px;
+      border: 2px solid #00ffff;
+      background: #111;
+      color: #00ffff;
+      border-radius: 8px;
+    }
+    #bienvenida button:hover, #instrucciones button:hover {
+      background: #00ffff;
+      color: #000;
+      cursor: pointer;
+    }
+    #panel-top {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 15px #00ffff;
+      width: 250px;
+      z-index: 100;
+    }
+    #panel-juego {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 15px #00ffff;
+      max-width: 800px;
+      width: 90%;
+      text-align: center;
+    }
+    .opciones button, .retroalimentacion button, button {
+      background: transparent;
+      color: #00ffff;
+      border: 2px solid #00ffff;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      text-shadow: 0 0 5px #00ffff;
+    }
+    .opciones button:hover, .retroalimentacion button:hover, button:hover {
+      background: #00ffff;
+      color: #000;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #00ffff;
+      background: #111;
+      color: #00ffff;
+      border-radius: 8px;
+    }
+    h1, h2, p {
+      text-align: center;
+      text-shadow: 0 0 10px #00ffff;
+    }
+    #progresoContainer {
+      width: 100%;
+      background: #111;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    #barraProgreso {
+      height: 10px;
+      width: 0%;
+      background: #00ffff;
+      transition: width 0.5s ease;
+    }
+    #panelInstrucciones {
+      background-color: rgba(0,0,0,0.8);
+      padding: 20px;
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      max-width: 800px;
+      box-shadow: 0 0 10px #00ffff;
+      text-align: justify;
+    }
+    .parrafo {
+      margin-bottom: 20px;
+      border-left: 3px solid #00ffff;
+      padding-left: 10px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="bienvenida" class="pantalla activa">
+    <h1>Bienvenido</h1>
+    <p>Ingresa tu nombre para iniciar la misión:</p>
+    <input type="text" id="nombreCadete" placeholder="Nombre del Cadete">
+    <button onclick="iniciarMision()">INICIAR</button>
+  </div>
+  <div id="instrucciones" class="pantalla">
+    <h1>Cadete <span id="nombreCadeteInstrucciones"></span></h1>
+    <div id="panelInstrucciones">
+      <div id="parrafo1" class="parrafo"></div>
+      <div id="parrafo2" class="parrafo"></div>
+      <div id="parrafo3" class="parrafo"></div>
+      <button id="botonIniciarJuego" onclick="mostrarNivel(1)" style="display:none">Iniciar Nivel</button>
+    </div>
+  </div>
+  <div id="niveles"></div>
+
+  <script>
+    const parrafos = [
+      "Con EPRE restaurado y la red sensorial funcionando, el sistema está listo para operar en su máxima capacidad.",
+      "Pero se detectan intentos de acceso no autorizado.",
+      "Debes activar el Protocolo Centinela para blindar a EPRE de amenazas digitales."
+    ];
+
+    const niveles = [
+      { pregunta: "¿Qué es la ciberseguridad?", opciones: ["Es un tipo de virus", "Proteger sistemas y datos", "Una app segura", "Un lenguaje de programación"], correcta: 1 },
+      { pregunta: "¿Cuál es una amenaza digital?", opciones: ["Firewall", "Antivirus", "Phishing", "Contraseña"], correcta: 2 },
+      { pregunta: "¿Qué dato es sensible?", opciones: ["Color favorito", "Correo personal", "Comida preferida", "Nombre de tu perro"], correcta: 1 },
+      { pregunta: "¿Qué acción ayuda a protegerte?", opciones: ["Compartir contraseñas", "Usar WiFi público sin VPN", "Actualizar software", "Ignorar notificaciones"], correcta: 2 },
+      { pregunta: "¿Qué es una buena contraseña?", opciones: ["123456", "Tu nombre", "abc123", "Frase con símbolos y números"], correcta: 3 }
+    ];
+
+    let nivelActual = 0;
+    let puntos = 0;
+    let vidas = 3;
+
+    function escribirParrafo(index, id, cb) {
+      const texto = parrafos[index];
+      const el = document.getElementById(id);
+      let i = 0;
+      el.textContent = '';
+      const intv = setInterval(() => {
+        if (i < texto.length) {
+          el.textContent += texto[i++];
+        } else {
+          clearInterval(intv);
+          if (cb) setTimeout(cb, 500);
+        }
+      }, 50);
+    }
+
+    function animarInstrucciones() {
+      escribirParrafo(0, 'parrafo1', () => {
+        escribirParrafo(1, 'parrafo2', () => {
+          escribirParrafo(2, 'parrafo3', () => {
+            document.getElementById('botonIniciarJuego').style.display = 'block';
+          });
+        });
+      });
+    }
+
+    function iniciarMision() {
+      const nombre = document.getElementById('nombreCadete').value.trim();
+      if (!nombre) return;
+      localStorage.setItem('nombreCadete', nombre);
+      document.getElementById('bienvenida').classList.remove('activa');
+      document.getElementById('instrucciones').classList.add('activa');
+      document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
+      animarInstrucciones();
+    }
+
+    function mostrarNivel(num) {
+      document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+      const container = document.getElementById('niveles');
+      container.innerHTML = crearHTMLNivel(num);
+      document.getElementById('nivel' + num).classList.add('activa');
+      aplicarFondoNivel('nivel' + num);
+    }
+
+    function crearHTMLNivel(num) {
+      const nivel = niveles[num - 1];
+      const nombre = localStorage.getItem('nombreCadete') || 'Cadete';
+      return `
+        <div id="nivel${num}" class="pantalla">
+          <div id="panel-top">
+            <p><strong>Cadete:</strong> ${nombre}</p>
+            <p><strong>Vidas:</strong> ${vidas}</p>
+            <p><strong>Puntos:</strong> ${puntos}</p>
+            <div id="progresoContainer"><div id="barraProgreso" style="width:${num * 20}%"></div></div>
+          </div>
+          <div id="panel-juego">
+            <h2>Nivel ${num}</h2>
+            <p>${nivel.pregunta}</p>
+            <div class="opciones">
+              ${nivel.opciones.map((op, i) => `<button onclick="verificarRespuesta(${i}, ${nivel.correcta}, ${num})">${op}</button>`).join('')}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function verificarRespuesta(sel, correcta, num) {
+      if (sel === correcta) {
+        puntos += 10;
+        if (num < niveles.length) {
+          mostrarNivel(num + 1);
+        } else {
+          alert("¡Misión cumplida!");
+        }
+      } else {
+        vidas--;
+        alert("Respuesta incorrecta. Vidas restantes: " + vidas);
+        if (vidas <= 0) alert("Misión fallida.");
+      }
+    }
+
+    function aplicarFondoNivel(idPantalla) {
+      document.querySelectorAll('.pantalla').forEach(p => p.style.background = '#000');
+      const nivel = document.getElementById(idPantalla);
+      if (nivel) nivel.style.background = "url('fondo4.jpg') no-repeat center center / cover";
+    }
+  </script>
+</body>
+</html>
 
