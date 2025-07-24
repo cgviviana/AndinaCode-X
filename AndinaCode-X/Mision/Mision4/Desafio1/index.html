@@ -31,7 +31,9 @@
       text-align: center;
     }
     #niveles {
-      background-image: url('Img/fondo4.jpg');
+      background-image: url('fondo4.jpg');
+      background-size: cover;
+      background-position: center;
     }
     #bienvenida h1, #bienvenida p, #instrucciones h1 {
       text-shadow: 0 0 10px #00ffff;
@@ -207,7 +209,7 @@
         boton.textContent = `Nivel ${i}`;
         if (i <= nivelDesbloqueado) {
           boton.onclick = () => {
-            window.location.href = `https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision4/Desafio1/Nivel${i}/`;
+            window.location.href = `https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision4/Desafio1/Nivel${i}/#niveles`;
           };
         } else {
           boton.disabled = true;
@@ -219,12 +221,16 @@
 
     window.onload = () => {
       const nombre = localStorage.getItem('nombreCadete');
-      if (nombre) {
+      const nivel = parseInt(localStorage.getItem('nivelDesbloqueado')) || 1;
+
+      if (!nombre) {
+        mostrarPantalla('bienvenida');
+      } else if (window.location.hash === '#niveles' || nivel > 1) {
+        mostrarPantallaNiveles();
+      } else {
         document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
         animarInstrucciones();
         mostrarPantalla('instrucciones');
-      } else {
-        mostrarPantalla('bienvenida');
       }
     };
   </script>
