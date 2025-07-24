@@ -193,6 +193,7 @@
       const nombre = document.getElementById('nombreCadete').value.trim();
       if (!nombre) return;
       localStorage.setItem('nombreCadete', nombre);
+      localStorage.setItem('nivelActual', 1); // Empezamos en nivel 1
       document.getElementById('bienvenida').classList.remove('activa');
       document.getElementById('instrucciones').classList.add('activa');
       document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
@@ -200,6 +201,8 @@
     }
 
     function mostrarNivel(num) {
+      nivelActual = num;
+      localStorage.setItem("nivelActual", num);
       document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
       const container = document.getElementById('niveles');
       container.innerHTML = crearHTMLNivel(num);
@@ -248,22 +251,23 @@
       const nivel = document.getElementById(idPantalla);
       if (nivel) nivel.style.background = "url('fondo4.jpg') no-repeat center center / cover";
     }
-    window.onload = () => {
-  const hash = window.location.hash;
-  const nombre = localStorage.getItem('nombreCadete') || 'Cadete';
-  if (hash === "#niveles") {
-    document.getElementById('bienvenida').classList.remove('activa');
-    document.getElementById('instrucciones').classList.remove('activa');
-    mostrarNivel(nivelActual + 1 || 1);
-  } else if (nombre) {
-    document.getElementById('bienvenida').classList.remove('activa');
-    document.getElementById('instrucciones').classList.add('activa');
-    document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
-    animarInstrucciones();
-  }
-};
 
+    window.onload = () => {
+      const hash = window.location.hash;
+      const nombre = localStorage.getItem('nombreCadete');
+      const nivelGuardado = parseInt(localStorage.getItem('nivelActual')) || 1;
+
+      if (hash === "#niveles" && nombre) {
+        document.getElementById('bienvenida').classList.remove('activa');
+        document.getElementById('instrucciones').classList.remove('activa');
+        mostrarNivel(nivelGuardado);
+      } else if (nombre) {
+        document.getElementById('bienvenida').classList.remove('activa');
+        document.getElementById('instrucciones').classList.add('activa');
+        document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
+        animarInstrucciones();
+      }
+    };
   </script>
 </body>
 </html>
-
