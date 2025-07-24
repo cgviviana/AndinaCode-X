@@ -1,1 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nivel 2: Firewall Defensivo</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffff;
+      overflow: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 32px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    #panel-juego {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #00ffff;
+      background: rgba(0, 0, 0, 0.7);
+      text-align: center;
+    }
+
+    #instrucciones {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    #temporizador {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+
+    #zonaJuego {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      border: 2px dashed #00ffff;
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: rgba(0, 0, 0, 0.4);
+      display: none;
+    }
+
+    .paquete {
+      position: absolute;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 2px solid #00ffff;
+      color: #00ffff;
+      background: rgba(0, 0, 0, 0.8);
+      animation: bajar 8s linear forwards;
+      cursor: pointer;
+      text-shadow: 0 0 5px #00ffff;
+    }
+
+    .explosion {
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ff0, #f00);
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: explotar 0.3s ease-out forwards;
+    }
+
+    .alerta {
+      border-color: red;
+      color: red;
+      text-shadow: 0 0 5px red;
+      box-shadow: 0 0 15px red;
+    }
+
+    .icono-virus {
+      font-size: 50px;
+      color: red;
+      text-shadow: 0 0 10px red;
+      margin: 10px auto;
+      display: block;
+    }
+
+    @keyframes bajar {
+      from { top: 0; }
+      to { top: 100%; }
+    }
+
+    @keyframes explotar {
+      from { transform: scale(0.5); opacity: 1; }
+      to { transform: scale(2); opacity: 0; }
+    }
+
+    button {
+      background: transparent;
+      color: #00ffff;
+      border: 2px solid #00ffff;
+      padding: 10px 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      text-shadow: 0 0 5px #00ffff;
+    }
+
+    button:hover {
+      background: #00ffff;
+      color: #000;
+    }
+
+    #mensajeFinal {
+      margin-top: 20px;
+      display: none;
+    }
+
+    #botonesFinal {
+      display: none;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Nivel 2: Firewall Defensivo</h1>
+
+  <div id="panel-juego">
+    <p id="instrucciones">Bloquea los archivos maliciosos antes de que lleguen al sistema. ¡Tienes 60 segundos!</p>
+    <p id="temporizador" style="display:none;">Tiempo restante: <span id="tiempoRestante">60</span> segundos</p>
+
+    <button id="botonIniciar" onclick="iniciarNivel2()">Iniciar</button>
+
+    <div id="zonaJuego"></div>
+
+    <p id="mensajeFinal"></p>
+    <div id="iconoAmenaza" class="icono-virus" style="display:none;">☣</div>
+
+    <div id="botonesFinal">
+      <button onclick="reiniciarNivel()">Sí, reiniciar</button>
+      <button onclick="window.location.href='index.html'">No, salir</button>
+    </div>
+  </div>
+
+  <!-- Audios -->
+  <audio id="audioAcierto" src="Audio/../../success.mp3" preload="auto"></audio>
+  <audio id="audioError" src="Audio/../../error.mp3" preload="auto"></audio>
+
+  <script>
+    let amenazasBloqueadas = 0;
+    let amenazasActivas = [];
+    let amenazasEscapadas = 0;
+    let tiempo = 60;
+    let intervaloPaquetes;
+    let intervaloTiempo;
+
+    const zonaJuego = document.getElementById("zonaJuego");
+    const successSound = document.getElementById("audioAcierto");
+    const errorSound = document.getElementById("audioError");
+    const iconoAmenaza = document.getElementById("iconoAmenaza");
+
+    const archivosSeguros = [
+      "fotoPerfil.jpg", "TrabajoGrado.doc", "informeFinal2024.pdf",
+      "resumenNotas.xlsx", "clase1.pptx", "documentoIdentidad.png",
+      "videoClase.mp4", "calendarioEventos.ics", "propuestaEmpresarial.docx", "miMascota.jpg"
+    ];
+
+    const amenazas = [
+      "phishing-alert.html", "keylogger.exe", "troyanoFiscal2024.scr",
+      "malware2023.bat", "spywareUpdate.zip", "ransomware-locker.jar",
+      "crypminerTool.js", "adwarePopper.exe", "hack-tool-v3.1.exe", "fakeBankAccess.pdf"
+    ];
+
+    function iniciarNivel2() {
+      amenazasBloqueadas = 0;
+      amenazasActivas = [];
+      amenazasEscapadas = 0;
+      tiempo = 60;
+
+      document.getElementById("botonIniciar").style.display = "none";
+      document.getElementById("temporizador").style.display = "block";
+      zonaJuego.style.display = "block";
+      document.getElementById("tiempoRestante").textContent = tiempo;
+      document.getElementById("mensajeFinal").style.display = "none";
+      document.getElementById("botonesFinal").style.display = "none";
+      iconoAmenaza.style.display = "none";
+
+      intervaloPaquetes = setInterval(crearPaquete, 1000);
+      intervaloTiempo = setInterval(() => {
+        tiempo--;
+        document.getElementById("tiempoRestante").textContent = tiempo;
+        if (tiempo <= 0) finalizarNivel2();
+      }, 1000);
+    }
+
+    function crearPaquete() {
+      const paquete = document.createElement("div");
+      paquete.classList.add("paquete");
+
+      const esAmenaza = Math.random() < 0.5;
+      const nombreArchivo = esAmenaza
+        ? amenazas[Math.floor(Math.random() * amenazas.length)]
+        : archivosSeguros[Math.floor(Math.random() * archivosSeguros.length)];
+
+      paquete.textContent = nombreArchivo;
+      paquete.style.left = Math.random() * 80 + "%";
+
+      if (esAmenaza) amenazasActivas.push(paquete);
+
+      paquete.onclick = function () {
+        if (esAmenaza) {
+          amenazasBloqueadas++;
+          successSound.currentTime = 0;
+          successSound.play();
+          mostrarExplosion(paquete.offsetLeft, paquete.offsetTop);
+          amenazasActivas = amenazasActivas.filter(p => p !== paquete);
+        } else {
+          errorSound.currentTime = 0;
+          errorSound.play();
+        }
+        paquete.remove();
+      };
+
+      zonaJuego.appendChild(paquete);
+
+      setTimeout(() => {
+        if (zonaJuego.contains(paquete)) {
+          if (esAmenaza) {
+            paquete.classList.add("alerta");
+            amenazasEscapadas++;
+          }
+          zonaJuego.removeChild(paquete);
+        }
+      }, 8000);
+    }
+
+    function mostrarExplosion(x, y) {
+      const explosion = document.createElement("div");
+      explosion.classList.add("explosion");
+      explosion.style.left = `${x}px`;
+      explosion.style.top = `${y}px`;
+      zonaJuego.appendChild(explosion);
+      setTimeout(() => explosion.remove(), 300);
+    }
+
+    function finalizarNivel2() {
+      clearInterval(intervaloPaquetes);
+      clearInterval(intervaloTiempo);
+
+      const mensaje = document.getElementById("mensajeFinal");
+      const botones = document.getElementById("botonesFinal");
+
+      if (amenazasEscapadas === 0 && amenazasBloqueadas > 0) {
+        mensaje.textContent = "Nivel completado";
+        mensaje.style.display = "block";
+        setTimeout(() => {
+          window.location.href = "https://www.paginaanterior.com";
+        }, 3000);
+      } else {
+        mensaje.textContent = "¡Dejaste pasar una amenaza! ¿Deseas reiniciar?";
+        iconoAmenaza.style.display = "block";
+        mensaje.style.display = "block";
+        botones.style.display = "flex";
+      }
+    }
+
+    function reiniciarNivel() {
+      zonaJuego.innerHTML = "";
+      iniciarNivel2();
+    }
+  </script>
+
+</body>
+</html>
 
