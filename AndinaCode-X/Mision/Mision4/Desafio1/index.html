@@ -20,6 +20,8 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      background-size: cover;
+      background-position: center;
     }
     .pantalla.activa {
       display: flex;
@@ -27,6 +29,9 @@
     #bienvenida, #instrucciones {
       background: #000;
       text-align: center;
+    }
+    #niveles {
+      background-image: url('fondo4.jpg');
     }
     #bienvenida h1, #bienvenida p, #instrucciones h1 {
       text-shadow: 0 0 10px #00ffff;
@@ -116,108 +121,112 @@
     <input type="text" id="nombreCadete" placeholder="Nombre del Cadete">
     <button onclick="iniciarMision()">INICIAR</button>
   </div>
+
   <div id="instrucciones" class="pantalla">
     <h1>Cadete <span id="nombreCadeteInstrucciones"></span></h1>
     <div id="panelInstrucciones">
       <div id="parrafo1" class="parrafo"></div>
       <div id="parrafo2" class="parrafo"></div>
       <div id="parrafo3" class="parrafo"></div>
-      <button id="botonIniciarJuego" onclick="mostrarPantallaDeNiveles()" style="display:none">Iniciar Desafío</button>
+      <button id="botonIniciarJuego" onclick="mostrarPantallaNiveles()" style="display:none">Iniciar Desafío</button>
     </div>
   </div>
+
   <div id="niveles" class="pantalla">
     <div id="panel-superior">
-      <div>Cadete: <span id="nombreSuperior"></span></div>
-      <div>Puntos: <span id="puntosSuperior">0</span></div>
-      <div>Progreso: <span id="progresoSuperior">0%</span></div>
+      <p><strong>Cadete:</strong> <span id="nombrePanel"></span></p>
+      <p><strong>Puntos:</strong> <span id="puntosPanel">0</span></p>
     </div>
     <div id="panel-juego">
-      <h2>Completa en orden los niveles del desafío</h2>
+      <h2>Selecciona un Nivel</h2>
       <div id="botonesNiveles"></div>
-      <button id="botonDiploma" style="display:none" onclick="alert('Diploma')">Ver Diploma</button>
     </div>
   </div>
-<script>
-const parrafos = [
-  "Con EPRE restaurado y la red sensorial funcionando, el sistema está listo para operar en su máxima capacidad.",
-  "Pero se detectan intentos de acceso no autorizado.",
-  "Debes activar el Protocolo Centinela para blindar a EPRE de amenazas digitales."
-];
 
-function escribirParrafo(index, id, cb) {
-  const texto = parrafos[index];
-  const el = document.getElementById(id);
-  let i = 0;
-  el.textContent = '';
-  const intv = setInterval(() => {
-    if (i < texto.length) {
-      el.textContent += texto[i++];
-    } else {
-      clearInterval(intv);
-      if (cb) setTimeout(cb, 500);
+  <script>
+    const parrafos = [
+      "Con EPRE restaurado y la red sensorial funcionando, el sistema está listo para operar en su máxima capacidad.",
+      "Pero se detectan intentos de acceso no autorizado.",
+      "Debes activar el Protocolo Centinela para blindar a EPRE de amenazas digitales."
+    ];
+
+    function escribirParrafo(index, id, cb) {
+      const texto = parrafos[index];
+      const el = document.getElementById(id);
+      let i = 0;
+      el.textContent = '';
+      const intv = setInterval(() => {
+        if (i < texto.length) {
+          el.textContent += texto[i++];
+        } else {
+          clearInterval(intv);
+          if (cb) setTimeout(cb, 500);
+        }
+      }, 50);
     }
-  }, 50);
-}
 
-function animarInstrucciones() {
-  escribirParrafo(0, 'parrafo1', () => {
-    escribirParrafo(1, 'parrafo2', () => {
-      escribirParrafo(2, 'parrafo3', () => {
-        document.getElementById('botonIniciarJuego').style.display = 'inline-block';
+    function animarInstrucciones() {
+      escribirParrafo(0, 'parrafo1', () => {
+        escribirParrafo(1, 'parrafo2', () => {
+          escribirParrafo(2, 'parrafo3', () => {
+            document.getElementById('botonIniciarJuego').style.display = 'block';
+          });
+        });
       });
-    });
-  });
-}
+    }
 
-function iniciarMision() {
-  const nombre = document.getElementById('nombreCadete').value.trim();
-  if (!nombre) return;
-  localStorage.setItem('nombreCadete', nombre);
-  localStorage.setItem('nivelDesbloqueado', 1);
-  document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
-  document.getElementById('instrucciones').classList.add('activa');
-  document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
-  animarInstrucciones();
-}
+    function iniciarMision() {
+      const nombre = document.getElementById('nombreCadete').value.trim();
+      if (!nombre) return;
+      localStorage.setItem('nombreCadete', nombre);
+      localStorage.setItem('puntos', '0');
+      localStorage.setItem('nivelDesbloqueado', '1');
+      document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
+      mostrarPantalla('instrucciones');
+      animarInstrucciones();
+    }
 
-function mostrarPantallaDeNiveles() {
-  const nombre = localStorage.getItem('nombreCadete');
-  const nivel = parseInt(localStorage.getItem('nivelDesbloqueado')) || 1;
-  const puntos = Math.min((nivel - 1) * 20, 100);
-  document.getElementById('nombreSuperior').textContent = nombre;
-  document.getElementById('puntosSuperior').textContent = puntos;
-  document.getElementById('progresoSuperior').textContent = `${puntos}%`;
-  document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
-  document.getElementById('niveles').classList.add('activa');
+    function mostrarPantalla(id) {
+      document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+      document.getElementById(id).classList.add('activa');
+    }
 
-  const botones = document.getElementById('botonesNiveles');
-  botones.innerHTML = '';
-  for (let i = 1; i <= 5; i++) {
-    const btn = document.createElement('button');
-    btn.textContent = `Nivel ${i}`;
-    btn.className = 'boton-nivel';
-    btn.disabled = i > nivel;
-    btn.onclick = () => {
-      window.location.href = `https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision4/Desafio1/Nivel${i}/`;
+    function mostrarPantallaNiveles() {
+      const nombre = localStorage.getItem('nombreCadete') || 'Cadete';
+      const puntos = localStorage.getItem('puntos') || '0';
+      const nivelDesbloqueado = parseInt(localStorage.getItem('nivelDesbloqueado')) || 1;
+
+      document.getElementById('nombrePanel').textContent = nombre;
+      document.getElementById('puntosPanel').textContent = puntos;
+      const contenedor = document.getElementById('botonesNiveles');
+      contenedor.innerHTML = '';
+
+      for (let i = 1; i <= 5; i++) {
+        const boton = document.createElement('button');
+        boton.className = 'boton-nivel';
+        boton.textContent = `Nivel ${i}`;
+        if (i <= nivelDesbloqueado) {
+          boton.onclick = () => {
+            window.location.href = `https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision4/Desafio1/Nivel${i}/`;
+          };
+        } else {
+          boton.disabled = true;
+        }
+        contenedor.appendChild(boton);
+      }
+      mostrarPantalla('niveles');
+    }
+
+    window.onload = () => {
+      const nombre = localStorage.getItem('nombreCadete');
+      if (nombre) {
+        document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
+        animarInstrucciones();
+        mostrarPantalla('instrucciones');
+      } else {
+        mostrarPantalla('bienvenida');
+      }
     };
-    botones.appendChild(btn);
-  }
-  if (nivel > 5) document.getElementById('botonDiploma').style.display = 'inline-block';
-}
-
-window.onload = () => {
-  const hash = window.location.hash;
-  const nombre = localStorage.getItem('nombreCadete');
-  const nivel = parseInt(localStorage.getItem('nivelDesbloqueado')) || 1;
-  if (hash === "#niveles" && nombre) {
-    mostrarPantallaDeNiveles();
-  } else if (nombre) {
-    document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
-    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
-    document.getElementById('instrucciones').classList.add('activa');
-    animarInstrucciones();
-  }
-};
-</script>
+  </script>
 </body>
 </html>
