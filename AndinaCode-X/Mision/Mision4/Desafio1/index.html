@@ -110,10 +110,21 @@
       border-radius: 10px;
       text-align: left;
       box-shadow: 0 0 10px #00ffff;
-      font-size: 20px;
+      font-size: 40px;
     }
     #botonesNiveles {
       margin-top: 20px;
+    }
+    #botonDiploma {
+      margin-top: 30px;
+      font-size: 20px;
+      padding: 12px 30px;
+      background: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
     }
   </style>
 </head>
@@ -141,8 +152,9 @@
       <p><strong>Puntos:</strong> <span id="puntosPanel">0</span></p>
     </div>
     <div id="panel-juego">
-      <h2>Selecciona un Nivel</h2>
+      <h2>Completa los niveles en orden para desbloquear el diploma</h2>
       <div id="botonesNiveles"></div>
+      <button id="botonDiploma" onclick="verDiploma()">Ver Diploma</button>
     </div>
   </div>
 
@@ -196,21 +208,28 @@
 
     function mostrarPantallaNiveles() {
       const nombre = localStorage.getItem('nombreCadete') || 'Cadete';
-      const puntos = localStorage.getItem('puntos') || '0';
+      const puntos = parseInt(localStorage.getItem('puntos')) || 0;
       const nivelDesbloqueado = parseInt(localStorage.getItem('nivelDesbloqueado')) || 1;
 
       document.getElementById('nombrePanel').textContent = nombre;
       document.getElementById('puntosPanel').textContent = puntos;
+
+      if (puntos >= 100) {
+        document.getElementById('botonDiploma').style.display = 'inline-block';
+      }
+
       const contenedor = document.getElementById('botonesNiveles');
       contenedor.innerHTML = '';
-
       for (let i = 1; i <= 5; i++) {
         const boton = document.createElement('button');
         boton.className = 'boton-nivel';
         boton.textContent = `Nivel ${i}`;
         if (i <= nivelDesbloqueado) {
           boton.onclick = () => {
-            window.location.href = `https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision4/Desafio1/Nivel${i}/#niveles`;
+            localStorage.setItem('volverANiveles', '1');
+            localStorage.setItem('nivelDesbloqueado', (i + 1).toString());
+            localStorage.setItem('puntos', (i * 20).toString());
+            window.location.href = `https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision4/Desafio1/Nivel${i}/`;
           };
         } else {
           boton.disabled = true;
@@ -220,13 +239,19 @@
       mostrarPantalla('niveles');
     }
 
+    function verDiploma() {
+      alert('¡Felicidades cadete! Has completado todos los niveles. Aquí está tu diploma.');
+    }
+
     window.onload = () => {
       const nombre = localStorage.getItem('nombreCadete');
       const nivel = parseInt(localStorage.getItem('nivelDesbloqueado')) || 1;
+      const volver = localStorage.getItem('volverANiveles');
 
       if (!nombre) {
         mostrarPantalla('bienvenida');
-      } else if (window.location.hash === '#niveles' || nivel > 1) {
+      } else if (volver === '1') {
+        localStorage.removeItem('volverANiveles');
         mostrarPantallaNiveles();
       } else {
         document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
