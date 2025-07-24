@@ -128,12 +128,13 @@
   </style>
 </head>
 <body>
-  <div id="bienvenida" class="pantalla activa">
+  <div id="bienvenida" class="pantalla">
     <h1>Bienvenido</h1>
     <p>Ingresa tu nombre para iniciar la misión:</p>
     <input type="text" id="nombreCadete" placeholder="Nombre del Cadete">
     <button onclick="iniciarMision()">INICIAR</button>
   </div>
+
   <div id="instrucciones" class="pantalla">
     <h1>Cadete <span id="nombreCadeteInstrucciones"></span></h1>
     <div id="panelInstrucciones">
@@ -143,6 +144,7 @@
       <button id="botonIniciarJuego" onclick="mostrarNivel(1)" style="display:none">Iniciar Nivel</button>
     </div>
   </div>
+
   <div id="niveles"></div>
 
   <script>
@@ -193,8 +195,8 @@
       const nombre = document.getElementById('nombreCadete').value.trim();
       if (!nombre) return;
       localStorage.setItem('nombreCadete', nombre);
-      localStorage.setItem('nivelActual', 1); // Empezamos en nivel 1
-      document.getElementById('bienvenida').classList.remove('activa');
+      localStorage.setItem('nivelActual', 1);
+      document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
       document.getElementById('instrucciones').classList.add('activa');
       document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
       animarInstrucciones();
@@ -258,14 +260,16 @@
       const nivelGuardado = parseInt(localStorage.getItem('nivelActual')) || 1;
 
       if (hash === "#niveles" && nombre) {
-        document.getElementById('bienvenida').classList.remove('activa');
-        document.getElementById('instrucciones').classList.remove('activa');
+        document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
         mostrarNivel(nivelGuardado);
       } else if (nombre) {
-        document.getElementById('bienvenida').classList.remove('activa');
+        document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
         document.getElementById('instrucciones').classList.add('activa');
         document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
         animarInstrucciones();
+      } else {
+        document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+        document.getElementById('bienvenida').classList.add('activa');
       }
     };
   </script>
