@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mapa de Intrusiones</title>
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: #000;
+      color: #00ffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+    h1 {
+      text-shadow: 0 0 10px #00ffff;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .contenedor-juego {
+      display: flex;
+      gap: 50px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+    .panel {
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 10px #00ffff;
+      min-width: 300px;
+      min-height: 400px;
+    }
+    .panel h3 {
+      text-align: center;
+      text-shadow: 0 0 10px #00ffff;
+      margin-bottom: 15px;
+    }
+    .ataque {
+      background: #111;
+      border: 1px solid #00ffff;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: grab;
+    }
+    .grupo {
+      border: 2px dashed #00ffff;
+      border-radius: 10px;
+      margin: 10px 0;
+      padding: 10px;
+      min-height: 60px;
+    }
+    .grupo.correcto {
+      border-color: lime;
+    }
+    .grupo.incorrecto {
+      border-color: red;
+    }
+    #mensaje-final {
+      margin-top: 20px;
+      font-size: 18px;
+      text-shadow: 0 0 10px #00ffff;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mapa de Intrusiones</h1>
+
+  <div class="contenedor-juego">
+    <div class="panel" id="panel-ataques">
+      <h3>Ataques Detectados</h3>
+      <!-- Ataques generados aleatoriamente -->
+    </div>
+
+    <div class="panel" id="panel-grupos">
+      <h3>Clasifica por Patrones</h3>
+      <div class="grupo" id="g1" ondrop="soltar(event, 'g1')" ondragover="permitirSoltar(event)">
+        <strong>Suplantación de identidad</strong>
+      </div>
+      <div class="grupo" id="g2" ondrop="soltar(event, 'g2')" ondragover="permitirSoltar(event)">
+        <strong>Malware</strong>
+      </div>
+      <div class="grupo" id="g3" ondrop="soltar(event, 'g3')" ondragover="permitirSoltar(event)">
+        <strong>Ataques por fuerza bruta</strong>
+      </div>
+    </div>
+  </div>
+
+  <p id="mensaje-final">¡Nivel completado!</p>
+
+  <audio id="audioSuccess" src="Audio/../../success.mp3" preload="auto"></audio>
+  <audio id="audioError" src="Audio/../../error.mp3" preload="auto"></audio>
+
+  <script>
+    const ataques = [
+      { id: 'a1', texto: 'Correo falso solicitando claves', grupo: 'g1' },
+      { id: 'a2', texto: 'Enlace infectado con troyano', grupo: 'g2' },
+      { id: 'a3', texto: 'Muchos intentos fallidos de contraseña', grupo: 'g3' },
+      { id: 'a4', texto: 'Formulario fraudulento para login', grupo: 'g1' },
+      { id: 'a5', texto: 'Descarga automática de spyware', grupo: 'g2' },
+    ];
+
+    function permitirSoltar(ev) {
+      ev.preventDefault();
+    }
+
+    function generarAtaquesAleatorios() {
+      const panel = document.getElementById('panel-ataques');
+      const mezclados = ataques.sort(() => Math.random() - 0.5);
+      mezclados.forEach(({ id, texto }) => {
+        const div = document.createElement('div');
+        div.className = 'ataque';
+        div.id = id;
+        div.draggable = true;
+        div.textContent = texto;
+        div.addEventListener('dragstart', ev => {
+          ev.dataTransfer.setData('text/plain', ev.target.id);
+        });
+        panel.appendChild(div);
+      });
+    }
+
+    function soltar(ev, zona) {
+      ev.preventDefault();
+      const id = ev.dataTransfer.getData('text');
+      const ataque = document.getElementById(id);
+      const grupo = ataques.find(a => a.id === id).grupo;
+      const zonaEl = document.getElementById(zona);
+
+      zonaEl.appendChild(ataque);
+      if (grupo === zona) {
+        zonaEl.classList.remove('incorrecto');
+        zonaEl.classList.add('correcto');
+        document.getElementById('audioSuccess').play();
+      } else {
+        zonaEl.classList.remove('correcto');
+        zonaEl.classList.add('incorrecto');
+        document.getElementById('audioError').play();
+      }
+
+      verificarNivel();
+    }
+
+    function verificarNivel() {
+      const todasCorrectas = ataques.every(a => {
+        const zonaEl = document.getElementById(a.grupo);
+        const hijos = Array.from(zonaEl.getElementsByClassName('ataque'));
+        return hijos.some(h => h.id === a.id);
+      });
+
+      if (todasCorrectas) {
+        document.getElementById('mensaje-final').style.display = 'block';
+        setTimeout(() => {
+          window.location.href = 'https://cgviviana.github.io/AndinaCode-X/AndinaCode-X/Mision/Mision4/Desafio1';
+        }, 3000);
+      }
+    }
+
+    window.onload = generarAtaquesAleatorios;
+  </script>
+</body>
+</html>
 
