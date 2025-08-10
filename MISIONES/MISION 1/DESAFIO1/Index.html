@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Desafío 1 - Reconstruir el Saber</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffff;
+    background: #000 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="bg" cx="50%" cy="50%"><stop offset="0%" stop-color="%23001a33"/><stop offset="50%" stop-color="%23000811"/><stop offset="100%" stop-color="%23000000"/></radialGradient></defs><rect width="100" height="100" fill="url(%23bg)"/></svg>');
+    background-size: cover;
+    background-attachment: fixed;
+    overflow: hidden;
+  }
+  .pantalla { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .pantalla.activa { display: flex; }
+
+  /* PANTALLA 1 */
+  #bienvenida { background: rgba(0,0,0,0.3); text-align: center; }
+  #bienvenida h1 { margin-bottom: 20px; text-shadow: 0 0 10px #00ffff, 0 0 20px rgba(0, 255, 255, 0.5); font-size: 36px; color: #00ffff; }
+  #bienvenida p { margin-bottom: 20px; text-shadow: 0 0 10px #00ffff, 0 0 20px rgba(0, 255, 255, 0.5); font-size: 20px; color: #ffffff; }
+  #bienvenida input { font-size: 18px; padding: 10px; margin: 15px; border: 2px solid #00ffff; background: rgba(0, 0, 0, 0.3); color: #ffffff; border-radius: 8px; }
+  #bienvenida button { padding: 12px 24px; font-size: 18px; background: transparent; border: 2px solid #00ffff; color: #00ffff; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+  #bienvenida button:hover { background: #00ffff; color: #000000; }
+
+  /* PANTALLA 2 */
+  #instrucciones { background: rgba(0,0,0,0.3); flex-direction: column; align-items: center; padding: 40px; text-align: justify; line-height: 1.6; color: #ffffff; font-size: 18px; }
+  #instrucciones h1 { text-align: center; margin-bottom: 20px; text-shadow: 0 0 10px #00ffff; color: #00ffff; }
+  #panelInstrucciones {
+  border: 2px solid #00ffff;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3), 0 0 20px rgba(0, 255, 255, 0.2);
+  max-width: 800px;
+  position: relative;
+}
+  .parrafo { margin-bottom: 20px; min-height: 80px; white-space: pre-wrap; padding-left: 10px; }
+  #instrucciones button { padding: 12px 24px; font-size: 18px; background: transparent; border: 2px solid #00ffff; color: #00ffff; border-radius: 8px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-shadow: 0 0 10px #00ffff; margin-top: 20px; display:none; }
+  #instrucciones button:hover { background: #00ffff; color: #000; }
+  #botonOmitirAnimacion {
+  display: none;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  left: auto;
+  margin-bottom: 0;
+  padding: 12px 24px;
+  font-size: 18px;
+  background: linear-gradient(90deg, #fff 0%, #00cfff 100%);
+  border: 2px solid #00cfff;
+  color: #0077bb;
+  border-radius: 8px;
+  cursor: pointer;
+  text-shadow: 0 0 10px #fff, 0 0 20px #00cfff;
+  box-shadow: 0 0 10px #00cfff, 0 0 20px #fff;
+  animation: pulseOmitir 1.2s infinite alternate;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+#botonOmitirAnimacion:hover {
+  background: linear-gradient(90deg, #00cfff 0%, #fff 100%);
+  color: #000;
+  border-color: #fff;
+}
+@keyframes pulseOmitir {
+  0% { box-shadow: 0 0 10px #00cfff, 0 0 20px #fff; }
+  100% { box-shadow: 0 0 30px #fff, 0 0 40px #00cfff; }
+  }
+
+  /* PANTALLA 3 */
+  #juego { background: url('IMAGENES/CP.png') no-repeat center center fixed; background-size: cover; flex-direction: column; align-items: center; justify-content: center; }
+  #instruccion-juego {
+    width: auto;
+    max-width: 60vw;
+    min-width: 280px;
+    text-align: center;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #fff;
+    background: rgba(0,0,0,0.85);
+    box-shadow: 0 2px 10px #00cfff;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 8px #00cfff;
+    border-radius: 6px;
+    position: absolute;
+    top: 18px;
+    left: 55%;
+    transform: translateX(-50%);
+    z-index: 12;
+    pointer-events: none;
+    margin: 0 auto;
+    display: block;
+  }
+  #panel-top { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; width: auto; padding: 5px 10px; font-size: 14px; background-color: rgba(0, 255, 255, 0.1); color: #ffffff; text-shadow: 0 0 10px #00ffff; border: 2px solid #00ffff; border-radius: 8px; position: absolute; top: 15px; left: 15px; z-index: 10; box-shadow: 0 0 10px rgba(0, 255, 255, 0.3); }
+  #titulo-desafio { font-size: 16px; font-weight: bold; margin-bottom: 3px; }
+  #vidas, #puntos { font-size: 14px; margin-top: 5px; }
+  #progresoContainer { width: 200px; background: #111; border: 2px solid #00ffff; border-radius: 10px; overflow: hidden; margin-top: 5px; }
+  #barraProgreso { height: 20px; width: 0%; background: #00ffff; transition: width 0.5s ease; }
+
+  #panel-juego { display: flex; justify-content: space-around; align-items: center; width: 100%; flex: 1; padding: 20px; margin-top: 100px; }
+  #imagen-epoca { width: 400px; height: 300px; border: 3px solid #00ffff; border-radius: 12px; background: #111 center center no-repeat; background-size: contain; box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; }
+  #texto-epoca { width: 400px; height: 300px; padding: 10px; border: 3px solid #4a90e2; border-radius: 12px; overflow-y: auto; background: rgba(74, 144, 226, 0.1); font-size: 16px; text-align: justify; color: #ffffff; box-shadow: 0 0 10px rgba(74, 144, 226, 0.3), 0 0 20px rgba(74, 144, 226, 0.2); }
+  #botones-decadas { display: flex; flex-direction: column; gap: 10px; }
+  #botones-decadas button { padding: 10px 20px; background: transparent; border: 2px solid #4a90e2; color: #4a90e2; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-shadow: 0 0 10px #4a90e2; position: relative; overflow: hidden; }
+  #botones-decadas button::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.6s ease; }
+  #botones-decadas button:hover { background: linear-gradient(45deg, #2a5298, #4a90e2); color: white; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4); }
+  #botones-decadas button:hover::before { left: 100%; }
+  #botones-decadas button:hover { background: #00ffff; color: #000; }
+  #botones-decadas button.tachar {
+  animation: tacharFadeOut 0.7s forwards;
+  text-decoration: line-through;
+  color: #888 !important;
+  background: rgba(0,255,255,0.1) !important;
+  border-color: #888 !important;
+  pointer-events: none;
+}
+@keyframes tacharFadeOut {
+  0% { opacity: 1; filter: blur(0); }
+  60% { opacity: 0.7; filter: blur(1px); }
+  100% { opacity: 0; filter: blur(3px); }
+}
+
+  /* PANTALLA 4 */
+  #final { background: url('IMAGENES/CP2.png') no-repeat center center fixed; background-size: cover; flex-direction: column; text-align: center; color: #ffffff; padding: 20px; text-shadow: 0 0 10px #4a90e2; overflow-x: auto; overflow-y: auto; }
+  #horaFinal { margin-bottom: 20px; }
+  #linea-tiempo-final { width: 90%; margin: 20px auto; display: flex; align-items: flex-start; justify-content: flex-start; overflow-x: auto; position: relative; border-top: 3px solid #00ffff; padding-top: 40px; }
+
+  .slot { text-align: center; margin: 0 20px; opacity: 0; transition: opacity 0.5s ease; position: relative; z-index: 1; }
+  .slot.aparecer { opacity: 1; }
+  .slotFecha { font-size: 14px; margin-bottom: 10px; text-shadow: 0 0 5px #00ffff; }
+  .slotSeparator { width: 3px; height: 30px; background: #00ffff; margin: 0 auto 10px auto; }
+  .slot img { width: 60px; height: 60px; display: block; margin: 5px auto; border-radius: 8px; box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; }
+  #mensajeFelicitacion { margin-top: 20px; font-size: 20px; }
+  #final button { padding: 12px 24px; font-size: 18px; background: transparent; border: 2px solid #4a90e2; color: #4a90e2; border-radius: 8px; cursor: pointer; margin-top: 20px; text-shadow: 0 0 10px #4a90e2; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:none; position: relative; overflow: hidden; }
+  #final button::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.6s ease; }
+  #final button:hover { background: linear-gradient(45deg, #2a5298, #4a90e2); color: white; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4); }
+  #final button:hover::before { left: 100%; }
+  #final button:hover { background: #00ffff; color: #000; }
+  .pantallaNegraTransicion {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000;
+    opacity: 0;
+    z-index: 9999;
+    pointer-events: none;
+    transition: opacity 1.4s cubic-bezier(.77,0,.18,1);
+  }
+</style>
+
+</head>
+<body>
+
+<!-- Pantalla 1 -->
+<div id="bienvenida" class="pantalla activa">
+  <h1>Bienvenido</h1>
+  <p id="textoBienvenida"></p>
+  <input type="text" id="nombreCadete" placeholder="Nombre del Cadete">
+  <button id="btnIniciar" onclick="iniciarMision()">INICIAR</button>
+</div>
+
+<!-- Pantalla 2 -->
+<div id="instrucciones" class="pantalla">
+  <h1>Bienvenido Cadete <span id="nombreCadeteInstrucciones"></span></h1>
+  <div id="panelInstrucciones">
+    <div id="parrafo1" class="parrafo"></div>
+    <div id="parrafo2" class="parrafo"></div>
+    <div id="parrafo3" class="parrafo"></div>
+  </div>
+  <button id="botonOmitirAnimacion" onclick="omitirAnimacion()">Omitir animación</button>
+  <button id="botonIniciarJuego" onclick="iniciarJuego()">Iniciar Desafío</button>
+</div>
+
+<!-- Pantalla 3 -->
+<div id="juego" class="pantalla">
+  <div id="instruccion-juego">
+    Responde los hitos históricos seleccionando la década correcta para cada uno.
+  </div>
+  <div id="panel-top">
+    <div id="titulo-desafio">Desafío 1 - Cadete: <span id="nombreCadeteJuego"></span></div>
+    <div id="vidas">Vidas: 10</div>
+    <div id="puntos">Puntos: 0</div>
+    <div id="progresoContainer"><div id="barraProgreso"></div></div>
+  </div>
+
+  <div id="panel-juego">
+    <div id="imagen-epoca"></div>
+    <div id="texto-epoca"></div>
+    <div id="botones-decadas">
+      <button onclick="seleccionarDecada(0)">1960-1970</button>
+      <button onclick="seleccionarDecada(1)">1970-1980</button>
+      <button onclick="seleccionarDecada(2)">1980-1990</button>
+      <button onclick="seleccionarDecada(3)">1990-2000</button>
+      <button onclick="seleccionarDecada(4)">2000-2010</button>
+      <button onclick="seleccionarDecada(5)">2010-2020</button>
+      <button onclick="seleccionarDecada(6)">2020-Actual</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pantalla 4 -->
+  <div id="final" class="pantalla">
+  <div id="linea-tiempo-final"></div>
+  <div id="mensajeFelicitacion"></div>
+  <div id="horaFinal"></div>
+
+  <button id="continuarBtn" onclick="continuarMision2()">Continuar al Desafío II</button>
+</div>
+
+<script>
+// Pantalla negra de transición
+function mostrarPantallaNegra(callback) {
+  let pantallaNegra = document.getElementById("pantallaNegraTransicion");
+  if (!pantallaNegra) {
+    pantallaNegra = document.createElement("div");
+    pantallaNegra.id = "pantallaNegraTransicion";
+    pantallaNegra.className = "pantallaNegraTransicion";
+    document.body.appendChild(pantallaNegra);
+  }
+  pantallaNegra.style.pointerEvents = "auto";
+  pantallaNegra.style.opacity = "1";
+  setTimeout(() => {
+    if (callback) callback();
+    setTimeout(() => {
+      pantallaNegra.style.opacity = "0";
+      setTimeout(() => {
+        pantallaNegra.style.pointerEvents = "none";
+      }, 1400);
+    }, 700);
+  }, 900);
+}
+const successSound = new Audio('AUDIO/success.mp3');
+const errorSound = new Audio('AUDIO/error.mp3');
+const countdownSound = new Audio('AUDIO/countdown.mp3');
+countdownSound.loop = true;
+countdownSound.volume = 0.05; // volumen bien bajo
+
+let puntos = 0;
+let vidas = 10;
+
+const parrafos = [
+`¡Atención Cadete! Un misterioso apagón ha provocado que los servidores de la base Bitnarys pierdan información clave sobre la historia de la tecnología y la sociedad. Tu misión es fundamental para restaurar el conocimiento perdido.`,
+`En la siguiente actividad verás imágenes y descripciones de hitos históricos. Debes seleccionar la década correcta en la que ocurrió cada evento. Tienes 10 vidas: cada error te hará perder una vida, pero puedes seguir intentando hasta restaurar toda la línea de tiempo.`,
+`Lee con atención cada descripción y observa la imagen. Haz clic en la década que creas correcta. Si aciertas, avanzarás; si fallas, perderás una vida. ¡Recuerda! Solo tienes 10 oportunidades. Al completar todos los eventos, desbloquearás el acceso a la siguiente misión. ¡Buena suerte!`
+];
+
+const fragmentosOriginales = [
+  { img: 'IMAGENES/1960.png', texto: 'En esta década surge el concepto de sociedad "post industrial", donde la información y el conocimiento se vuelven más importantes que la producción industrial. ¿En qué década ocurrió este cambio de paradigma?', clave: 'Sociedad post-industrial', decada: 0, fechaTexto: '1960-1970' },
+  { img: 'IMAGENES/1970.png', texto: 'Aparecen los primeros computadores personales, permitiendo que la tecnología llegue a los hogares y oficinas. ¿En qué década se popularizó el computador personal?', clave: 'Computador personal', decada: 1, fechaTexto: '1970-1980' },
+  { img: 'IMAGENES/1980.png', texto: 'Se introduce una red global que conecta computadoras en todo el mundo, revolucionando la comunicación. ¿En qué década nació el Internet?', clave: 'Internet', decada: 2, fechaTexto: '1980-1990' },
+  { img: 'IMAGENES/1990.png', texto: 'Las redes sociales comienzan a conectar personas de diferentes lugares, cambiando la forma en que interactuamos. ¿En qué década se popularizaron las redes sociales?', clave: 'Redes sociales', decada: 3, fechaTexto: '1990-2000' },
+  { img: 'IMAGENES/2000.png', texto: 'El internet se expande en el ámbito educativo, permitiendo el acceso a información y aprendizaje en línea. ¿En qué década la educación digital se vuelve masiva?', clave: 'Educación digital', decada: 4, fechaTexto: '2000-2010' },
+  { img: 'IMAGENES/2010.png', texto: 'El análisis de grandes volúmenes de datos se convierte en una herramienta clave para la toma de decisiones. ¿En qué década surge el fenómeno del Big Data?', clave: 'Big Data', decada: 5, fechaTexto: '2010-2020' },
+  { img: 'IMAGENES/2020.png', texto: 'La protección de datos personales y la ciberseguridad se vuelven temas prioritarios en la sociedad digital. ¿En qué década se intensifica la preocupación por la protección digital?', clave: 'Protección digital', decada: 6, fechaTexto: '2020-Actual' }
+];
+
+let fragmentosPendientes = [...fragmentosOriginales].sort(() => Math.random() - 0.5);
+let fragmentosAcertados = [];
+let fragmentoActual = null;
+
+function escribirParrafo(parrafoIndex, elementoId, callback) {
+  animacionActiva = true;
+  animacionParrafo = parrafoIndex;
+  animacionElemento = document.getElementById(elementoId);
+  animacionCallback = callback;
+  animacionTexto = parrafos[parrafoIndex];
+  animacionElemento.innerHTML = '';
+  animacionIndex = 0;
+  animacionPalabraCount = 0;
+  document.getElementById('botonOmitirAnimacion').style.display = 'none';
+  mostrarAnimacionLetra();
+}
+
+function mostrarAnimacionLetra() {
+  if (!animacionActiva) return;
+  if (animacionIndex < animacionTexto.length) {
+    const letra = animacionTexto[animacionIndex];
+    animacionElemento.innerHTML += letra;
+    if (letra === ' ' || letra === '\n') {
+      animacionPalabraCount++;
+      if (animacionPalabraCount === 4) {
+        document.getElementById('botonOmitirAnimacion').style.display = 'inline-block';
+      }
+    }
+    animacionIndex++;
+    setTimeout(mostrarAnimacionLetra, 72);
+  } else {
+    animacionActiva = false;
+    document.getElementById('botonOmitirAnimacion').style.display = 'none';
+    if (animacionCallback) setTimeout(animacionCallback, 500);
+  }
+}
+
+function omitirAnimacion() {
+  if (!animacionActiva) return;
+  animacionElemento.innerHTML = animacionTexto;
+  animacionActiva = false;
+  document.getElementById('botonOmitirAnimacion').style.display = 'none';
+  if (animacionCallback) setTimeout(animacionCallback, 500);
+}
+
+function animarParrafos() {
+  escribirParrafo(0, 'parrafo1', () => {
+    document.getElementById('botonIniciarJuego').style.display = 'block'; // Mostrar botón al inicio del segundo párrafo
+    escribirParrafo(1, 'parrafo2', () => {
+      escribirParrafo(2, 'parrafo3');
+    });
+  });
+}
+
+function iniciarMision() {
+  let nombre = document.getElementById('nombreCadete').value.trim();
+  if (!nombre) return;
+  localStorage.setItem('nombreCadete', nombre);
+  mostrarPantallaNegra(() => {
+    document.getElementById('bienvenida').classList.remove('activa');
+    document.getElementById('instrucciones').classList.add('activa');
+    document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
+    animarParrafos();
+  });
+}
+
+// Al cargar, revisar si hay nombre en URL o guardado
+window.addEventListener('DOMContentLoaded', () => {
+  // Primero verificar si viene nombre por URL
+  const params = new URLSearchParams(window.location.search);
+  let nombre = params.get('nombre');
+  
+  // Si no viene por URL, verificar localStorage
+  if (!nombre) {
+    nombre = localStorage.getItem('nombreCadete');
+  } else {
+    // Si viene por URL, guardarlo en localStorage para uso posterior
+    localStorage.setItem('nombreCadete', nombre);
+  }
+  
+  const bienvenida = document.getElementById('bienvenida');
+  const input = document.getElementById('nombreCadete');
+  const btn = document.getElementById('btnIniciar');
+  const textoBienvenida = document.getElementById('textoBienvenida');
+  
+  if (nombre) {
+    // Saltar pantalla de bienvenida y pasar directamente a instrucciones
+    bienvenida.classList.remove('activa');
+    document.getElementById('instrucciones').classList.add('activa');
+    document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
+    animarParrafos();
+  } else {
+    // Solo mostrar input si no hay nombre
+    textoBienvenida.textContent = 'Ingresa tu nombre para iniciar el desafío:';
+    input.style.display = 'inline-block';
+    btn.style.display = 'inline-block';
+  }
+});
+
+function iniciarJuego() {
+  mostrarPantallaNegra(() => {
+    document.getElementById('instrucciones').classList.remove('activa');
+    document.getElementById('juego').classList.add('activa');
+    countdownSound.play();
+    const nombre = localStorage.getItem('nombreCadete');
+    document.getElementById('nombreCadeteJuego').textContent = nombre;
+    mostrarSiguienteFragmento();
+  });
+}
+
+function mostrarSiguienteFragmento() {
+  if (fragmentosPendientes.length === 0) {
+    countdownSound.pause();
+    mostrarLineaTiempoFinal();
+    return;
+  }
+  fragmentoActual = fragmentosPendientes.pop();
+  document.getElementById('imagen-epoca').style.backgroundImage = `url('${fragmentoActual.img}')`;
+  document.getElementById('texto-epoca').textContent = fragmentoActual.texto;
+  actualizarProgreso();
+}
+
+function seleccionarDecada(index) {
+  if (fragmentoActual && index === fragmentoActual.decada) {
+    successSound.play();
+    puntos += 10;
+    document.getElementById('puntos').textContent = `Puntos: ${puntos}`;
+    // Animar y tachar el botón correcto
+    const botones = document.querySelectorAll('#botones-decadas button');
+    if (botones[index]) {
+      botones[index].classList.add('tachar');
+      setTimeout(() => {
+        botones[index].style.display = 'none';
+      }, 700);
+    }
+    fragmentosAcertados.push(fragmentoActual);
+    setTimeout(mostrarSiguienteFragmento, 700);
+  } else {
+    vidas--;
+    errorSound.play();
+    document.getElementById('vidas').textContent = `Vidas: ${vidas}`;
+    if (vidas <= 0) {
+      countdownSound.pause();
+      mostrarPantallaNegra(() => {
+        location.reload();
+      });
+    }
+  }
+}
+
+function actualizarProgreso() {
+  const porcentaje = (fragmentosAcertados.length / fragmentosOriginales.length) * 100;
+  document.getElementById('barraProgreso').style.width = porcentaje + '%';
+}
+
+function mostrarLineaTiempoFinal() {
+  document.getElementById('juego').classList.remove('activa');
+  document.getElementById('final').classList.add('activa');
+
+  const lineaFinal = document.getElementById('linea-tiempo-final');
+  lineaFinal.innerHTML = '';
+  let index = 0;
+
+  const now = new Date();
+  const fecha = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+  const horas = String(now.getHours()).padStart(2, '0');
+  const minutos = String(now.getMinutes()).padStart(2, '0');
+  const segundos = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('horaFinal').textContent = `Hora y fecha de terminación: ${horas}:${minutos}:${segundos} - ${fecha}`;
+
+  const intervalo = setInterval(() => {
+    if (index < fragmentosAcertados.length) {
+      const frag = fragmentosAcertados[index];
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.innerHTML = `
+        <div class="slotFecha">${frag.fechaTexto}</div>
+        <div class="slotSeparator"></div>
+        <img src='${frag.img}'>
+        <div>${frag.clave}</div>`;
+      lineaFinal.appendChild(slot);
+
+      setTimeout(() => {
+        slot.classList.add('aparecer');
+      }, 10);
+
+      index++;
+    } else {
+      clearInterval(intervalo);
+      const nombre = localStorage.getItem('nombreCadete');
+      document.getElementById('mensajeFelicitacion').textContent = `¡Felicitaciones Cadete ${nombre}, has restaurado el sistema!`;
+      document.getElementById('continuarBtn').style.display = 'inline-block';
+    }
+  }, 1000);
+}
+
+function continuarMision2() {
+  const nombre = localStorage.getItem('nombreCadete');
+  mostrarPantallaNegra(() => {
+    window.location.href = `../DESAFIO2/index.html?nombre=${encodeURIComponent(nombre)}`;
+  });
+}
+</script>
+</body>
+</html>

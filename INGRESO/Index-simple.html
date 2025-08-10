@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Planeta Bitnarys - Misión Reconstrucción del Saber en Galaxia AndinaCode X">
+  <title>Bitnarys - Misión Reconstrucción del Saber</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .commander-greeting {
+      text-align: center;
+      font-size: 2em;
+      margin: 30px 0;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .mission-container {
+      display: flex;
+      flex-direction: column;
+      width: 95%;
+      max-width: 1200px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+      margin: 20px auto;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+    }
+
+    @media (min-width: 768px) {
+      .mission-container { flex-direction: row; }
+    }
+
+    .story-section, .missions-panel { 
+      padding: 30px; 
+    }
+
+    .story-section {
+      flex: 2;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .story-section p {
+      font-size: 1.1em;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .missions-panel {
+      flex: 1;
+      background-color: rgba(0, 255, 255, 0.05);
+      border-left: 2px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .missions-panel h2 {
+      text-align: center;
+      font-size: 1.8em;
+      color: #00ffff;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .missions-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .mission-item {
+      background: linear-gradient(45deg, #1a1a2e, #16213e);
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      padding: 15px 20px;
+      font-size: 1.1em;
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .mission-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 20px rgba(0, 255, 255, 0.4);
+      background: linear-gradient(45deg, #2a2a4e, #26315e);
+    }
+
+    .mission-item:focus {
+      outline: 3px solid #ffff00;
+      outline-offset: 2px;
+    }
+
+    .mission-item.blocked {
+      background: linear-gradient(45deg, #2a1a1a, #3e1616);
+      border-color: #666;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .mission-item.blocked:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .star-board {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .star-image {
+      width: 30px;
+      height: 30px;
+      opacity: 0.3;
+    }
+
+    .insignia-section {
+      margin-top: 30px;
+      text-align: center;
+      padding: 20px;
+      background: rgba(0, 255, 255, 0.1);
+      border-radius: 15px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1 class="commander-greeting">Bienvenido Comandante</h1>
+    
+    <div class="mission-container">
+      <section class="story-section">
+        <h2 style="color: #00ffff; font-size: 1.5em; margin-bottom: 20px;">🌟 Planeta Bitnarys - Reconstrucción del Saber</h2>
+        <p>Comandante, has llegado al misterioso <strong>Planeta Bitnarys</strong>, un mundo donde la información es poder y los datos son la clave de la supervivencia.</p>
+        <p>Una catástrofe cósmica ha fragmentado las <strong>Estrellas Sagradas del Conocimiento</strong> en cuatro piezas, dispersándolas por todo el planeta. Estas estrellas contienen la sabiduría ancestral necesaria para restaurar el equilibrio del universo.</p>
+        <p>Tu misión es clara: debes superar cuatro desafíos únicos para recuperar cada una de las Estrellas Sagradas. Solo quien las reúna todas, podrá restaurar el equilibrio del universo y evitar la catástrofe.</p>
+        <p>Cada misión pondrá a prueba tu valentía, inteligencia y creatividad. ¡Prepárate, comandante!</p>
+      </section>
+      
+      <section class="missions-panel">
+        <div class="star-board">
+          <img id="star1" class="star-image" src="" alt="Estrella sagrada 1" aria-hidden="true">
+          <img id="star2" class="star-image" src="" alt="Estrella sagrada 2" aria-hidden="true">
+          <img id="star3" class="star-image" src="" alt="Estrella sagrada 3" aria-hidden="true">
+          <img id="star4" class="star-image" src="" alt="Estrella sagrada 4" aria-hidden="true">
+        </div>
+        
+        <h2>Misiones</h2>
+        <ul class="missions-list">
+          <li>
+            <button id="mission1" class="mission-item">
+              🚀 Misión 1: El Despertar
+            </button>
+          </li>
+          <li>
+            <button id="mission2" class="mission-item blocked">
+              🔒 Misión 2: Los Datos Perdidos
+            </button>
+          </li>
+          <li>
+            <button id="mission3" class="mission-item blocked">
+              🔒 Misión 3: El Código Sagrado
+            </button>
+          </li>
+          <li>
+            <button id="mission4" class="mission-item blocked">
+              🔒 Misión 4: La Unión Final
+            </button>
+          </li>
+        </ul>
+        
+        <div class="insignia-section">
+          <p style="font-size: 1.3em; color: #00ffcc; text-shadow: 0 0 10px #00ffff;">
+            🎖️ Felicitaciones, has ganado la Insignia Galáctica del Planeta 1
+          </p>
+          <p style="font-size: 1.1em; color: #ffffff; margin-top: 10px;">
+            🚀 ¡Has ascendido de rango! Ahora eres oficialmente un <strong>Almirante Galáctico</strong>.
+          </p>
+          <p style="font-size: 1.1em; color: #00ffff; margin-top: 10px;">
+            Bien hecho, <span id="admiral-name"></span> 👨‍🚀
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script>
+    let commanderName = "";
+
+    // Obtener nombre del comandante
+    function loadCommanderName() {
+      const params = new URLSearchParams(window.location.search);
+      commanderName = params.get("nombre");
+      
+      if (commanderName) {
+        const greeting = document.querySelector('.commander-greeting');
+        greeting.textContent = `Bienvenido Comandante ${commanderName}`;
+        
+        const admiralName = document.getElementById('admiral-name');
+        admiralName.textContent = commanderName;
+      }
+    }
+
+    // Abrir misión
+    function openMission(missionPath) {
+      const finalUrl = missionPath + "?nombre=" + encodeURIComponent(commanderName);
+      window.location.href = finalUrl;
+    }
+
+    // Configurar eventos de los botones
+    function setupMissionButtons() {
+      // Misión 1 - Disponible
+      document.getElementById("mission1").addEventListener('click', () => {
+        console.log("Abriendo Misión 1 para:", commanderName);
+        openMission("../MISIONES/MISION 1/MOT1/Index.html");
+      });
+
+      // Misión 2 - Bloqueada
+      document.getElementById("mission2").addEventListener('click', () => {
+        alert("🔒 Esta misión aún no está disponible.\nCompleta la Misión 1 primero.");
+      });
+
+      // Misión 3 - Bloqueada  
+      document.getElementById("mission3").addEventListener('click', () => {
+        alert("🔒 Esta misión aún no está disponible.\nCompleta las misiones anteriores primero.");
+      });
+
+      // Misión 4 - Bloqueada
+      document.getElementById("mission4").addEventListener('click', () => {
+        alert("🔒 Esta misión aún no está disponible.\nCompleta las misiones anteriores primero.");
+      });
+    }
+
+    // Inicializar cuando se carga la página
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCommanderName();
+      setupMissionButtons();
+      
+      console.log("Página de misiones cargada correctamente para:", commanderName);
+    });
+  </script>
+</body>
+</html>

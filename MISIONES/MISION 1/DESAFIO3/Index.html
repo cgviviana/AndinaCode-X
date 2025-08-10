@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Desafío 3 - Bitmarys</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      background: #000 url('IMAGENES/SalaE.png') center center fixed;
+      background-size: cover;
+      background-position: center center;
+      color: #00ffff;
+    }
+    .pantalla {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    .contenedor {
+      width: 70%;
+      max-width: 800px;
+      padding: 2.5em 2em 2em 2em;
+      background: linear-gradient(135deg, rgba(0,0,0,0.96) 80%, rgba(0,32,64,0.92) 100%);
+      border: 2px solid #00ffff;
+      border-radius: 18px;
+      box-shadow: 0 0 40px 10px rgba(0, 255, 255, 0.8), 0 0 0 8px rgba(0, 0, 10, 0.6) inset;
+      text-align: justify;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+    }
+    h1 { text-align: center; margin-bottom: 1em; }
+    .bloque { margin-top: 1em; line-height: 1.8em; }
+    .boton {
+      display: block;
+      margin: 2em auto 0;
+      padding: 0.5em 1.5em;
+      border: 1px solid #00ffff;
+      background-color: transparent;
+      color: #00ffff;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .boton:hover {
+      background: #00ffff;
+      color: #000;
+    }
+    #hoja2, #hoja3 {
+      background-image: url('IMAGENES/SalaE.png');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+      background-attachment: fixed;
+    }
+    /* HUD estilo Desafío 2 */
+    .hud {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.95);
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      padding: 15px 25px;
+      z-index: 100;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 25px;
+      min-width: 500px;
+      max-width: 90vw;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+    .hud .hudItem {
+      font-size: 1em;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hudBar {
+      margin-top: 0.2em;
+      background: #111;
+      border: 1px solid #00ffff;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 18px;
+      width: 120px;
+      box-shadow: 0 0 8px #00ffff44;
+    }
+    .hudFill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00ffff 60%, #00bfff 100%);
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px #00ffff;
+    }
+    .hudText {
+      font-size: 1em;
+      color: #00ffff;
+      text-shadow: 0 0 5px #00ffff;
+      margin-left: 8px;
+    }
+    .pregunta {
+      width: 95%;
+      max-width: 700px;
+      min-width: 320px;
+      margin: 110px auto 1.2em auto;
+      background: rgba(0, 0, 0, 0.92);
+      border: 2px solid #00ffff;
+      border-radius: 16px;
+      padding: 1.5em 1em 2em 1em;
+      text-align: center;
+      animation: brillo 2s infinite alternate;
+      position: relative;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+    }
+    .resultadoFinal {
+      width: 90%;
+      max-width: 500px;
+      height: auto;
+      min-height: 300px;
+      max-height: 80vh;
+      margin: 2.2em auto;
+      background: linear-gradient(135deg, #0a0a1a 60%, #1a1a33 100%);
+      border: 3px solid #00bfff;
+      border-radius: 28px;
+      color: #fff;
+      box-shadow: 0 0 40px 10px #00bfff88, 0 0 0 10px #001a inset, 0 0 24px 2px #00bfffcc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      animation: brillo 2s infinite alternate;
+      overflow: auto;
+      padding: 24px 20px 20px 20px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .resultadoFinal > br {
+      display: none;
+    }
+    .resultadoFinal > button.btnReiniciarElegante {
+      font-size: 0.95em;
+      padding: 7px 18px;
+      margin-top: 0.7em;
+      border-radius: 8px;
+      min-width: 80px;
+      max-width: 120px;
+    }
+    @keyframes brillo {
+      from { box-shadow: 0 0 15px rgba(0, 255, 255, 0.4); }
+      to { box-shadow: 0 0 30px rgba(0, 255, 255, 0.8); }
+    }
+    .preguntaTexto {
+      font-size: 1.28em;
+      font-weight: bold;
+      margin-bottom: 1.2em;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff, 0 0 2px #000;
+    }
+    .opcion {
+      display: block;
+      margin: 0.8em auto;
+      padding: 1em 0.5em;
+      width: 95%;
+      max-width: 500px;
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      background-color: rgba(0,0,0,0.25);
+      color: #00ffff;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+      transition: background 0.2s, box-shadow 0.2s, color 0.2s, transform 0.15s;
+      animation: opcionPulse 1.2s infinite alternate;
+    }
+    .opcion:hover {
+      background: rgba(0,255,255,0.18);
+      color: #fff;
+      box-shadow: 0 0 20px #00ffff;
+      transform: scale(1.04);
+    }
+    @keyframes opcionPulse {
+      from { box-shadow: 0 0 10px rgba(0, 255, 255, 0.3); }
+      to { box-shadow: 0 0 25px rgba(0, 255, 255, 0.6); }
+    }
+    .pantallaNegraTransicion {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #000;
+      opacity: 0;
+      z-index: 9999;
+      pointer-events: none;
+      transition: opacity 1.4s cubic-bezier(.77,0,.18,1);
+    }
+    .btnReiniciarElegante {
+      display: inline-block;
+      margin-top: 2.2em;
+      padding: 0.7em 2.2em;
+      font-size: 1.15em;
+      font-family: 'Orbitron', sans-serif;
+      color: #fff;
+      background: linear-gradient(90deg, #00ffff 60%, #00bfff 100%);
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 0 18px rgba(0, 255, 255, 0.6), 0 0 0 4px rgba(0, 1, 26, 0.6) inset;
+      cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.3s;
+      animation: reiniciarPulse 1.2s infinite alternate;
+    }
+    .btnReiniciarElegante:hover {
+      transform: scale(1.07) rotate(-1deg);
+      box-shadow: 0 0 32px rgba(0, 255, 255, 0.8), 0 0 0 6px rgba(0, 1, 26, 0.6) inset;
+      background: linear-gradient(90deg, #00bfff 60%, #00ffff 100%);
+    }
+    @keyframes reiniciarPulse {
+      from { box-shadow: 0 0 18px rgba(0, 255, 255, 0.6), 0 0 0 4px rgba(0, 1, 26, 0.6) inset; }
+      to { box-shadow: 0 0 32px rgba(0, 255, 255, 0.8), 0 0 0 8px rgba(0, 1, 26, 0.6) inset; }
+    }
+  </style>
+</head>
+<body>
+  <div class="pantalla" id="hoja1">
+    <div class="contenedor">
+      <h1>Bienvenido Cadete <span id="cadeteNombre"></span></h1>
+      <p class="bloque" id="bloque1"></p>
+      <p class="bloque" id="bloque2"></p>
+      <p class="bloque" id="bloque3"></p>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:18px; margin-top:2em;">
+        <button id="btnOmitir" class="boton" style="display:none; min-width:200px;" onclick="omitirAnimacion()">Omitir animación</button>
+        <button id="btnIniciar" class="boton" style="display:none; min-width:200px;" onclick="iniciarJuego()">Iniciar Desafío</button>
+      </div>
+    </div>
+    <audio id="audioInicio" src="AUDIO/countdown.mp3" autoplay loop></audio>
+  </div>
+
+  <div class="pantalla" id="hoja2">
+    <div class="hud">
+      <div class="hudItem">
+        <span>Cadete:</span>
+        <span id="cadeteLabel"></span>
+      </div>
+      <div class="hudItem">
+        <span>Vidas:</span>
+        <div class="hudBar" style="display:inline-block;vertical-align:middle;width:80px;">
+          <div class="hudFill" id="vidasFill"></div>
+        </div>
+        <span class="hudText" id="vidas">3</span>
+      </div>
+      <div class="hudItem">
+        <span>Puntos:</span>
+        <span id="puntos">0</span>
+      </div>
+      <div class="hudItem">
+        <span>Progreso:</span>
+        <div class="hudBar" style="display:inline-block;vertical-align:middle;width:120px;">
+          <div class="hudFill" id="progresoFill"></div>
+        </div>
+        <span class="hudText" id="progresoText">0%</span>
+      </div>
+    </div>
+    <div class="pregunta" id="preguntaContainer">
+      <div class="preguntaTexto" id="textoPregunta"></div>
+      <div id="opciones"></div>
+    </div>
+    <audio id="audioSuccess" src="AUDIO/success.mp3"></audio>
+    <audio id="audioError" src="AUDIO/error.mp3"></audio>
+  </div>
+
+  <div class="pantalla" id="hoja3" style="position: relative;">
+    <div class="resultadoFinal" id="resultadoFinal"></div>
+    <audio id="audioFin" src="AUDIO/fin.mp3"></audio>
+  </div>
+
+  <script>
+    // Usar localStorage para el nombre
+    let cadete = localStorage.getItem('nombreCadete');
+    if (!cadete) {
+      cadete = new URLSearchParams(window.location.search).get("cadete") || "Cadete";
+      if (cadete && cadete !== "Cadete") localStorage.setItem('nombreCadete', cadete);
+    }
+    document.getElementById("cadeteNombre").textContent = cadete;
+    document.getElementById("cadeteLabel").textContent = cadete;
+
+    const texto1 = "Te damos la bienvenida al Desafío 3, Cadete. Los antiguos servidores del conocimiento han sido saboteados y los protocolos de ética están en peligro.";
+    const texto2 = "Tu misión será tomar decisiones críticas que reflejen los principios de ética informacional en contextos reales, demostrando tu dignidad como Centinela del Conocimiento.";
+    const texto3 = "Lee con atención cada dilema que aparecerá en pantalla y elige con sabiduría. Sólo los más íntegros logran restaurar el equilibrio.";
+
+    // Guardar los intervalos activos para poder cancelarlos
+    let intervalosAnim = [];
+    function escribirTexto(id, texto, callback) {
+      let i = 0;
+      const el = document.getElementById(id);
+      el.textContent = '';
+      const intervalo = setInterval(() => {
+        el.textContent += texto[i];
+        i++;
+        if (i === texto.length) {
+          clearInterval(intervalo);
+          intervalosAnim = intervalosAnim.filter(intv => intv !== intervalo);
+          if (callback) callback();
+        }
+      }, 40);
+      intervalosAnim.push(intervalo);
+    }
+
+    window.onload = function() {
+      document.getElementById("hoja1").style.display = "block";
+      document.getElementById("audioInicio").volume = 0.1;
+      let animacionTerminada = false;
+      document.getElementById("btnOmitir").style.display = "block";
+      escribirTexto("bloque1", texto1, () => {
+        escribirTexto("bloque2", texto2, () => {
+          escribirTexto("bloque3", texto3, () => {
+            document.getElementById("btnIniciar").style.display = "block";
+            document.getElementById("btnOmitir").style.display = "none";
+            animacionTerminada = true;
+          });
+        });
+      });
+      // Inicializar barras HUD
+      document.getElementById("vidasFill").style.width = "100%";
+      document.getElementById("progresoFill").style.width = "0%";
+      document.getElementById("progresoText").textContent = "0%";
+    };
+
+    function omitirAnimacion() {
+      // Detener todos los intervalos de animación
+      intervalosAnim.forEach(clearInterval);
+      intervalosAnim = [];
+      // Mostrar todo el texto de inmediato y mostrar el botón de iniciar
+      document.getElementById("bloque1").textContent = texto1;
+      document.getElementById("bloque2").textContent = texto2;
+      document.getElementById("bloque3").textContent = texto3;
+      document.getElementById("btnIniciar").style.display = "block";
+      document.getElementById("btnOmitir").style.display = "none";
+    }
+
+    function mostrarPantallaNegra(callback) {
+      let pantallaNegra = document.getElementById("pantallaNegraTransicion");
+      if (!pantallaNegra) {
+        pantallaNegra = document.createElement("div");
+        pantallaNegra.id = "pantallaNegraTransicion";
+        pantallaNegra.className = "pantallaNegraTransicion";
+        document.body.appendChild(pantallaNegra);
+      }
+      pantallaNegra.style.pointerEvents = "auto";
+      pantallaNegra.style.opacity = "1";
+      setTimeout(() => {
+        if (callback) callback();
+        setTimeout(() => {
+          pantallaNegra.style.opacity = "0";
+          setTimeout(() => {
+            pantallaNegra.style.pointerEvents = "none";
+          }, 1400);
+        }, 700);
+      }, 900);
+    }
+
+    function iniciarJuego() {
+      mostrarPantallaNegra(() => {
+        document.getElementById("hoja1").style.display = "none";
+        document.getElementById("audioInicio").pause();
+        document.getElementById("hoja2").style.display = "block";
+        mostrarPregunta();
+      });
+    }
+
+    const preguntas = [
+      { texto: "Detectas una brecha de seguridad. ¿Qué haces?", opciones: ["Ignorarla", "Reportarla", "Compartirla", "Publicarla"], correcta: 1 },
+      { texto: "Te llega información dudosa. ¿Qué haces?", opciones: ["Verificarla antes de compartirla", "Reenviarla", "Ignorar el origen", "Inventar más"], correcta: 0 },
+      { texto: "Una compañera sufre ciberacoso. ¿Qué haces?", opciones: ["Unirte", "Ignorar", "Reportarlo", "Reírse"], correcta: 2 },
+      { texto: "¿Qué representa la empatía en el entorno digital?", opciones: ["Reírse de los errores", "Aceptar discursos de odio", "Evitar lenguaje ofensivo", "Compartir rumores"], correcta: 2 },
+      { texto: "¿Qué hacer con la autoría de un contenido creado con IA?", opciones: ["No decir nada", "Atribuir correctamente", "Plagiarlo", "Decir que es propio"], correcta: 1 },
+      { texto: "¿Qué actitud representa justicia digital?", opciones: ["Excluir opiniones", "Reconocer méritos y respetar derechos", "Imponer ideas", "No compartir recursos"], correcta: 1 },
+      { texto: "¿Cómo proteger la privacidad digital?", opciones: ["Usar contraseñas fáciles", "Compartir datos de colegas", "Controlar información personal", "Ignorar políticas"], correcta: 2 },
+      { texto: "¿Qué refleja responsabilidad digital?", opciones: ["Negar errores", "Asumir fallas y corregir", "Evadir normas", "Difundir errores"], correcta: 1 },
+      { texto: "¿Qué implica veracidad?", opciones: ["Verificar la fuente", "Difundir sin leer", "Especular", "Editar la información"], correcta: 0 },
+      { texto: "¿Qué hacer si usas contenido ajeno?", opciones: ["Copiar y pegar", "Citar fuente", "Ignorar autoría", "Apropiarse"], correcta: 1 }
+    ];
+
+    let indice = 0, vidas = 3, puntos = 0;
+
+    function mostrarPregunta() {
+      if (indice >= preguntas.length || vidas <= 0) {
+        mostrarPantallaNegra(mostrarResultado);
+        return;
+      }
+      const q = preguntas[indice];
+      document.getElementById("textoPregunta").textContent = q.texto;
+      const opcionesDiv = document.getElementById("opciones");
+      opcionesDiv.innerHTML = "";
+      q.opciones.forEach((op, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = op;
+        btn.className = "opcion";
+        btn.onclick = () => responder(idx);
+        opcionesDiv.appendChild(btn);
+      });
+    }
+
+    function responder(idx) {
+      const correcta = preguntas[indice].correcta;
+      const opcionesDiv = document.getElementById("opciones");
+      const botones = opcionesDiv.querySelectorAll(".opcion");
+      // Desactivar todos los botones
+      botones.forEach(b => b.disabled = true);
+      // Animación visual de feedback
+      if (idx === correcta) {
+        botones[idx].style.background = 'rgba(0,255,127,0.25)';
+        botones[idx].style.borderColor = '#00ff7f';
+        botones[idx].style.color = '#00ff7f';
+        botones[idx].style.transform = 'scale(1.08)';
+        document.getElementById("audioSuccess").play();
+        puntos++;
+      } else {
+        botones[idx].style.background = 'rgba(255,0,0,0.18)';
+        botones[idx].style.borderColor = '#ff0044';
+        botones[idx].style.color = '#ff0044';
+        botones[idx].style.transform = 'scale(0.97)';
+        // También resalta la correcta
+        botones[correcta].style.background = 'rgba(0,255,127,0.18)';
+        botones[correcta].style.borderColor = '#00ff7f';
+        botones[correcta].style.color = '#00ff7f';
+        document.getElementById("audioError").play();
+        vidas--;
+      }
+      indice++;
+      document.getElementById("vidas").textContent = vidas;
+      document.getElementById("puntos").textContent = puntos;
+      document.getElementById("progresoFill").style.width = (indice / preguntas.length * 100) + "%";
+      document.getElementById("progresoText").textContent = Math.round(indice / preguntas.length * 100) + "%";
+      document.getElementById("vidasFill").style.width = Math.max(0, vidas/3*100) + "%";
+      setTimeout(mostrarPregunta, 900);
+    }
+
+    function mostrarResultado() {
+      document.getElementById("hoja2").style.display = "none";
+      document.getElementById("hoja3").style.display = "block";
+      document.getElementById("audioFin").play();
+      const resultadoDiv = document.getElementById("resultadoFinal");
+      resultadoDiv.innerHTML = "";
+      if (vidas > 0) {
+        // Obtener fecha y hora actual
+        const ahora = new Date();
+        const fecha = ahora.toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        const hora = ahora.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+        
+        // Pedir nombre del usuario para el registro
+        let nombreUsuario = prompt("¡Felicitaciones! Ingresa tu nombre para registrar tu logro:");
+        if (!nombreUsuario || nombreUsuario.trim() === "") {
+          nombreUsuario = "Usuario Anónimo";
+        }
+        
+        // Mostrar mensaje de felicitación con nombre, fecha y hora
+        resultadoDiv.innerHTML = `
+          <div style="text-align: center; line-height: 1.5;">
+            <h2 style="color: #00ff7f; margin-bottom: 0.8em;">¡Felicitaciones!</h2>
+            <p style="margin-bottom: 0.5em;"><strong>Cadete:</strong> ${cadete}</p>
+            <p style="margin-bottom: 0.5em;"><strong>Usuario:</strong> ${nombreUsuario}</p>
+            <p style="margin-bottom: 0.5em;"><strong>Puntaje:</strong> ${puntos}/${preguntas.length}</p>
+            <p style="margin-bottom: 0.3em;"><strong>Fecha:</strong> ${fecha}</p>
+            <p style="margin-bottom: 1em;"><strong>Hora:</strong> ${hora}</p>
+            <p style="color: #00ffff; font-size: 0.9em; margin-bottom: 1em;">Has completado la prueba con éxito y demostrado tu dignidad como Centinela del Conocimiento.</p>
+            <div style="background: linear-gradient(135deg, rgba(0,255,127,0.15) 0%, rgba(0,255,255,0.15) 100%); border: 2px solid #00ff7f; border-radius: 12px; padding: 12px; margin-top: 1em;">
+              <p style="color: #00ff7f; font-weight: bold; font-size: 1.1em; text-shadow: 0 0 8px #00ff7f;">🏆 ¡Ahora eres un Constructor Ético de Datos! 🏆</p>
+              <p style="color: #ffffff; font-size: 0.85em; margin-top: 0.5em;">Tu integridad y sabiduría te han ganado este título honorífico.</p>
+            </div>
+            <button onclick="completarMision()" style="margin-top: 20px; padding: 12px 24px; background: linear-gradient(135deg, #003d4d, #00ffff); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);">
+              🚀 Continuar a la Sala de Misiones
+            </button>
+          </div>
+        `;
+        
+        // Marcar misión como completada
+        localStorage.setItem('mission1_completed', 'true');
+        localStorage.setItem('mission1_completed_date', new Date().toISOString());
+      } else {
+        resultadoDiv.innerHTML = `Cadete ${cadete}, has perdido tus 3 vidas. Debes reiniciar la prueba.<br><br>`;
+        // Botón de reintentar
+        const btnReintentar = document.createElement("button");
+        btnReintentar.textContent = "Reintentar";
+        btnReintentar.className = "btnReiniciarElegante";
+        btnReintentar.onclick = reiniciarSoloActividad;
+        resultadoDiv.appendChild(btnReintentar);
+      }
+    }
+
+    // Reinicia solo la actividad, omitiendo la intro y el texto
+    function reiniciarSoloActividad() {
+      mostrarPantallaNegra(() => {
+        indice = 0;
+        vidas = 3;
+        puntos = 0;
+        document.getElementById("vidasFill").style.width = "100%";
+        document.getElementById("progresoFill").style.width = "0%";
+        document.getElementById("progresoText").textContent = "0%";
+        document.getElementById("vidas").textContent = vidas;
+        document.getElementById("puntos").textContent = puntos;
+        document.getElementById("hoja3").style.display = "none";
+        document.getElementById("hoja2").style.display = "block";
+        mostrarPregunta();
+      });
+    }
+
+    function completarMision() {
+      // Obtener el nombre del usuario de la URL
+      const params = new URLSearchParams(window.location.search);
+      const nombreUsuario = params.get("nombre") || "Usuario";
+      
+      // Redirigir a la sala de misiones
+      window.location.href = `../../../INGRESO/Index.html?nombre=${encodeURIComponent(nombreUsuario)}`;
+    }
+  </script>
+</body>
+</html>

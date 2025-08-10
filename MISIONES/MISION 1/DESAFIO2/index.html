@@ -1,0 +1,828 @@
+    
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Captura de Datos - Desafío 1</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffff;
+      background: #000 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="bg" cx="50%" cy="50%"><stop offset="0%" stop-color="%23001a33"/><stop offset="50%" stop-color="%23000811"/><stop offset="100%" stop-color="%23000000"/></radialGradient></defs><rect width="100" height="100" fill="url(%23bg)"/></svg>');
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+    #startScreen, #storyScreen, #gameScreen {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #startScreen {
+      background: rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    #storyScreen {
+      background: rgba(0,0,0,0.3);
+      display: none;
+      z-index: 9;
+    }
+
+    #gameScreen {
+      background: url('IMAGENES/celeste.jpg') no-repeat center center;
+      background-size: cover;
+      display: none;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff, 0 0 25px rgba(0, 255, 255, 0.5);
+    }
+
+    input {
+      font-size: 20px;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      text-align: center;
+    }
+
+    button {
+      font-size: 24px;
+      padding: 15px 40px;
+      background: transparent;
+      border: 2px solid #00ffff;
+      color: #00ffff;
+      cursor: pointer;
+      border-radius: 10px;
+      text-shadow: 0 0 5px #00ffff;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(45deg, #003d4d, #00ffff);
+      color: #000000;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    .panel {
+      background: rgba(74, 144, 226, 0.1);
+      border: 2px solid #4a90e2;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 800px;
+      box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
+      text-align: justify;
+      color: #ffffff;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel h2 {
+      text-align: center;
+    }
+
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 18px;
+      background: rgba(74, 144, 226, 0.1);
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #4a90e2;
+      text-shadow: 0 0 5px #4a90e2;
+      display: none;
+      z-index: 6;
+      color: #ffffff;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+    }
+
+    #hudTitle {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    #clock {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    #livesBar {
+      margin-top: 10px;
+      height: 20px;
+      width: 120px;
+      background: #111;
+      border: 1px solid #4a90e2;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    #livesFill {
+      height: 100%;
+      width: 100%;
+      background: #4a90e2;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+    }
+
+    #progressContainer {
+      margin-top: 10px;
+      width: 220px;
+      text-align: left;
+    }
+
+    #progressBar {
+      width: 100%;
+      height: 18px;
+      background: #222;
+      border: 1px solid #4a90e2;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 4px;
+      box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+    }
+
+    #progressFill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4a90e2 60%, #6bb6ff 100%);
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+    }
+
+    #progressText {
+      font-size: 15px;
+      color: #4a90e2;
+      text-shadow: 0 0 5px #4a90e2;
+    }
+
+    #icon {
+      display: none !important;
+    }
+
+    /* Cursor personalizado para el área de juego */
+    #gameScreen {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><radialGradient id="cursorGradient" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.9"/><stop offset="50%" style="stop-color:%234a90e2;stop-opacity:0.7"/><stop offset="100%" style="stop-color:%23203a43;stop-opacity:0.8"/></radialGradient></defs><circle cx="16" cy="16" r="14" fill="url(%23cursorGradient)" stroke="%23ffffff" stroke-width="1" opacity="0.9"/><circle cx="16" cy="16" r="4" fill="%23ffffff" opacity="1"/><circle cx="16" cy="16" r="2" fill="%234a90e2" opacity="0.8"/></svg>') 16 16, crosshair;
+    }
+
+    /* Cuadro de opciones para el usuario */
+    #optionsBox {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.7);
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      padding: 18px 24px 18px 24px;
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 0 20px #00ffff;
+      min-width: 180px;
+    }
+
+    #restartButton {
+      position: static;
+      font-size: 22px;
+      padding: 14px 36px;
+      background: transparent;
+      border: 2px solid #4a90e2;
+      color: #4a90e2;
+      cursor: pointer;
+      border-radius: 10px;
+      text-shadow: 0 0 5px #4a90e2;
+      margin: 0;
+      margin-bottom: 0;
+      display: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #restartButton::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    #restartButton:hover {
+      background: linear-gradient(45deg, #2a5298, #4a90e2);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    }
+
+    #restartButton:hover::before {
+      left: 100%;
+    }
+
+    .smallButton {
+      font-size: 18px;
+      padding: 12px 32px;
+      margin-top: 60px;
+    }
+
+    #missionComplete {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.88);
+      padding: 32px 32px 28px 32px;
+      border: 2.5px solid #00ffff;
+      border-radius: 18px;
+      color: #00ffff;
+      text-align: center;
+      z-index: 9;
+      min-width: 260px;
+      max-width: 340px;
+      min-height: 180px;
+      max-height: 320px;
+      box-shadow: 0 0 32px #00ffff99, 0 0 0 8px #001a inset;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+
+    /* Recuadro de misión fallida (alert GAME OVER) */
+    #gameOverModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      border: 3px solid #4a90e2;
+      border-radius: 22px;
+      color: #fff;
+      width: 210px;
+      height: 210px;
+      box-shadow: 0 0 40px 10px rgba(74, 144, 226, 0.4), 0 0 0 10px rgba(42, 82, 152, 0.2) inset, 0 0 24px 2px rgba(74, 144, 226, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10010;
+      padding: 12px 10px 10px 10px;
+      text-align: center;
+      animation: brillo 2s infinite alternate;
+      overflow: auto;
+      backdrop-filter: blur(10px);
+    }
+    #gameOverModal > div {
+      font-size: 0.98em !important;
+      margin-bottom: 0.2em !important;
+      line-height: 1.1;
+      padding: 0 2px;
+      white-space: normal;
+      word-break: break-word;
+    }
+    #gameOverModal .btnReiniciarElegante {
+      font-size: 0.95em;
+      padding: 7px 18px;
+      margin-top: 0.7em;
+      border-radius: 8px;
+      min-width: 80px;
+      max-width: 120px;
+    }
+    
+    #gameOverModal .btnReiniciarElegante {
+      margin-top: 1.2em;
+    }
+
+    /* Asteroides (imágenes de respuesta) */
+    .asteroid {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      box-shadow: 0 0 20px rgba(74, 144, 226, 0.4);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 12;
+      user-select: none;
+      object-fit: contain;
+      background: rgba(74, 144, 226, 0.1);
+      border-radius: 8px;
+      border: 2px solid transparent;
+    }
+    
+    .asteroid:hover, .asteroid.highlighted {
+      filter: brightness(1.4) drop-shadow(0 0 15px #4a90e2);
+      transform: scale(1.1);
+      border-color: #4a90e2;
+      box-shadow: 0 0 30px rgba(74, 144, 226, 0.8);
+      background: rgba(74, 144, 226, 0.2);
+    }
+    #consigna {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.2em;
+      color: #ffffff;
+      text-shadow: 0 0 8px #4a90e2, 0 0 2px #000;
+      z-index: 20;
+      background: rgba(74, 144, 226, 0.1);
+      padding: 10px 24px;
+      border-radius: 10px;
+      border: 2px solid #4a90e2;
+      box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
+      max-width: 600px;
+      min-width: 180px;
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      backdrop-filter: blur(10px);
+    }
+  .pantallaNegraTransicion {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000;
+    opacity: 0;
+    z-index: 9999;
+    pointer-events: none;
+    transition: opacity 1.4s cubic-bezier(.77,0,.18,1);
+  }
+
+  @keyframes brillo {
+    0% { 
+      box-shadow: 0 0 40px 10px rgba(74, 144, 226, 0.4), 0 0 0 10px rgba(42, 82, 152, 0.2) inset, 0 0 24px 2px rgba(74, 144, 226, 0.6);
+    }
+    100% { 
+      box-shadow: 0 0 60px 15px rgba(74, 144, 226, 0.8), 0 0 0 10px rgba(42, 82, 152, 0.3) inset, 0 0 36px 4px rgba(74, 144, 226, 0.9);
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Pantalla de Bienvenida (eliminada, ahora solo pantalla de carga oculta) -->
+<div id="startScreen" style="display:none;"></div>
+
+<!-- Pantalla de Historia -->
+<div id="storyScreen">
+  <div class="panel">
+    <h2 id="storyTitle">MISIÓN: CAPTURA DE DATOS</h2>
+    <p id="storyText">Caza el dato correcto moviendo la mira con el mouse y haz clic para seleccionarlo. ¡Buena suerte, Almirante!</p>
+    <button id="beginButton" class="smallButton">Iniciar Desafío</button>
+  </div>
+</div>
+
+<!-- Pantalla del Juego -->
+<div id="gameScreen">
+  <div id="hud">
+    <div id="hudTitle">Desafío 1 - Jugador: <span id="playerDisplayName"></span></div>
+    <div id="clock"></div>
+    <div>Puntos: <span id="points">0</span></div>
+    <div>Vidas: <span id="livesCount">10</span></div>
+    <div id="livesBar"><div id="livesFill"></div></div>
+    <div id="progressContainer">
+      <div id="progressBar"><div id="progressFill"></div></div>
+      <div id="progressText">Progreso: <span id="progressValue">0</span>%</div>
+    </div>
+  </div>
+  <div id="icon"></div>
+  <div id="optionsBox" style="display:none;">
+    <button id="restartButton">Reiniciar</button>
+  </div>
+  <!-- Consigna -->
+  <div id="consigna" style="display:none;"></div>
+</div>
+
+<!-- Misión completada eliminada por solicitud del usuario -->
+
+<!-- Sonidos -->
+<audio id="successSound" src="AUDIO/success.mp3"></audio>
+<audio id="errorSound" src="AUDIO/error.mp3"></audio>
+
+<script>
+// Pantalla negra de transición
+function mostrarPantallaNegra(callback) {
+  let pantallaNegra = document.getElementById("pantallaNegraTransicion");
+  if (!pantallaNegra) {
+    pantallaNegra = document.createElement("div");
+    pantallaNegra.id = "pantallaNegraTransicion";
+    pantallaNegra.className = "pantallaNegraTransicion";
+    document.body.appendChild(pantallaNegra);
+  }
+  pantallaNegra.style.pointerEvents = "auto";
+  pantallaNegra.style.opacity = "1";
+  setTimeout(() => {
+    if (callback) callback();
+    setTimeout(() => {
+      pantallaNegra.style.opacity = "0";
+      setTimeout(() => {
+        pantallaNegra.style.pointerEvents = "none";
+      }, 1400);
+    }, 700);
+  }, 900);
+}
+
+const storyScreen = document.getElementById('storyScreen');
+const beginButton = document.getElementById('beginButton');
+const startScreen = document.getElementById('startScreen');
+const gameScreen = document.getElementById('gameScreen');
+const hud = document.getElementById('hud');
+const playerDisplayName = document.getElementById('playerDisplayName');
+const restartButton = document.getElementById('restartButton');
+const optionsBox = document.getElementById('optionsBox');
+const icon = document.getElementById('icon');
+const successSound = document.getElementById('successSound');
+const errorSound = document.getElementById('errorSound');
+const consigna = document.getElementById('consigna');
+
+let points = 0;
+let lives = 10;
+let progress = 0;
+let iconActive = false;
+let gameInterval;
+let currentIconType = '';
+let pendientesEstructurados = [];
+let pendientesNoEstructurados = [];
+
+// Obtener nombre de la URL
+function getNombreFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('nombre') || '';
+}
+
+let playerName = getNombreFromURL();
+
+// Si no hay nombre, mostrar mensaje y no continuar
+if (!playerName) {
+  alert('No se encontró el nombre del jugador. Regresa a la misión anterior.');
+} else {
+  // Mostrar nombre en la historia y HUD
+  playerDisplayName.textContent = playerName;
+  document.getElementById('storyTitle').textContent = `Bienvenido Almirante ${playerName}`;
+  // Saltar pantalla de bienvenida y mostrar historia
+  startScreen.style.display = 'none';
+  storyScreen.style.display = 'flex';
+  optionsBox.style.display = 'none';
+  restartButton.style.display = 'none';
+}
+
+const icons = [
+  { img: 'IMAGENES/1E.Lista.png', type: 'estructurado' },
+  { img: 'IMAGENES/1NE. Fotografia.png', type: 'noestructurado' },
+  { img: 'IMAGENES/2E. DatoSensor.png', type: 'estructurado' },
+  { img: 'IMAGENES/2NE. ConversacionWsA.png', type: 'noestructurado' },
+  { img: 'IMAGENES/3E. Horario.png', type: 'estructurado' },
+  { img: 'IMAGENES/3NE. Video.png', type: 'noestructurado' },
+  { img: 'IMAGENES/4E. Calendario.png', type: 'estructurado' },
+  { img: 'IMAGENES/4NE. Audio.png', type: 'noestructurado' },
+  { img: 'IMAGENES/5E. Factura.png', type: 'estructurado' },
+  { img: 'IMAGENES/5NE.Escaneada.png', type: 'noestructurado' },
+  { img: 'IMAGENES/6E. BaseDatos.png', type: 'estructurado' },
+  { img: 'IMAGENES/6NE. CapturaPantalla.png', type: 'noestructurado' },
+  { img: 'IMAGENES/7E. Asistencia.png', type: 'estructurado' },
+  { img: 'IMAGENES/7NE. PublicacionRS.png', type: 'noestructurado' }
+];
+
+function updateClock() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2,'0');
+  const minutes = String(now.getMinutes()).padStart(2,'0');
+  const seconds = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+}
+setInterval(updateClock, 1000);
+
+
+// Guardar avance de misión 1 completada en localStorage
+function guardarAvanceMision1() {
+  localStorage.setItem('mision1_completada', 'true');
+  localStorage.setItem('nombre_jugador', playerName);
+}
+
+beginButton.addEventListener('click', () => {
+  mostrarPantallaNegra(() => {
+    storyScreen.style.display = 'none';
+    gameScreen.style.display = 'block';
+    hud.style.display = 'block';
+    optionsBox.style.display = 'flex';
+    restartButton.style.display = 'block';
+    points = 0;
+    lives = 10;
+    progress = 0;
+    updateLivesBar();
+    updateProgressBar();
+    document.getElementById('points').textContent = points;
+    document.getElementById('livesCount').textContent = lives;
+    pendientesEstructurados = icons.filter(i => i.type === 'estructurado').map(i => i.img);
+    pendientesNoEstructurados = icons.filter(i => i.type === 'noestructurado').map(i => i.img);
+    gameLoop();
+  });
+});
+restartButton.addEventListener('click', () => {
+  mostrarPantallaNegra(() => {
+    clearInterval(gameInterval);
+    points = 0;
+    lives = 10;
+    progress = 0;
+    updateLivesBar();
+    updateProgressBar();
+    document.getElementById('points').textContent = points;
+    document.getElementById('livesCount').textContent = lives;
+    pendientesEstructurados = icons.filter(i => i.type === 'estructurado').map(i => i.img);
+    pendientesNoEstructurados = icons.filter(i => i.type === 'noestructurado').map(i => i.img);
+    gameLoop();
+  });
+});
+
+// --- Asteroides flotantes y consigna ---
+let asteroids = [];
+let asteroidInterval;
+
+function showAsteroids(correctType) {
+  // Limpiar anteriores
+  asteroids.forEach(a => a.el.remove());
+  asteroids = [];
+  clearInterval(asteroidInterval);
+
+  // Consigna
+  consigna.textContent = `¡Caza el dato ${correctType === 'estructurado' ? 'ESTRUCTURADO' : 'NO ESTRUCTURADO'}!`;
+  consigna.style.display = 'block';
+
+  // Seleccionar aleatoriamente una imagen pendiente de cada tipo
+  let estructuradoImg = pendientesEstructurados.length > 0 ? pendientesEstructurados[Math.floor(Math.random() * pendientesEstructurados.length)] : null;
+  let noestructuradoImg = pendientesNoEstructurados.length > 0 ? pendientesNoEstructurados[Math.floor(Math.random() * pendientesNoEstructurados.length)] : null;
+
+  // Si ya no quedan imágenes de algún tipo, repite la última
+  if (!estructuradoImg) estructuradoImg = icons.find(i => i.type === 'estructurado').img;
+  if (!noestructuradoImg) noestructuladoImg = icons.find(i => i.type === 'noestructurado').img;
+
+  const imgs = [
+    { img: estructuradoImg, correct: correctType === 'estructurado' },
+    { img: noestructuradoImg, correct: correctType === 'noestructurado' }
+  ];
+  // Mezclar posiciones
+  imgs.sort(() => Math.random() - 0.5);
+
+  imgs.forEach((img, idx) => {
+    const el = document.createElement('img');
+    el.src = img.img;
+    el.className = 'asteroid';
+    el.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+    el.style.top = (120 + Math.random() * (window.innerHeight - 220)) + 'px';
+    el.dataset.correct = img.correct ? 'true' : 'false';
+    
+    // Mejorar detección de hover y clic
+    el.addEventListener('mouseenter', function() {
+      this.classList.add('highlighted');
+    });
+    
+    el.addEventListener('mouseleave', function() {
+      this.classList.remove('highlighted');
+    });
+    
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      checkAnswer(this, correctType, estructuradoImg, noestructuradoImg);
+    });
+    
+    document.body.appendChild(el);
+    asteroids.push({ el, dx: (Math.random() - 0.5) * 3, dy: (Math.random() - 0.5) * 3 });
+  });
+
+  asteroidInterval = setInterval(() => {
+    asteroids.forEach(a => {
+      let x = parseFloat(a.el.style.left);
+      let y = parseFloat(a.el.style.top);
+      x += a.dx;
+      y += a.dy;
+      // Rebote en bordes
+      if (x < 0 || x > window.innerWidth - 90) a.dx *= -1;
+      if (y < 100 || y > window.innerHeight - 90) a.dy *= -1;
+      x = Math.max(0, Math.min(window.innerWidth - 90, x));
+      y = Math.max(100, Math.min(window.innerHeight - 90, y));
+      a.el.style.left = x + 'px';
+      a.el.style.top = y + 'px';
+    });
+    
+    // Verificar si la mira está sobre algún asteroide
+    // Ya no necesario - funciona solo con hover directo
+  }, 20);
+
+  // Los asteroides ya tienen event listeners directos para click
+}
+
+function checkAnswer(element, correctType, estructuradoImg, noestructuradoImg) {
+  const isCorrect = element.dataset.correct === 'true';
+  
+  if (isCorrect) {
+    points += 10;
+    progress = Math.min(progress + 15, 100);
+    document.getElementById('points').textContent = points;
+    updateProgressBar();
+    
+    // Sonido de éxito
+    const successSound = new Audio('AUDIO/success.mp3');
+    successSound.play().catch(() => {});
+    
+    // Eliminar la imagen acertada del array de pendientes
+    if (correctType === 'estructurado' && pendientesEstructurados.length > 0) {
+      const imgSrc = element.src.split('/').pop();
+      pendientesEstructurados = pendientesEstructurados.filter(img => !img.includes(imgSrc));
+    }
+    if (correctType === 'noestructurado' && pendientesNoEstructurados.length > 0) {
+      const imgSrc = element.src.split('/').pop();
+      pendientesNoEstructurados = pendientesNoEstructurados.filter(img => !img.includes(imgSrc));
+    }
+  } else {
+    lives--;
+    document.getElementById('livesCount').textContent = lives;
+    
+    // Sonido de error
+    const errorSound = new Audio('AUDIO/error.mp3');
+    errorSound.play().catch(() => {});
+    
+    updateLivesBar();
+    if (lives <= 0) {
+      clearInterval(gameInterval);
+      mostrarGameOverModal();
+      return;
+    }
+  }
+  
+  // Limpiar y pasar a la siguiente ronda
+  asteroids.forEach(ast => ast.el.remove());
+  asteroids = [];
+  clearInterval(asteroidInterval);
+  consigna.style.display = 'none';
+  hideIcon();
+  checkEndGame();
+}
+
+function showIcon() {
+  if (lives <= 0) return;
+  // Solo mostrar asteroides flotantes, sin icono fijo
+  const randomObj = icons[Math.floor(Math.random() * icons.length)];
+  currentIconType = randomObj.type;
+  iconActive = true;
+  showAsteroids(currentIconType);
+}
+
+function hideIcon() {
+  iconActive = false;
+}
+
+function gameLoop() {
+  clearInterval(gameInterval);
+  gameInterval = setInterval(() => {
+    if (lives > 0 && !iconActive) {
+      showIcon();
+    }
+  }, 1000);
+}
+
+// Terminar juego si progreso llega a 100 o vidas se acaban
+function checkEndGame() {
+  if (progress >= 100) {
+    clearInterval(gameInterval);
+    guardarAvanceMision1();
+    // Avanzar automáticamente al siguiente nivel
+    window.location.href = '../DESAFIO3/Index.html';
+    return;
+  }
+  if (lives <= 0) {
+    clearInterval(gameInterval);
+    mostrarGameOverModal();
+  }
+}
+
+// Mostrar botón para volver a misión 2 si ya terminó misión 1
+function mostrarBotonVolverMision2() {
+  // Esta función queda vacía para no crear el botón de volver a misión 2
+}
+
+// Al cargar la página, si ya terminó misión 1, mostrar botón para volver
+window.addEventListener('DOMContentLoaded', function() {
+  if (localStorage.getItem('mision1_completada') === 'true') {
+    mostrarBotonVolverMision2();
+    agregarBotonAvanzar();
+  }
+});
+
+function agregarBotonAvanzar() {
+  if (document.getElementById('btnAvanzarMision')) return;
+  const btn = document.createElement('button');
+  btn.id = 'btnAvanzarMision';
+  btn.textContent = 'Avanzar a la siguiente misión';
+  btn.style.marginTop = '18px';
+  btn.style.background = 'linear-gradient(90deg,#00f0ff 60%,#00bfff 100%)';
+  btn.style.color = '#fff';
+  btn.style.fontFamily = 'Orbitron, sans-serif';
+  btn.style.fontSize = '1.1em';
+  btn.style.border = 'none';
+  btn.style.borderRadius = '30px';
+  btn.style.boxShadow = '0 0 18px #00f0ff99,0 0 0 4px #001a inset';
+  btn.style.cursor = 'pointer';
+  btn.onclick = function() {
+    mostrarPantallaNegra(() => {
+      window.location.href = '../DESAFIO3/Index.html';
+    });
+  };
+  // Insertar en el recuadro de misión completada si existe
+  const mComp = document.getElementById('missionComplete');
+  if (mComp) mComp.appendChild(btn);
+}
+
+// Eliminar validación con Enter/Espacio en el keydown
+document.removeEventListener('keydown', () => {}); // No hacer nada
+
+function updateLivesBar() {
+  const fill = document.getElementById('livesFill');
+  const percent = (lives / 10) * 100;
+  fill.style.width = percent + '%';
+  document.getElementById('livesCount').textContent = lives;
+}
+function updateProgressBar() {
+  const fill = document.getElementById('progressFill');
+  const text = document.getElementById('progressValue');
+  fill.style.width = progress + '%';
+  text.textContent = progress;
+}
+
+// --- Lógica de mostrar dos opciones y validar respuesta con clic ---
+// (sin uso, bloque comentado)
+
+// Reemplazar el alert('GAME OVER') por un modal personalizado
+function mostrarGameOverModal() {
+  // Eliminar si ya existe
+  const existente = document.getElementById('gameOverModal');
+  if (existente) existente.remove();
+  // Crear modal
+  const modal = document.createElement('div');
+  modal.id = 'gameOverModal';
+  modal.innerHTML = `<div style="font-size:1em;font-weight:bold;margin-bottom:0.2em;color:#ff0044;text-shadow:0 0 8px #ff0044;">¡Misión fallida!</div><div style="margin-bottom:0.2em;line-height:1.1;">Te has quedado sin vidas. ¿Intentar de nuevo?</div>`;
+  const btn = document.createElement('button');
+  btn.textContent = 'Reiniciar';
+  btn.className = 'btnReiniciarElegante';
+  btn.onclick = () => {
+    mostrarPantallaNegra(() => {
+      modal.remove();
+      clearInterval(gameInterval);
+      points = 0;
+      lives = 10;
+      progress = 0;
+      updateLivesBar();
+      updateProgressBar();
+      document.getElementById('points').textContent = points;
+      document.getElementById('livesCount').textContent = lives;
+      pendientesEstructurados = icons.filter(i => i.type === 'estructurado').map(i => i.img);
+      pendientesNoEstructurados = icons.filter(i => i.type === 'noestructurado').map(i => i.img);
+      gameLoop();
+    });
+  };
+  modal.appendChild(btn);
+  document.body.appendChild(modal);
+}
+</script>
+</body>

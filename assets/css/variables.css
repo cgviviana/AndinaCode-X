@@ -1,0 +1,67 @@
+/* ===== VARIABLES CSS - GALAXIA ANDINACODE X ===== */
+
+:root {
+  /* Colores principales */
+  --primary-color: #00f0ff;
+  --primary-glow: 0 0 10px var(--primary-color), 0 0 25px var(--primary-color), 0 0 40px var(--primary-color);
+  --secondary-color: #ffffff;
+  --background-dark: #000000;
+  --background-overlay: rgba(0, 0, 0, 0.8);
+  --background-card: rgba(255, 255, 255, 0.2);
+  --background-card-hover: rgba(255, 255, 255, 0.3);
+  
+  /* Tipografía */
+  --font-primary: 'Orbitron', sans-serif;
+  --font-size-xl: 3em;
+  --font-size-lg: 1.8em;
+  --font-size-md: 1.2em;
+  --font-size-sm: 1em;
+  --font-weight-normal: 500;
+  --font-weight-bold: 700;
+  
+  /* Espaciado */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --spacing-xxl: 4rem;
+  
+  /* Bordes y radios */
+  --border-radius-sm: 8px;
+  --border-radius-md: 15px;
+  --border-radius-lg: 20px;
+  
+  /* Transiciones */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* Sombras */
+  --shadow-glow: 0 0 25px var(--primary-color);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-text: 2px 2px 10px black;
+  
+  /* Z-index */
+  --z-modal: 9999;
+  --z-overlay: 1000;
+  --z-background: 1;
+  
+  /* Breakpoints para media queries */
+  --breakpoint-mobile: 600px;
+  --breakpoint-tablet: 900px;
+  --breakpoint-desktop: 1200px;
+}
+
+/* Variables para modo oscuro y claro (futuro) */
+[data-theme="dark"] {
+  --background-main: #000000;
+  --text-primary: #ffffff;
+  --text-secondary: var(--primary-color);
+}
+
+[data-theme="light"] {
+  --background-main: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #0066cc;
+}

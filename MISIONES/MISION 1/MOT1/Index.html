@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!--Created by Ardora - www.webardora.net-->
+<!--ArdoraLibro-->
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8">
+<html lang="es">
+<script src="js/jquery.js" type="text/javascript"></script>
+<script src="js/jquery-ui-1.8.19 custom.js" type="text/javascript"></script>
+<script src="Folleto/jquery.easing.1.3.js" type="text/javascript"></script>
+<script src="Folleto/jquery.booklet.js" type="text/javascript"></script>
+<script src="js/ardorabooklet.js" type="text/javascript"></script>
+<link href="CSS/ArdoranoBooklet.css" type="text/css" rel="stylesheet" media="screen">
+<title></title></head>
+<body>
+   <header>
+   </header>
+   <article>
+      <div id="mybook">
+<div class="cover">
+  <h3></h3>
+   <div class="imaCenter"> <img alt="" src="Imagenes/Portada.png"></div>
+  <h4></h4>
+</div>
+<div class="pLeft" id="pag0">
+<p style="text-align:center;">
+  <img src="Imagenes/1.png" alt="Página 1" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pRight" id="pag1">
+<p style="text-align:center;">
+  <img src="Imagenes/2.png" alt="Página 2" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pLeft" id="pag2">
+<p style="text-align:center;">
+  <img src="Imagenes/3.png" alt="Página 3" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pRight" id="pag3">
+<p style="text-align:center;">
+  <img src="Imagenes/4.png" alt="Página 4" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pLeft" id="pag4">
+<p style="text-align:center;">
+  <img src="Imagenes/5.png" alt="Página 5" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pRight" id="pag5">
+<p style="text-align:center;">
+  <img src="Imagenes/6.png" alt="Página 6" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pLeft" id="pag6">
+<p style="text-align:center;">
+  <img src="Imagenes/7.png" alt="Página 7" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pRight" id="pag7">
+<p style="text-align:center;">
+  <img src="Imagenes/8.png" alt="Página 8" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pLeft" id="pag8">
+<p style="text-align:center;">
+  <img src="Imagenes/9.png" alt="Página 9" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pRight" id="pag9">
+<p style="text-align:center;">
+  <img src="Imagenes/10.png" alt="Página 10" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pLeft" id="pag10">
+<p style="text-align:center;">
+  <img src="Imagenes/11.png" alt="Página 11" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pRight" id="pag11">
+<p style="text-align:center;">
+  <img src="Imagenes/12.png" alt="Página 12" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pLeft" id="pag12">
+<p style="text-align:center;">
+  <img src="Imagenes/13.png" alt="Página 13" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pRight" id="pag13">
+<p style="text-align:center;">
+  <img src="Imagenes/14.png" alt="Página 14" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pLeft" id="pag14">
+<p style="text-align:center;">
+  <img src="Imagenes/15.png" alt="Página 15" style="max-width:100%;height:auto;">
+</p>
+</div>
+<div class="pRight">
+</div>
+      </div>
+   </article>
+
+   <!-- Modal de redirección -->
+   <div id="redirect-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); z-index: 10000; justify-content: center; align-items: center; flex-direction: column;">
+     <div style="background: linear-gradient(135deg, #1e3c72, #2a5298); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; border: 2px solid #4a90e2; box-shadow: 0 0 30px rgba(74, 144, 226, 0.5);">
+       <h2 style="color: #ffffff; font-family: 'Orbitron', sans-serif; font-size: 1.8em; margin-bottom: 20px; text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);">Manual Completado</h2>
+       <p style="color: #ffffff; font-family: 'Orbitron', sans-serif; font-size: 1.2em; margin-bottom: 25px; line-height: 1.6;">¡Felicitaciones! Has terminado de leer el manual.</p>
+       <p style="color: #6bb6ff; font-family: 'Orbitron', sans-serif; font-size: 1.1em; margin-bottom: 30px;">En <span id="countdown">5</span> segundos comenzará la misión...</p>
+       <div style="display: flex; gap: 15px; justify-content: center;">
+         <button id="start-now" style="background: linear-gradient(135deg, #4a90e2, #6bb6ff); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 1em; cursor: pointer; transition: all 0.3s ease;">Comenzar Ahora</button>
+         <button id="cancel-redirect" style="background: linear-gradient(135deg, #5a6c7d, #7a8c9d); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 1em; cursor: pointer; transition: all 0.3s ease;">Cancelar</button>
+       </div>
+     </div>
+   </div>
+
+   <script>
+     let commanderName = "";
+     let hasShownRedirect = false;
+     let countdownTimer;
+     let redirectTimer;
+
+     // Obtener nombre del comandante
+     function getCommanderName() {
+       const params = new URLSearchParams(window.location.search);
+       commanderName = params.get("nombre") || "Comandante";
+     }
+
+     // Detectar cuando se llega a la última página
+     function detectLastPage() {
+       // El booklet usa páginas dobles, la última página real es pag14 (página 15)
+       // Verificamos si las páginas finales están visibles
+       const lastPage = document.getElementById('pag14');
+       const penultimatePage = document.getElementById('pag13');
+       
+       if (lastPage && penultimatePage) {
+         const lastPageVisible = window.getComputedStyle(lastPage.closest('.b-page')).display !== 'none';
+         const penultimatePageVisible = window.getComputedStyle(penultimatePage.closest('.b-page')).display !== 'none';
+         
+         // Si ambas páginas finales están visibles y no hemos mostrado el modal
+         if ((lastPageVisible || penultimatePageVisible) && !hasShownRedirect) {
+           // Verificar si realmente estamos en las páginas finales usando las clases del booklet
+           const isOnFinalSpread = document.querySelector('.b-p1 #pag13') || 
+                                   document.querySelector('.b-p2 #pag14') ||
+                                   document.querySelector('.b-p1 #pag14');
+           
+           if (isOnFinalSpread) {
+             hasShownRedirect = true;
+             setTimeout(showRedirectModal, 2000); // Esperar 2 segundos para asegurar que el usuario vea la página
+           }
+         }
+       }
+     }
+
+     // También detectar mediante eventos del booklet
+     function setupBookletEvents() {
+       $('#mybook').on('bookletchange', function(event, data) {
+         // data.index contiene el índice de la página actual
+         const currentIndex = data.index;
+         const totalPages = $('#mybook').booklet('option', 'pageTotal');
+         
+         // Si estamos en las dos últimas páginas (índices 12 y 13 para pag13 y pag14)
+         if (currentIndex >= totalPages - 4 && !hasShownRedirect) {
+           hasShownRedirect = true;
+           setTimeout(showRedirectModal, 1500);
+         }
+       });
+     }
+
+     // Mostrar modal de redirección
+     function showRedirectModal() {
+       const modal = document.getElementById("redirect-modal");
+       modal.style.display = "flex";
+       
+       let countdown = 5;
+       const countdownElement = document.getElementById("countdown");
+       
+       countdownTimer = setInterval(() => {
+         countdown--;
+         countdownElement.textContent = countdown;
+         
+         if (countdown <= 0) {
+           clearInterval(countdownTimer);
+           redirectToMission();
+         }
+       }, 1000);
+       
+       // Auto-redirect después de 5 segundos
+       redirectTimer = setTimeout(redirectToMission, 5000);
+     }
+
+     // Redirigir a la primera misión
+     function redirectToMission() {
+       window.location.href = "../DESAFIO1/Index.html?nombre=" + encodeURIComponent(commanderName);
+     }
+
+     // Eventos de botones
+     document.addEventListener('DOMContentLoaded', function() {
+       getCommanderName();
+       
+       // Esperar a que el booklet se inicialice
+       setTimeout(() => {
+         setupBookletEvents();
+         // Verificar páginas cada 2 segundos como respaldo
+         setInterval(detectLastPage, 2000);
+       }, 1000);
+       
+       // Botón "Comenzar Ahora"
+       document.getElementById("start-now").addEventListener('click', function() {
+         clearInterval(countdownTimer);
+         clearTimeout(redirectTimer);
+         redirectToMission();
+       });
+       
+       // Botón "Cancelar"
+       document.getElementById("cancel-redirect").addEventListener('click', function() {
+         clearInterval(countdownTimer);
+         clearTimeout(redirectTimer);
+         document.getElementById("redirect-modal").style.display = "none";
+         hasShownRedirect = false; // Permitir que se muestre nuevamente
+       });
+     });
+   </script>
+</body></html>

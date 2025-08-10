@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portal Galáctico Areandina - Aventura educativa interactiva en el espacio">
+  <meta name="theme-color" content="#00f0ff">
+  <title>Portal Galáctico - Areandina</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" as="style">
+  <link rel="preload" href="IMAGENES/Bitnarys.png" as="image">
+  
+  <!-- Stylesheets -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-original.css?v=3">
+  
+  <!-- Fallback styles for critical CSS -->
+  <style>
+    /* Critical CSS fallback */
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: #000 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="bg" cx="50%" cy="50%"><stop offset="0%" stop-color="%23001a33"/><stop offset="50%" stop-color="%23000811"/><stop offset="100%" stop-color="%23000000"/></radialGradient></defs><rect width="100" height="100" fill="url(%23bg)"/></svg>');
+      background-size: cover;
+      background-attachment: fixed;
+      color: #00ffff;
+      min-height: 100vh;
+    }
+    .loading { opacity: 0.7; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+
+<body>
+  <!-- Skip link for accessibility -->
+  <a href="#main-content" class="sr-only">Saltar al contenido principal</a>
+  
+  <!-- Main container -->
+  <main id="main-content" role="main">
+    <h1 id="titulo-galaxia"></h1>
+    <h2 id="comandante" class="efecto"></h2>
+
+    <!-- Planets section -->
+    <div class="planets-container">
+      <button 
+        class="planet-button" 
+        data-planet="bitnarys"
+        aria-label="Acceder al Planeta Bitnarys"
+        tabindex="0"
+      >
+        <p class="planet-title">Planeta Bitnarys</p>
+        <img 
+          src="IMAGENES/Bitnarys.png" 
+          alt="Bitnarys - Planeta de datos y programación"
+          class="planet-image"
+        >
+      </button>
+      
+      <button 
+        class="planet-button" 
+        data-planet="codara"
+        aria-label="Planeta Codara - Bloqueado"
+        tabindex="0"
+      >
+        <p class="planet-title">Planeta Codara</p>
+        <img 
+          src="IMAGENES/Codara.png" 
+          alt="Codara - Planeta de algoritmos (bloqueado)"
+          class="planet-image"
+        >
+      </button>
+      
+      <button 
+        class="planet-button" 
+        data-planet="tekron"
+        aria-label="Planeta Tekron - Bloqueado"
+        tabindex="0"
+      >
+        <p class="planet-title">Planeta Tekron</p>
+        <img 
+          src="IMAGENES/Tekron.png" 
+          alt="Tekron - Planeta de tecnología (bloqueado)"
+          class="planet-image"
+        >
+      </button>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="acceso">
+    <img id="imagenAcceso" src="" alt="Estado de acceso">
+    <input 
+      type="text" 
+      id="nombreCadete" 
+      placeholder="Ingresa tu nombre de comandante"
+      maxlength="50"
+      aria-label="Nombre del comandante"
+    >
+    <button 
+      id="btnVolver" 
+      style="display:none;margin-top:20px;padding:10px 30px;font-size:1.1em;border-radius:8px;border:none;background:#00f0ff;color:#222;font-family:'Orbitron',sans-serif;cursor:pointer;"
+      aria-label="Volver al menú principal"
+    >
+      Volver
+    </button>
+  </div>
+
+  <!-- Audio elements -->
+  <audio id="fondo" preload="auto" loop aria-label="Música de fondo">
+    <source src="AUDIO/Space.mp3" type="audio/mpeg">
+    Tu navegador no soporta el elemento de audio.
+  </audio>
+  
+  <audio id="viaje" preload="auto" aria-label="Sonido de viaje">
+    <source src="AUDIO/Viaje.mp3" type="audio/mpeg">
+  </audio>
+  
+  <audio id="texto" preload="auto" aria-label="Sonido de escritura">
+    <source src="AUDIO/Texto.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Scripts -->
+  <script>
+    let sonidoActivado = false;
+
+    function activarSonidoFondo() {
+      if (!sonidoActivado) {
+        document.getElementById("fondo").volume = 0.4;
+        document.getElementById("fondo").play();
+        sonidoActivado = true;
+      }
+    }
+
+    function escribirConEfecto(texto, contenedorId) {
+      const contenedor = document.getElementById(contenedorId);
+      contenedor.innerHTML = '';
+      [...texto].forEach((letra, i) => {
+        const span = document.createElement('span');
+        span.innerHTML = (letra === ' ') ? '&nbsp;' : letra;
+        span.style.animationDelay = `${i * 0.05}s`;
+        contenedor.appendChild(span);
+      });
+    }
+
+    function escribirTitulo(texto, elementoId, delay = 150) {
+      const contenedor = document.getElementById(elementoId);
+      const audio = document.getElementById("texto");
+      let i = 0;
+
+      function escribir() {
+        if (i < texto.length) {
+          contenedor.innerHTML += texto[i] === ' ' ? '&nbsp;' : texto[i];
+          if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log('Audio play prevented'));
+          }
+          i++;
+          setTimeout(escribir, delay);
+        }
+      }
+
+      escribir();
+    }
+
+    function solicitarAcceso(enlace) {
+      // SIEMPRE pedir el nombre - no usar localStorage automáticamente
+      document.getElementById("imagenAcceso").src = "IMAGENES/AccesoSi.png";
+      document.getElementById("acceso").style.display = "flex";
+      document.getElementById("nombreCadete").style.display = "block";
+      document.getElementById("nombreCadete").value = ""; // Limpiar campo
+      document.getElementById("nombreCadete").focus();
+      window._nextLink = enlace;
+      mostrarBotonVolver();
+    }
+
+    function mostrarDenegado() {
+      document.getElementById("imagenAcceso").src = "IMAGENES/AccesoNo.png";
+      document.getElementById("acceso").style.display = "flex";
+      document.getElementById("nombreCadete").style.display = "none";
+      mostrarBotonVolver();
+      setTimeout(() => {
+        document.getElementById("acceso").style.display = "none";
+        ocultarBotonVolver();
+      }, 2000);
+    }
+
+    function continuar() {
+      const nombre = document.getElementById("nombreCadete").value.trim();
+      if (!nombre) {
+        alert("Por favor ingresa tu nombre de comandante");
+        return;
+      }
+      // NO guardar en localStorage - solo usar para esta sesión
+      document.getElementById("viaje").play().catch(e => console.log('Audio play prevented'));
+      document.getElementById("fondo").pause();
+      document.getElementById("fondo").currentTime = 0;
+      setTimeout(() => {
+        window.location.href = window._nextLink + "?nombre=" + encodeURIComponent(nombre);
+      }, 2500);
+    }
+
+    function mostrarBotonVolver() {
+      document.getElementById('btnVolver').style.display = 'block';
+    }
+    
+    function ocultarBotonVolver() {
+      document.getElementById('btnVolver').style.display = 'none';
+    }
+
+    function volverAtras() {
+      document.getElementById('acceso').style.display = 'none';
+      ocultarBotonVolver();
+    }
+
+    // Configurar eventos
+    document.addEventListener('DOMContentLoaded', () => {
+      // Limpiar cualquier dato previo del localStorage
+      localStorage.removeItem('nombreCadete');
+      
+      // Escribir título
+      escribirTitulo("Galaxia AndinaCode X", "titulo-galaxia");
+
+      // Configurar planetas - RUTAS CORREGIDAS
+      document.querySelector('[data-planet="bitnarys"]').onclick = () => solicitarAcceso('../INGRESO/Misiones.html');
+      document.querySelector('[data-planet="codara"]').onclick = mostrarDenegado;
+      document.querySelector('[data-planet="tekron"]').onclick = mostrarDenegado;
+
+      // Configurar modal
+      document.getElementById('nombreCadete').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') continuar();
+      });
+
+      document.getElementById('btnVolver').onclick = volverAtras;
+
+      // Cerrar modal con ESC
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.getElementById('acceso').style.display === 'flex') {
+          volverAtras();
+        }
+      });
+
+      // Mostrar mensaje de bienvenida solo si viene con parámetro URL
+      const params = new URLSearchParams(window.location.search);
+      const nombre = params.get("nombre");
+      if (nombre) {
+        escribirConEfecto("Bienvenido comandante " + nombre, "comandante");
+      }
+
+      // Crear estrellas
+      for (let i = 0; i < 40; i++) {
+        const estrella = document.createElement('div');
+        estrella.className = 'estrella';
+        estrella.style.left = Math.random() * 100 + 'vw';
+        estrella.style.top = Math.random() * 100 + 'vh';
+        estrella.style.animationDuration = (1 + Math.random() * 2) + 's';
+        document.body.appendChild(estrella);
+      }
+
+      for (let i = 0; i < 2; i++) {
+        const grande = document.createElement('div');
+        grande.className = 'estrella-grande';
+        grande.style.left = Math.random() * 100 + 'vw';
+        grande.style.top = Math.random() * 100 + 'vh';
+        document.body.appendChild(grande);
+      }
+
+      const giratoria = document.createElement('div');
+      giratoria.className = 'estrella-gira';
+      giratoria.style.left = "50vw";
+      giratoria.style.top = "30vh";
+      document.body.appendChild(giratoria);
+
+      for (let i = 0; i < 2; i++) {
+        const mov = document.createElement('div');
+        mov.className = 'estrella-mov';
+        mov.style.left = Math.random() * 100 + 'vw';
+        mov.style.top = Math.random() * 100 + 'vh';
+        document.body.appendChild(mov);
+      }
+
+      // Activar sonido al hacer clic
+      document.body.addEventListener('click', activarSonidoFondo, { once: true });
+    });
+  </script>
+  
+  <!-- Service Worker registration (for future PWA features) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => console.log('SW registered'))
+          .catch(registrationError => console.log('SW registration failed'));
+      });
+    }
+  </script>
+</body>
+</html>

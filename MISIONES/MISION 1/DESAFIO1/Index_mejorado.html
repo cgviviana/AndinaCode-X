@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Desafío 1 - Reconstruir el Saber - Galaxia AndinaCode X">
+  <title>Desafío 1 - Reconstruir el Saber</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS modules -->
+  <link rel="stylesheet" href="../../../assets/css/variables.css">
+  <link rel="stylesheet" href="../../../assets/css/base.css">
+  <link rel="stylesheet" href="../../../assets/css/layout.css">
+  <link rel="stylesheet" href="../../../assets/css/animations.css">
+  <link rel="stylesheet" href="../../../assets/css/components.css">
+  
+  <!-- Challenge-specific styles -->
+  <style>
+    .challenge-screen {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-lg);
+      position: relative;
+    }
+
+    .challenge-screen.active {
+      display: flex;
+    }
+
+    .welcome-screen {
+      background: var(--background-dark);
+      text-align: center;
+    }
+
+    .welcome-title {
+      margin-bottom: var(--spacing-lg);
+      text-shadow: var(--primary-glow);
+      font-size: var(--font-size-xl);
+      color: var(--primary-color);
+    }
+
+    .welcome-text {
+      margin-bottom: var(--spacing-lg);
+      text-shadow: var(--primary-glow);
+      font-size: var(--font-size-lg);
+      color: var(--primary-color);
+    }
+
+    .challenge-input {
+      font-size: 18px;
+      padding: var(--spacing-sm);
+      margin: var(--spacing-md);
+      border: 2px solid var(--primary-color);
+      background: #111;
+      color: var(--primary-color);
+      border-radius: var(--border-radius-sm);
+      font-family: var(--font-primary);
+    }
+
+    .challenge-input:focus {
+      outline: none;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .challenge-btn {
+      padding: 12px 24px;
+      font-size: 18px;
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      transition: var(--transition-normal);
+      text-shadow: var(--primary-glow);
+      font-family: var(--font-primary);
+    }
+
+    .challenge-btn:hover {
+      background: var(--primary-color);
+      color: var(--background-dark);
+      transform: scale(1.05);
+    }
+
+    .challenge-btn:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    .instructions-screen {
+      background: var(--background-dark);
+      flex-direction: column;
+      align-items: center;
+      padding: var(--spacing-xxl);
+      text-align: justify;
+      line-height: 1.6;
+      color: var(--primary-color);
+      font-size: 18px;
+    }
+
+    .instructions-panel {
+      border: 2px solid var(--primary-color);
+      padding: var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      background-color: var(--background-overlay);
+      box-shadow: var(--shadow-glow);
+      max-width: 800px;
+      position: relative;
+    }
+
+    .instruction-paragraph {
+      margin-bottom: var(--spacing-lg);
+      min-height: 80px;
+      white-space: pre-wrap;
+      padding-left: var(--spacing-sm);
+    }
+
+    .skip-animation-btn {
+      position: absolute;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      background: linear-gradient(90deg, #fff 0%, #00cfff 100%);
+      color: var(--background-dark);
+      border: none;
+      display: none;
+    }
+
+    .decades-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-lg);
+      padding: var(--spacing-lg);
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .decade-card {
+      background: var(--background-card);
+      border: 2px solid var(--primary-color);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-md);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .decade-card:hover {
+      background: var(--background-card-hover);
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .decade-card:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    .decade-title {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--spacing-sm);
+      color: var(--primary-color);
+    }
+
+    .decade-image {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .completion-screen {
+      text-align: center;
+      background: var(--background-dark);
+    }
+
+    .completion-title {
+      font-size: var(--font-size-xl);
+      color: var(--primary-color);
+      text-shadow: var(--primary-glow);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .timer-display {
+      position: absolute;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      font-size: var(--font-size-lg);
+      color: var(--primary-color);
+      background: var(--background-overlay);
+      padding: var(--spacing-sm);
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--primary-color);
+    }
+
+    @media (max-width: 768px) {
+      .decades-container {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+      }
+
+      .welcome-title {
+        font-size: 2em;
+      }
+
+      .instructions-panel {
+        padding: var(--spacing-md);
+        margin: var(--spacing-sm);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Skip link for accessibility -->
+  <a href="#main-content" class="sr-only">Saltar al contenido principal</a>
+  
+  <!-- Main container -->
+  <main id="main-content" role="main">
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="challenge-screen welcome-screen active">
+      <h1 class="welcome-title">Desafío 1: Reconstruir el Saber</h1>
+      <p class="welcome-text">Bienvenido al primer desafío, comandante</p>
+      <label for="commander-name" class="sr-only">Ingresa tu nombre de comandante</label>
+      <input 
+        type="text" 
+        id="commander-name" 
+        class="challenge-input"
+        placeholder="Ingresa tu nombre de comandante"
+        maxlength="50"
+        autocomplete="name"
+        aria-describedby="name-help"
+      >
+      <div id="name-help" class="sr-only">
+        Ingresa tu nombre para comenzar el desafío
+      </div>
+      <button 
+        class="challenge-btn" 
+        onclick="startChallenge()"
+        aria-label="Comenzar el desafío"
+      >
+        Comenzar Desafío
+      </button>
+    </div>
+
+    <!-- Instructions Screen -->
+    <div id="instructions-screen" class="challenge-screen instructions-screen">
+      <h1>Instrucciones del Desafío</h1>
+      <div class="instructions-panel">
+        <button 
+          id="skip-animation-btn" 
+          class="challenge-btn skip-animation-btn"
+          onclick="skipAnimation()"
+          aria-label="Omitir animación de texto"
+        >
+          Omitir Animación
+        </button>
+        
+        <div class="instruction-paragraph" id="paragraph1"></div>
+        <div class="instruction-paragraph" id="paragraph2"></div>
+        <div class="instruction-paragraph" id="paragraph3"></div>
+        <div class="instruction-paragraph" id="paragraph4"></div>
+        
+        <button 
+          id="start-game-btn" 
+          class="challenge-btn" 
+          onclick="startGame()" 
+          style="display: none;"
+          aria-label="Iniciar el juego"
+        >
+          ¡Empezar!
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="challenge-screen">
+      <div class="timer-display" id="timer" aria-live="polite">Tiempo: 60s</div>
+      
+      <h2 class="challenge-title">Selecciona las décadas en orden cronológico</h2>
+      <p class="challenge-subtitle">Haz clic en las imágenes desde la más antigua hasta la más reciente</p>
+      
+      <div class="decades-container" role="grid" aria-label="Décadas para ordenar">
+        <div 
+          class="decade-card" 
+          data-decade="1960" 
+          onclick="selectDecade('1960')"
+          role="gridcell"
+          tabindex="0"
+          aria-label="Década de 1960"
+        >
+          <h3 class="decade-title">1960s</h3>
+          <img 
+            src="../../../assets/images/1960.png" 
+            alt="Imagen representativa de la década de 1960"
+            class="decade-image"
+            loading="lazy"
+          >
+        </div>
+        
+        <div 
+          class="decade-card" 
+          data-decade="1970" 
+          onclick="selectDecade('1970')"
+          role="gridcell"
+          tabindex="0"
+          aria-label="Década de 1970"
+        >
+          <h3 class="decade-title">1970s</h3>
+          <img 
+            src="../../../assets/images/1970.png" 
+            alt="Imagen representativa de la década de 1970"
+            class="decade-image"
+            loading="lazy"
+          >
+        </div>
+        
+        <div 
+          class="decade-card" 
+          data-decade="1980" 
+          onclick="selectDecade('1980')"
+          role="gridcell"
+          tabindex="0"
+          aria-label="Década de 1980"
+        >
+          <h3 class="decade-title">1980s</h3>
+          <img 
+            src="../../../assets/images/1980.png" 
+            alt="Imagen representativa de la década de 1980"
+            class="decade-image"
+            loading="lazy"
+          >
+        </div>
+        
+        <div 
+          class="decade-card" 
+          data-decade="1990" 
+          onclick="selectDecade('1990')"
+          role="gridcell"
+          tabindex="0"
+          aria-label="Década de 1990"
+        >
+          <h3 class="decade-title">1990s</h3>
+          <img 
+            src="../../../assets/images/1990.png" 
+            alt="Imagen representativa de la década de 1990"
+            class="decade-image"
+            loading="lazy"
+          >
+        </div>
+        
+        <div 
+          class="decade-card" 
+          data-decade="2000" 
+          onclick="selectDecade('2000')"
+          role="gridcell"
+          tabindex="0"
+          aria-label="Década de 2000"
+        >
+          <h3 class="decade-title">2000s</h3>
+          <img 
+            src="../../../assets/images/2000.png" 
+            alt="Imagen representativa de la década de 2000"
+            class="decade-image"
+            loading="lazy"
+          >
+        </div>
+        
+        <div 
+          class="decade-card" 
+          data-decade="2010" 
+          onclick="selectDecade('2010')"
+          role="gridcell"
+          tabindex="0"
+          aria-label="Década de 2010"
+        >
+          <h3 class="decade-title">2010s</h3>
+          <img 
+            src="../../../assets/images/2010.png" 
+            alt="Imagen representativa de la década de 2010"
+            class="decade-image"
+            loading="lazy"
+          >
+        </div>
+        
+        <div 
+          class="decade-card" 
+          data-decade="2020" 
+          onclick="selectDecade('2020')"
+          role="gridcell"
+          tabindex="0"
+          aria-label="Década de 2020"
+        >
+          <h3 class="decade-title">2020s</h3>
+          <img 
+            src="../../../assets/images/2020.png" 
+            alt="Imagen representativa de la década de 2020"
+            class="decade-image"
+            loading="lazy"
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Completion Screen -->
+    <div id="completion-screen" class="challenge-screen completion-screen">
+      <h1 class="completion-title">¡Desafío Completado!</h1>
+      <p class="completion-text">Has reconstruido exitosamente la línea temporal del saber</p>
+      <button 
+        class="challenge-btn" 
+        onclick="returnToMissions()"
+        aria-label="Regresar a las misiones"
+      >
+        Regresar a Misiones
+      </button>
+    </div>
+  </main>
+
+  <!-- Audio elements -->
+  <audio id="success-audio" preload="auto" aria-label="Sonido de éxito">
+    <source src="AUDIO/success.mp3" type="audio/mpeg">
+  </audio>
+  
+  <audio id="error-audio" preload="auto" aria-label="Sonido de error">
+    <source src="AUDIO/error.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Scripts -->
+  <script src="../../../assets/js/config.js"></script>
+  <script src="../../../assets/js/utils.js"></script>
+  <script src="../../../assets/js/audio-manager.js"></script>
+  
+  <!-- Challenge-specific script -->
+  <script>
+    class Challenge1 {
+      constructor() {
+        this.commanderName = '';
+        this.currentScreen = 'welcome-screen';
+        this.selectedDecades = [];
+        this.correctOrder = ['1960', '1970', '1980', '1990', '2000', '2010', '2020'];
+        this.timeLeft = 60;
+        this.timer = null;
+        this.audioManager = new AudioManager();
+        
+        this.instructions = [
+          "En este desafío, deberás reconstruir la línea temporal del conocimiento tecnológico.",
+          "Las décadas se han mezclado en el tiempo y es tu misión organizarlas correctamente.",
+          "Selecciona las décadas en orden cronológico, desde la más antigua hasta la más reciente.",
+          "Tienes 60 segundos para completar la tarea. ¡Que la fuerza del conocimiento te acompañe!"
+        ];
+        
+        this.setupKeyboardNavigation();
+      }
+
+      setupKeyboardNavigation() {
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            const activeElement = document.activeElement;
+            if (activeElement.classList.contains('decade-card')) {
+              e.preventDefault();
+              activeElement.click();
+            }
+          }
+        });
+      }
+
+      startChallenge() {
+        const nameInput = document.getElementById('commander-name');
+        this.commanderName = nameInput.value.trim();
+        
+        if (!this.commanderName) {
+          this.showAccessibleAlert('Por favor, ingresa tu nombre de comandante');
+          nameInput.focus();
+          return;
+        }
+
+        this.switchScreen('instructions-screen');
+        this.startInstructionsAnimation();
+      }
+
+      startInstructionsAnimation() {
+        const skipBtn = document.getElementById('skip-animation-btn');
+        skipBtn.style.display = 'block';
+        
+        let paragraphIndex = 0;
+        let charIndex = 0;
+        
+        const animateText = () => {
+          if (paragraphIndex >= this.instructions.length) {
+            this.showStartButton();
+            skipBtn.style.display = 'none';
+            return;
+          }
+          
+          const currentParagraph = document.getElementById(`paragraph${paragraphIndex + 1}`);
+          const text = this.instructions[paragraphIndex];
+          
+          if (charIndex < text.length) {
+            currentParagraph.textContent = text.substring(0, charIndex + 1);
+            charIndex++;
+            setTimeout(animateText, 50);
+          } else {
+            paragraphIndex++;
+            charIndex = 0;
+            setTimeout(animateText, 1000);
+          }
+        };
+        
+        animateText();
+      }
+
+      skipAnimation() {
+        this.instructions.forEach((text, index) => {
+          document.getElementById(`paragraph${index + 1}`).textContent = text;
+        });
+        
+        document.getElementById('skip-animation-btn').style.display = 'none';
+        this.showStartButton();
+      }
+
+      showStartButton() {
+        const startBtn = document.getElementById('start-game-btn');
+        startBtn.style.display = 'block';
+        startBtn.focus();
+      }
+
+      startGame() {
+        this.switchScreen('game-screen');
+        this.startTimer();
+        this.shuffleDecades();
+      }
+
+      startTimer() {
+        this.timer = setInterval(() => {
+          this.timeLeft--;
+          document.getElementById('timer').textContent = `Tiempo: ${this.timeLeft}s`;
+          
+          if (this.timeLeft <= 0) {
+            this.gameOver();
+          }
+        }, 1000);
+      }
+
+      shuffleDecades() {
+        const container = document.querySelector('.decades-container');
+        const cards = Array.from(container.children);
+        
+        // Shuffle array
+        for (let i = cards.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [cards[i], cards[j]] = [cards[j], cards[i]];
+        }
+        
+        // Re-append in shuffled order
+        cards.forEach(card => container.appendChild(card));
+      }
+
+      selectDecade(decade) {
+        if (this.selectedDecades.includes(decade)) {
+          return;
+        }
+
+        this.selectedDecades.push(decade);
+        
+        const card = document.querySelector(`[data-decade="${decade}"]`);
+        card.style.background = 'rgba(0, 255, 0, 0.3)';
+        card.style.border = '2px solid #00ff00';
+        card.setAttribute('aria-selected', 'true');
+        
+        if (this.selectedDecades.length === this.correctOrder.length) {
+          this.checkSolution();
+        }
+      }
+
+      checkSolution() {
+        clearInterval(this.timer);
+        
+        const isCorrect = this.selectedDecades.every((decade, index) => 
+          decade === this.correctOrder[index]
+        );
+
+        if (isCorrect) {
+          this.audioManager.playSound('success');
+          this.showSuccess();
+        } else {
+          this.audioManager.playSound('error');
+          this.showFailure();
+        }
+      }
+
+      showSuccess() {
+        this.switchScreen('completion-screen');
+        this.showAccessibleAlert('¡Felicitaciones! Has completado el desafío exitosamente');
+      }
+
+      showFailure() {
+        this.showAccessibleAlert('Orden incorrecto. Inténtalo de nuevo');
+        this.resetGame();
+      }
+
+      gameOver() {
+        clearInterval(this.timer);
+        this.audioManager.playSound('error');
+        this.showAccessibleAlert('Se acabó el tiempo. Inténtalo de nuevo');
+        this.resetGame();
+      }
+
+      resetGame() {
+        this.selectedDecades = [];
+        this.timeLeft = 60;
+        
+        document.querySelectorAll('.decade-card').forEach(card => {
+          card.style.background = '';
+          card.style.border = '';
+          card.removeAttribute('aria-selected');
+        });
+        
+        setTimeout(() => {
+          this.startTimer();
+          this.shuffleDecades();
+        }, 2000);
+      }
+
+      switchScreen(screenId) {
+        document.querySelectorAll('.challenge-screen').forEach(screen => {
+          screen.classList.remove('active');
+        });
+        
+        document.getElementById(screenId).classList.add('active');
+        this.currentScreen = screenId;
+      }
+
+      showAccessibleAlert(message) {
+        // Create accessible alert
+        const alert = document.createElement('div');
+        alert.className = 'modal-overlay';
+        alert.setAttribute('role', 'alert');
+        alert.setAttribute('aria-live', 'assertive');
+        
+        alert.innerHTML = `
+          <div class="modal-content">
+            <p>${message}</p>
+            <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()">
+              Continuar
+            </button>
+          </div>
+        `;
+        
+        document.body.appendChild(alert);
+        
+        // Focus the button
+        alert.querySelector('button').focus();
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+          if (alert.parentNode) {
+            alert.remove();
+          }
+        }, 3000);
+      }
+
+      returnToMissions() {
+        // Save completion status
+        Utils.saveToStorage('challenge1_completed', true);
+        
+        // Navigate back
+        window.location.href = '../../../INGRESO/Index.html';
+      }
+    }
+
+    // Global functions for onclick handlers
+    let challenge1Instance;
+
+    function startChallenge() {
+      challenge1Instance.startChallenge();
+    }
+
+    function skipAnimation() {
+      challenge1Instance.skipAnimation();
+    }
+
+    function startGame() {
+      challenge1Instance.startGame();
+    }
+
+    function selectDecade(decade) {
+      challenge1Instance.selectDecade(decade);
+    }
+
+    function returnToMissions() {
+      challenge1Instance.returnToMissions();
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      challenge1Instance = new Challenge1();
+    });
+  </script>
+</body>
+</html>

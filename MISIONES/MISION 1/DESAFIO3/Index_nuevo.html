@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafío 3 - Constructor Ético de Datos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      background: #000;
+      color: #00f0ff;
+    }
+    
+    /* Sistema de pantallas */
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      background: #000 url('IMAGENES/SalaE.png') center center / cover no-repeat;
+    }
+    
+    .screen.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Contenedor principal de contenido */
+    .content-box {
+      width: 90%;
+      max-width: 700px;
+      padding: 40px;
+      background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(0,32,64,0.9) 100%);
+      border: 2px solid #00f0ff;
+      border-radius: 20px;
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .content-box h1 {
+      color: #00f0ff;
+      font-size: 2.2em;
+      margin-bottom: 25px;
+      text-shadow: 0 0 15px #00f0ff;
+    }
+    
+    .content-box p {
+      color: #ffffff;
+      font-size: 1.1em;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      text-align: justify;
+    }
+    
+    .content-box ul {
+      text-align: left;
+      margin: 20px 0;
+      padding-left: 20px;
+    }
+    
+    .content-box li {
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    
+    /* Botones principales */
+    .main-button {
+      display: inline-block;
+      margin: 25px auto 0;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, transparent, rgba(0, 240, 255, 0.1));
+      border: 2px solid #00f0ff;
+      color: #00f0ff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1em;
+      font-weight: 500;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+    }
+    
+    .main-button:hover {
+      background: linear-gradient(135deg, #00f0ff, rgba(0, 240, 255, 0.8));
+      color: #000;
+      box-shadow: 0 0 25px #00f0ff;
+      transform: translateY(-3px);
+    }
+    
+    /* Pantalla de juego */
+    .game-screen {
+      background: #000 url('IMAGENES/SalaE.png') center center / cover no-repeat;
+      position: relative;
+    }
+    
+    /* HUD del juego */
+    .game-hud {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9);
+      border: 2px solid #00ffff;
+      border-radius: 15px;
+      padding: 20px 30px;
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      z-index: 1000;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+    }
+    
+    .hud-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .hud-label {
+      font-size: 0.9em;
+      color: #00ffff;
+      text-shadow: 0 0 8px #00ffff;
+      font-weight: 500;
+    }
+    
+    .hud-value {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 0 0 5px #ffffff;
+    }
+    
+    .hud-bar {
+      width: 120px;
+      height: 12px;
+      background: #333;
+      border: 1px solid #00ffff;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    
+    .hud-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ffff, #00bfff);
+      transition: width 0.5s ease;
+      box-shadow: 0 0 10px #00ffff;
+    }
+    
+    /* Contenedor de preguntas */
+    .question-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 750px;
+      background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(0,32,64,0.9));
+      border: 2px solid #00f0ff;
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.4);
+      z-index: 500;
+      display: none;
+    }
+    
+    .question-container.show {
+      display: block;
+      animation: slideIn 0.5s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translate(-50%, -60%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+    
+    .question-title {
+      color: #00f0ff;
+      font-size: 1.4em;
+      margin-bottom: 25px;
+      text-align: center;
+      text-shadow: 0 0 10px #00f0ff;
+      line-height: 1.4;
+    }
+    
+    .question-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 25px;
+    }
+    
+    .option-button {
+      padding: 18px 25px;
+      background: transparent;
+      border: 2px solid #00bfff;
+      color: #00f0ff;
+      font-size: 1em;
+      font-family: 'Orbitron', sans-serif;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+    }
+    
+    .option-button:hover {
+      background: #00bfff;
+      color: #000;
+      box-shadow: 0 0 20px #00bfff;
+      transform: translateX(5px);
+    }
+    
+    .feedback {
+      text-align: center;
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    
+    .feedback.correct {
+      background: rgba(0, 255, 127, 0.2);
+      border: 2px solid #00ff7f;
+      color: #00ff7f;
+      text-shadow: 0 0 8px #00ff7f;
+    }
+    
+    .feedback.incorrect {
+      background: rgba(255, 68, 68, 0.2);
+      border: 2px solid #ff4444;
+      color: #ff4444;
+      text-shadow: 0 0 8px #ff4444;
+    }
+    
+    /* Pantalla de resultados */
+    .results-screen {
+      background: #000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .results-screen.show {
+      display: flex;
+    }
+    
+    .results-box {
+      width: 90%;
+      max-width: 600px;
+      padding: 40px;
+      background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(0,32,64,0.9));
+      border: 2px solid #00f0ff;
+      border-radius: 20px;
+      text-align: center;
+      animation: bounceIn 0.8s ease-out;
+    }
+    
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.5); }
+      50% { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    
+    .success-title {
+      color: #00ff7f;
+      font-size: 2.5em;
+      margin-bottom: 25px;
+      text-shadow: 0 0 20px #00ff7f;
+    }
+    
+    .certificate {
+      background: linear-gradient(135deg, rgba(0,255,127,0.1), rgba(0,240,255,0.1));
+      border: 2px solid #00ff7f;
+      border-radius: 15px;
+      padding: 25px;
+      margin: 25px 0;
+    }
+    
+    .continue-button {
+      background: linear-gradient(135deg, #003d4d, #00f0ff);
+      color: white;
+      border: none;
+      padding: 18px 35px;
+      font-size: 1.2em;
+      font-family: 'Orbitron', sans-serif;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 25px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .continue-button:hover {
+      background: linear-gradient(135deg, #00f0ff, #003d4d);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+      transform: translateY(-3px);
+    }
+    
+    .retry-button {
+      background: linear-gradient(135deg, #4d0000, #ff4444);
+      color: white;
+      border: 2px solid #ff4444;
+      padding: 15px 30px;
+      font-family: 'Orbitron', sans-serif;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 25px;
+      transition: all 0.3s ease;
+    }
+    
+    .retry-button:hover {
+      background: linear-gradient(135deg, #ff4444, #4d0000);
+      box-shadow: 0 0 25px rgba(255, 68, 68, 0.4);
+    }
+    
+    /* Transiciones de pantalla */
+    .fade-transition {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    
+    .fade-transition.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+  </style>
+</head>
+<body>
+  <!-- Transición de pantalla -->
+  <div id="fadeTransition" class="fade-transition"></div>
+
+  <!-- Pantalla 1: Introducción -->
+  <div id="screen1" class="screen active">
+    <div class="content-box">
+      <h1>Constructor Ético de Datos</h1>
+      <p>Has llegado al <strong>Santuario de la Sabiduría Digital</strong>, comandante. Este lugar sagrado guarda los secretos más profundos sobre el manejo ético de la información.</p>
+      <p>Como futuro <strong>Constructor Ético de Datos</strong>, debes demostrar que comprendes los principios fundamentales que rigen el uso responsable de la información en nuestra galaxia.</p>
+      <p>Te enfrentarás a 7 preguntas cruciales. Solo aquellos que demuestren verdadera sabiduría podrán obtener el título honorífico de <strong>Constructor Ético de Datos</strong>.</p>
+      <button class="main-button" onclick="showScreen2()">Comenzar Prueba</button>
+    </div>
+  </div>
+
+  <!-- Pantalla 2: Explicación -->
+  <div id="screen2" class="screen">
+    <div class="content-box">
+      <h1>La Ética de los Datos</h1>
+      <p>En el vasto universo digital, los datos son el recurso más valioso. Sin embargo, con gran poder viene gran responsabilidad.</p>
+      <p>Un verdadero Constructor Ético de Datos debe:</p>
+      <ul>
+        <li>• Respetar la privacidad y confidencialidad</li>
+        <li>• Garantizar la precisión y veracidad</li>
+        <li>• Promover la transparencia en el uso</li>
+        <li>• Proteger contra el mal uso</li>
+        <li>• Considerar el impacto social</li>
+      </ul>
+      <p>Ahora pondremos a prueba tus conocimientos. ¡Que la sabiduría te acompañe!</p>
+      <button class="main-button" onclick="startGame()">Iniciar Desafío</button>
+    </div>
+  </div>
+
+  <!-- Pantalla 3: Juego -->
+  <div id="screen3" class="screen game-screen">
+    <!-- HUD del juego -->
+    <div class="game-hud">
+      <div class="hud-item">
+        <span class="hud-label">Vidas</span>
+        <span class="hud-value" id="livesCount">3</span>
+        <div class="hud-bar">
+          <div id="livesBar" class="hud-fill" style="width: 100%;"></div>
+        </div>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Puntos</span>
+        <span class="hud-value" id="pointsCount">0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Progreso</span>
+        <span class="hud-value" id="progressText">0%</span>
+        <div class="hud-bar">
+          <div id="progressBar" class="hud-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor de preguntas -->
+    <div id="questionContainer" class="question-container">
+      <div id="questionTitle" class="question-title"></div>
+      <div id="questionOptions" class="question-options"></div>
+      <div id="feedback" class="feedback"></div>
+    </div>
+  </div>
+
+  <!-- Pantalla de resultados -->
+  <div id="resultsScreen" class="screen results-screen">
+    <div class="results-box">
+      <div id="resultsContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // Variables del juego
+    let currentQuestion = 0;
+    let lives = 3;
+    let points = 0;
+    let commanderName = "";
+    let gameActive = false;
+
+    // Preguntas del desafío
+    const questions = [
+      {
+        question: "¿Cuál es el principio fundamental de la privacidad de datos?",
+        options: [
+          "A) Recopilar toda la información posible",
+          "B) Solo recopilar datos necesarios y con consentimiento",
+          "C) Compartir datos libremente",
+          "D) Almacenar datos indefinidamente"
+        ],
+        correct: 1
+      },
+      {
+        question: "¿Qué significa 'transparencia' en el manejo de datos?",
+        options: [
+          "A) Ocultar cómo se usan los datos",
+          "B) Informar claramente sobre el uso y propósito de los datos",
+          "C) Usar datos sin avisar",
+          "D) Compartir datos con terceros sin permiso"
+        ],
+        correct: 1
+      },
+      {
+        question: "¿Cuál es una práctica ética al manejar datos personales?",
+        options: [
+          "A) Vender información personal",
+          "B) Proteger la información con medidas de seguridad adecuadas",
+          "C) Usar datos para fines no autorizados",
+          "D) Ignorar las solicitudes de privacidad"
+        ],
+        correct: 1
+      },
+      {
+        question: "¿Qué principio ético viola el uso de datos para discriminar?",
+        options: [
+          "A) Transparencia",
+          "B) Equidad y no discriminación",
+          "C) Eficiencia",
+          "D) Rentabilidad"
+        ],
+        correct: 1
+      },
+      {
+        question: "¿Cuál es la responsabilidad principal de un Constructor Ético de Datos?",
+        options: [
+          "A) Maximizar las ganancias",
+          "B) Garantizar el uso responsable y beneficioso de los datos",
+          "C) Recopilar la mayor cantidad de datos posible",
+          "D) Ignorar las regulaciones de privacidad"
+        ],
+        correct: 1
+      },
+      {
+        question: "¿Qué debe hacer un profesional ético al encontrar datos inexactos?",
+        options: [
+          "A) Ignorar el problema",
+          "B) Corregir los datos y mejorar los procesos de calidad",
+          "C) Usar los datos incorrectos de todos modos",
+          "D) Culpar a otros del error"
+        ],
+        correct: 1
+      },
+      {
+        question: "¿Cuál es un ejemplo de uso ético de datos?",
+        options: [
+          "A) Investigación médica para curar enfermedades",
+          "B) Espiar a los empleados sin su conocimiento",
+          "C) Vender listas de contactos sin permiso",
+          "D) Manipular resultados electorales"
+        ],
+        correct: 0
+      }
+    ];
+
+    // Inicialización
+    window.onload = function() {
+      const params = new URLSearchParams(window.location.search);
+      commanderName = params.get("nombre") || "Comandante";
+    }
+
+    // Funciones de transición
+    function transition(callback) {
+      const fade = document.getElementById("fadeTransition");
+      fade.classList.add("active");
+      
+      setTimeout(() => {
+        if (callback) callback();
+        setTimeout(() => {
+          fade.classList.remove("active");
+        }, 300);
+      }, 300);
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function showScreen2() {
+      transition(() => showScreen('screen2'));
+    }
+
+    function startGame() {
+      transition(() => {
+        showScreen('screen3');
+        gameActive = true;
+        document.getElementById('questionContainer').classList.add('show');
+        showQuestion();
+      });
+    }
+
+    // Lógica del juego
+    function showQuestion() {
+      if (currentQuestion >= questions.length) {
+        showFinalResults();
+        return;
+      }
+
+      const question = questions[currentQuestion];
+      document.getElementById('questionTitle').textContent = `${currentQuestion + 1}. ${question.question}`;
+      
+      const optionsDiv = document.getElementById('questionOptions');
+      optionsDiv.innerHTML = "";
+      
+      question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'option-button';
+        button.textContent = option;
+        button.onclick = () => answerQuestion(index);
+        optionsDiv.appendChild(button);
+      });
+      
+      document.getElementById('feedback').innerHTML = "";
+      updateProgress();
+    }
+
+    function answerQuestion(selectedIndex) {
+      if (!gameActive) return;
+      
+      const question = questions[currentQuestion];
+      const feedbackDiv = document.getElementById('feedback');
+      
+      if (selectedIndex === question.correct) {
+        points++;
+        feedbackDiv.innerHTML = '<div class="feedback correct">¡Correcto! +1 punto</div>';
+        document.getElementById('pointsCount').textContent = points;
+        playAudio('AUDIO/success.mp3');
+      } else {
+        lives--;
+        feedbackDiv.innerHTML = '<div class="feedback incorrect">Incorrecto. Perdiste una vida.</div>';
+        document.getElementById('livesCount').textContent = lives;
+        
+        const livesPercentage = (lives / 3) * 100;
+        document.getElementById('livesBar').style.width = livesPercentage + '%';
+        
+        playAudio('AUDIO/error.mp3');
+        
+        if (lives <= 0) {
+          setTimeout(showFinalResults, 2000);
+          return;
+        }
+      }
+      
+      setTimeout(() => {
+        currentQuestion++;
+        showQuestion();
+      }, 2000);
+    }
+
+    function updateProgress() {
+      const progress = Math.round((currentQuestion / questions.length) * 100);
+      document.getElementById('progressText').textContent = progress + '%';
+      document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    function showFinalResults() {
+      gameActive = false;
+      document.getElementById('questionContainer').classList.remove('show');
+      
+      const resultsDiv = document.getElementById('resultsContent');
+      
+      if (lives > 0) {
+        const currentDate = new Date();
+        const date = currentDate.toLocaleDateString();
+        const time = currentDate.toLocaleTimeString();
+        
+        resultsDiv.innerHTML = `
+          <h2 class="success-title">¡Felicitaciones!</h2>
+          <p style="color: #ffffff; font-size: 1.2em; margin-bottom: 15px;"><strong>Cadete:</strong> ${commanderName}</p>
+          <p style="color: #ffffff; font-size: 1.2em; margin-bottom: 15px;"><strong>Puntaje:</strong> ${points}/${questions.length}</p>
+          <p style="color: #ffffff; font-size: 1.1em; margin-bottom: 10px;"><strong>Fecha:</strong> ${date}</p>
+          <p style="color: #ffffff; font-size: 1.1em; margin-bottom: 20px;"><strong>Hora:</strong> ${time}</p>
+          <div class="certificate">
+            <p style="color: #00ff7f; font-weight: bold; font-size: 1.4em; margin-bottom: 15px;">🏆 ¡Ahora eres un Constructor Ético de Datos! 🏆</p>
+            <p style="color: #ffffff; font-size: 1.1em;">Tu integridad y sabiduría te han ganado este título honorífico.</p>
+          </div>
+          <button class="continue-button" onclick="completeMission()">🚀 Continuar a la Sala de Misiones</button>
+        `;
+        
+        localStorage.setItem('mission1_completed', 'true');
+        localStorage.setItem('mission1_completed_date', new Date().toISOString());
+        
+        playAudio('AUDIO/fin.mp3');
+      } else {
+        resultsDiv.innerHTML = `
+          <h2 style="color: #ff4444; font-size: 2.2em; margin-bottom: 20px;">Misión Fallida</h2>
+          <p style="color: #ffffff; font-size: 1.2em; margin-bottom: 15px;">Cadete ${commanderName}, has perdido tus 3 vidas.</p>
+          <p style="color: #ffffff; font-size: 1.1em; margin-bottom: 25px;">Debes reiniciar la prueba para continuar.</p>
+          <button class="retry-button" onclick="restartGame()">Reintentar</button>
+        `;
+      }
+      
+      showScreen('resultsScreen');
+      document.getElementById('resultsScreen').classList.add('show');
+    }
+
+    function restartGame() {
+      transition(() => {
+        currentQuestion = 0;
+        lives = 3;
+        points = 0;
+        gameActive = false;
+        
+        document.getElementById('livesCount').textContent = lives;
+        document.getElementById('pointsCount').textContent = points;
+        document.getElementById('livesBar').style.width = '100%';
+        document.getElementById('progressBar').style.width = '0%';
+        document.getElementById('progressText').textContent = '0%';
+        
+        document.getElementById('resultsScreen').classList.remove('show');
+        showScreen('screen2');
+      });
+    }
+
+    function completeMission() {
+      const params = new URLSearchParams(window.location.search);
+      const userName = params.get("nombre") || "Usuario";
+      window.location.href = `../../../INGRESO/Index.html?nombre=${encodeURIComponent(userName)}`;
+    }
+
+    function playAudio(src) {
+      try {
+        const audio = new Audio(src);
+        audio.play().catch(e => console.log("Audio no disponible:", e));
+      } catch (e) {
+        console.log("Error al reproducir audio:", e);
+      }
+    }
+  </script>
+</body>
+</html>

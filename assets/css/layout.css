@@ -1,0 +1,208 @@
+/* ===== LAYOUT PRINCIPAL - GALAXIA ANDINACODE X ===== */
+
+/* Fondo principal mejorado */
+.galaxy-background {
+  min-height: 100vh;
+  background-image: url('../images/XSistema.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Contenedor principal */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--spacing-lg);
+  text-align: center;
+  position: relative;
+  z-index: var(--z-background);
+}
+
+/* Header principal */
+.main-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.galaxy-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-md);
+  text-shadow: var(--shadow-text), var(--primary-glow);
+  line-height: 1.2;
+}
+
+.commander-greeting {
+  font-size: var(--font-size-lg);
+  margin-top: var(--spacing-sm);
+  color: var(--secondary-color);
+}
+
+/* Contenedor de planetas mejorado */
+.planets-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
+  width: 100%;
+  max-width: 1000px;
+  margin: var(--spacing-xl) 0;
+}
+
+/* Botones de planeta mejorados */
+.planet-button {
+  background: var(--background-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.planet-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, var(--primary-color), transparent, var(--primary-color));
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  z-index: -1;
+}
+
+.planet-button:hover,
+.planet-button:focus {
+  transform: translateY(-5px) scale(1.02);
+  background: var(--background-card-hover);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-glow), var(--shadow-card);
+}
+
+.planet-button:hover::before,
+.planet-button:focus::before {
+  opacity: 0.1;
+}
+
+.planet-button:active {
+  transform: translateY(-2px) scale(1.01);
+}
+
+/* Contenido del planeta */
+.planet-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+  text-shadow: 0 0 8px var(--primary-color);
+}
+
+.planet-image {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-glow);
+  transition: transform var(--transition-normal);
+}
+
+.planet-button:hover .planet-image,
+.planet-button:focus .planet-image {
+  transform: scale(1.05);
+}
+
+/* Estados de los planetas */
+.planet-button.accessible {
+  cursor: pointer;
+}
+
+.planet-button.locked {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.planet-button.locked:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.planet-button.locked .planet-title {
+  color: #ff6b6b;
+}
+
+/* Responsive design mejorado */
+@media (max-width: 900px) {
+  .main-container {
+    padding: var(--spacing-md);
+  }
+  
+  .planets-container {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+  }
+  
+  .planet-button {
+    padding: var(--spacing-md);
+  }
+  
+  .galaxy-title {
+    font-size: 2.5em;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-container {
+    padding: var(--spacing-sm);
+  }
+  
+  .planets-container {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    max-width: 320px;
+  }
+  
+  .planet-button {
+    padding: var(--spacing-sm);
+  }
+  
+  .galaxy-title {
+    font-size: 2em;
+  }
+  
+  .commander-greeting {
+    font-size: 1.4em;
+  }
+  
+  /* Mejorar interacción táctil en móviles */
+  .planet-button {
+    min-height: 44px; /* Mínimo recomendado para táctil */
+  }
+}
+
+/* Optimización para pantallas de alta densidad */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .galaxy-background {
+    background-image: url('../images/XSistema@2x.png'); /* Si existe versión de alta resolución */
+  }
+}
+
+/* Modo de contraste alto */
+@media (prefers-contrast: high) {
+  .planet-button {
+    border: 2px solid var(--primary-color);
+  }
+  
+  .planet-title {
+    text-shadow: none;
+    font-weight: var(--font-weight-bold);
+  }
+}
