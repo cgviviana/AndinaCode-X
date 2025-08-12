@@ -407,9 +407,12 @@
 <!-- Pantalla de Historia -->
 <div id="storyScreen">
   <div class="panel">
-    <h2 id="storyTitle">MISIÓN: CAPTURA DE DATOS</h2>
-    <p id="storyText">Caza el dato correcto moviendo la mira con el mouse y haz clic para seleccionarlo. ¡Buena suerte, Almirante!</p>
-    <button id="beginButton" class="smallButton">Iniciar Desafío</button>
+  <h2 id="storyTitle">MISIÓN 1: Reconstrucción del Saber</h2>
+  <p id="storyText">Objetivo: Explorar el centro de datos, restaurar archivos perdidos, gestionar datos para convertirlos en información útil y restablecer el sistema mediante un protocolo ético.<br><br>
+  Nivel 1: En la sala de registros históricos, revisa el registro corrupto sobre la evolución de las sociedades, la información y el conocimiento en una línea de tiempo. Esto desbloquea un mensaje de alerta para ir a la sala de Procesamiento.<br><br>
+  Nivel 2: En el río o lluvia de datos desordenados, clasifícalos en estructurados y no estructurados, organízalos en categorías y conviértelos en información útil. Esto desbloquea el módulo de seguridad.<br><br>
+  Nivel 3: Identifícate como Defensor del Saber mediante el protocolo ético, utilizando el escaneo de la decisión ética para restaurar el sistema.</p>
+  <button id="beginButton" class="smallButton">Iniciar Misión</button>
   </div>
 </div>
 
@@ -499,7 +502,7 @@ if (!playerName) {
 } else {
   // Mostrar nombre en la historia y HUD
   playerDisplayName.textContent = playerName;
-  document.getElementById('storyTitle').textContent = `Bienvenido Almirante ${playerName}`;
+  document.getElementById('storyTitle').textContent = `Reconstrucción del Saber - ${playerName}`;
   // Saltar pantalla de bienvenida y mostrar historia
   startScreen.style.display = 'none';
   storyScreen.style.display = 'flex';
@@ -538,6 +541,7 @@ setInterval(updateClock, 1000);
 function guardarAvanceMision1() {
   localStorage.setItem('mision1_completada', 'true');
   localStorage.setItem('nombre_jugador', playerName);
+  localStorage.setItem('mision1_respuesta', playerName); // Para compatibilidad con Misión 2f
 }
 
 beginButton.addEventListener('click', () => {

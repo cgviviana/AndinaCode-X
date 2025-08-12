@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Diploma de Misión</title>
+  <style>
+    body {
+      background: #000;
+      color: #00e0e0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .diploma {
+  background: rgba(0,0,0,0.92);
+  border: 3px solid #00e0e0;
+  border-radius: 18px;
+  box-shadow: 0 0 32px #00e0e099;
+      padding: 48px 36px 36px 36px;
+      max-width: 480px;
+      text-align: center;
+      position: relative;
+    }
+    .diploma h1 {
+  color: #00e0e0;
+  font-size: 2.2em;
+  margin-bottom: 18px;
+  text-shadow: 0 0 12px #00e0e0;
+    }
+    .diploma h2 {
+      color: #00e0e0;
+      font-size: 1.3em;
+      margin-bottom: 24px;
+      font-weight: normal;
+    }
+    .diploma .nombre {
+      color: #fff;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 18px 0 10px 0;
+      letter-spacing: 1px;
+  text-shadow: 0 0 8px #00e0e0;
+    }
+    .diploma .planeta {
+  color: #00e0e0;
+      font-size: 1.1em;
+      margin-bottom: 10px;
+    }
+    .diploma .fecha {
+  color: #00e0e0;
+      font-size: 1em;
+      margin-top: 18px;
+      margin-bottom: 0;
+    }
+    .diploma .firma {
+      margin-top: 32px;
+      color: #00e0e0;
+      font-size: 1em;
+      opacity: 0.7;
+    }
+    .diploma .logo {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 60px;
+      opacity: 0.18;
+    }
+    @media print {
+      body { background: #fff; }
+      .diploma { box-shadow: none; border-color: #00e0e0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="diploma">
+  <img src="../../../ENTORNO/IMAGENES/Bitnarys.png" class="logo" alt="Planeta Bitnarys">
+  <h1>Diploma de Misión Espacial Informática</h1>
+  <h2>Otorgado a:</h2>
+  <div class="nombre" id="nombreDiploma">__________</div>
+  <div class="planeta">Por completar todos los desafíos y alcanzar el rango máximo de <b>Comandante Informático</b> en la misión del planeta <b>Bitnarys</b></div>
+  <div class="rango" id="rangoDiploma" style="color:#00e0e0; font-size:1.1em; margin:10px 0 18px 0; text-shadow:0 0 8px #00e0e0;"></div>
+  <div class="fecha" id="fechaDiploma"></div>
+  <div class="firma">Comando Galaxia AndinaCode X</div>
+  <button id="btnReiniciar" class="reiniciar" onclick="reiniciarTodo()">Volver al inicio</button>
+  </div>
+  <style>
+    .reiniciar {
+      margin-top: 38px;
+      padding: 14px 38px;
+      font-size: 1.1em;
+      color: #00ffff;
+      background: rgba(0,0,0,0.7);
+      border: 2.5px solid #00ffff;
+      border-radius: 24px;
+      box-shadow: 0 0 0px #00ffff44, 0 2px 12px #00ffff22 inset;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.3s, transform 0.3s;
+      outline: none;
+      font-family: inherit;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .reiniciar::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, rgba(0,0,0,0) 60%);
+      border-radius: 24px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .reiniciar:hover {
+      background: rgba(0,0,0,0.82);
+      color: #00ffff;
+      box-shadow: 0 0 16px #00ffff55, 0 0 0px #39ff1444, 0 2px 18px #00ffff33 inset;
+      border-color: #39ff14;
+      transform: rotate(2.5deg) scale(1.03);
+    }
+    .reiniciar:active {
+      box-shadow: 0 0 6px #00ffff55;
+      transform: rotate(1deg) scale(0.98);
+    }
+  </style>
+  <script>
+    function reiniciarTodo() {
+      localStorage.clear();
+      sessionStorage.clear();
+      // Intentar limpiar caches si es posible
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          for (let name of names) caches.delete(name);
+        });
+      }
+      // Redirigir al inicio absoluto del proyecto
+      window.location.href = "../../../ENTORNO/index.html";
+    }
+  </script>
+  <script>
+    // Obtener nombre de la URL o prompt si no existe
+    let params = new URLSearchParams(window.location.search);
+    let nombre = params.get('nombre');
+    if (!nombre) {
+      nombre = prompt('Ingresa tu nombre completo para el diploma:');
+      if(nombre) {
+        window.location.search = '?nombre=' + encodeURIComponent(nombre);
+      }
+    } else {
+      document.getElementById('nombreDiploma').textContent = nombre;
+      // Mostrar rango final si existe en localStorage
+      let rango = localStorage.getItem('rangoFinal') || 'Comandante Informático';
+      document.getElementById('rangoDiploma').textContent = `Rango alcanzado: ${rango}`;
+      // Fecha y hora actual
+      const now = new Date();
+      const fecha = now.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+      const hora = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('fechaDiploma').textContent = `Fecha y hora de finalización: ${fecha} - ${hora}`;
+    }
+  </script>
+</body>
+</html>

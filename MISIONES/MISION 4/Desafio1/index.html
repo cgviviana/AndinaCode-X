@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Desafío Final - Protocolo Centinela | Defensor del Saber</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #00e0e0;
+      background: #000;
+      overflow: hidden;
+    }
+    .pantalla {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background-size: cover;
+      background-position: center;
+    }
+    .pantalla.activa {
+      display: flex;
+    }
+    #bienvenida, #instrucciones {
+      background: #000;
+      text-align: center;
+    }
+    #niveles {
+      background-image: url('Img/Fondo4.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+    #bienvenida h1, #bienvenida p, #instrucciones h1 {
+      text-shadow: 0 0 2px #00bcbc;
+    }
+    #bienvenida h1 { font-size: 36px; margin-bottom: 20px; }
+    #bienvenida p { font-size: 20px; margin-bottom: 20px; }
+    #bienvenida input, #bienvenida button, #instrucciones button {
+      font-size: 18px;
+      padding: 10px;
+      margin: 15px;
+      border: 2px solid #00ffff;
+      background: #111;
+      color: #00ffff;
+      border-radius: 8px;
+    }
+    #bienvenida button:hover, #instrucciones button:hover {
+      background: #00ffff;
+      color: #000;
+      cursor: pointer;
+    }
+    #panel-juego {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 15px #00ffff;
+      max-width: 800px;
+      width: 90%;
+      text-align: center;
+    }
+    #panelInstrucciones {
+      background-color: rgba(0,0,0,0.8);
+      padding: 20px;
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      max-width: 800px;
+      box-shadow: 0 0 10px #00ffff;
+      text-align: justify;
+    }
+    .parrafo {
+      margin-bottom: 20px;
+      padding-left: 0;
+      font-size: 20px;
+      line-height: 1.6;
+      color: #00ffff;
+      text-shadow: 0 0 8px #00ffff, 0 0 2px #00bcbc;
+      letter-spacing: 0.01em;
+      font-weight: normal;
+      background: none;
+      border: none;
+    }
+    #botonOmitirAnimacion {
+      display: none;
+      position: absolute;
+      right: 40px;
+      top: 40px;
+      padding: 10px 24px;
+      font-size: 16px;
+      background: #fff;
+      color: #007b8a;
+      border: 2px solid #00bcbc;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #00bcbc44;
+      z-index: 10;
+      transition: background 0.2s, color 0.2s;
+    }
+    #botonOmitirAnimacion:hover {
+      background: #00bcbc;
+      color: #fff;
+    }
+    .boton-nivel {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      background: transparent;
+      color: #00ffff;
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+      text-shadow: 0 0 5px #00ffff;
+      cursor: pointer;
+    }
+    .boton-nivel:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    .boton-nivel:hover:enabled {
+      background: #00ffff;
+      color: #000;
+    }
+    #panel-superior {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #000;
+      padding: 20px;
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+      text-align: left;
+      box-shadow: 0 0 10px #00ffff;
+      font-size: 28px;
+    }
+    #botonesNiveles {
+      margin-top: 20px;
+    }
+    #botonDiploma {
+      margin-top: 30px;
+      font-size: 20px;
+      padding: 12px 30px;
+      background: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="bienvenida" class="pantalla activa">
+    <h1>¡Bienvenido, Defensor del Saber!</h1>
+    <p>Ingresa tu nombre para comenzar el desafío final y activar el Protocolo Centinela:</p>
+    <input type="text" id="nombreCadete" placeholder="Nombre del Defensor">
+    <button onclick="iniciarMision()">INICIAR</button>
+  </div>
+
+  <div id="instrucciones" class="pantalla">
+    <h1>Defensor <span id="nombreCadeteInstrucciones"></span></h1>
+    <div id="panelInstrucciones">
+      <button id="botonOmitirAnimacion" onclick="omitirAnimacion()">Omitir animación</button>
+      <div id="parrafo1" class="parrafo"></div>
+      <div id="parrafo2" class="parrafo"></div>
+      <div id="parrafo3" class="parrafo"></div>
+      <button id="botonIniciarJuego" onclick="mostrarPantallaNiveles()" style="display:none">Comenzar Desafío Final</button>
+    </div>
+  </div>
+
+  <div id="niveles" class="pantalla">
+    <div id="panel-superior">
+      <p><strong>Defensor:</strong> <span id="nombrePanel"></span></p>
+      <p><strong>Puntos:</strong> <span id="puntosPanel">0</span></p>
+    </div>
+    <div id="panel-juego">
+      <h2 style="color:#00ffff; text-shadow:0 0 10px #00ffff, 0 0 20px #00e0e0; font-weight:normal; margin-bottom:18px;">Supera cada nivel para activar el Protocolo Centinela</h2>
+      <p style="color:#e0f7fa; font-size:1.1em; text-shadow:0 0 4px #00bcbc; margin-bottom:24px;">Cada nivel superado te acercará al rango de Centinela, el máximo reconocimiento de EPRE.<br>¡Demuestra tu sabiduría y protege el conocimiento!</p>
+      <div id="botonesNiveles"></div>
+      <button id="botonDiploma" onclick="verDiploma()">Obtener Diploma Centinela</button>
+    </div>
+  </div>
+
+  <script>
+    const parrafos = [
+      "Has llegado al desafío final. EPRE y la red sensorial están restaurados, pero una última amenaza digital se aproxima.",
+      "Como Defensor del Saber, tu misión es activar el Protocolo Centinela y proteger el conocimiento de la humanidad.",
+      "Supera cada nivel, demuestra tu sabiduría y alcanza el rango de Centinela. ¡El futuro de EPRE depende de ti!"
+    ];
+
+    let animacionActiva = true;
+    let intervalosAnim = [];
+    function escribirParrafo(index, id, cb) {
+      const texto = parrafos[index];
+      const el = document.getElementById(id);
+      let i = 0;
+      el.textContent = '';
+      let palabras = 0;
+      let mostrarOmitir = false;
+      let palabraActual = '';
+      let intv = setInterval(() => {
+        if (!animacionActiva) { clearInterval(intv); return; }
+        if (i < texto.length) {
+          el.textContent += texto[i];
+          if (texto[i] === ' ' || i === texto.length - 1) {
+            palabras++;
+            palabraActual = '';
+            if (palabras === 4 && !mostrarOmitir) {
+              document.getElementById('botonOmitirAnimacion').style.display = 'inline-block';
+              mostrarOmitir = true;
+            }
+          } else {
+            palabraActual += texto[i];
+          }
+          i++;
+        } else {
+          clearInterval(intv);
+          if (cb) setTimeout(cb, 500);
+        }
+      }, 50);
+      intervalosAnim.push(intv);
+    }
+
+    function omitirAnimacion() {
+      animacionActiva = false;
+      intervalosAnim.forEach(clearInterval);
+      document.getElementById('parrafo1').textContent = parrafos[0];
+      document.getElementById('parrafo2').textContent = parrafos[1];
+      document.getElementById('parrafo3').textContent = parrafos[2];
+      document.getElementById('botonOmitirAnimacion').style.display = 'none';
+      document.getElementById('botonIniciarJuego').style.display = 'block';
+    }
+
+    function animarInstrucciones() {
+      animacionActiva = true;
+      document.getElementById('botonOmitirAnimacion').style.display = 'none';
+      escribirParrafo(0, 'parrafo1', () => {
+        escribirParrafo(1, 'parrafo2', () => {
+          escribirParrafo(2, 'parrafo3', () => {
+            document.getElementById('botonOmitirAnimacion').style.display = 'none';
+            document.getElementById('botonIniciarJuego').style.display = 'block';
+          });
+        });
+      });
+    }
+
+    function iniciarMision() {
+      let nombre = localStorage.getItem('mision1_respuesta') || localStorage.getItem('nombre_jugador');
+      if (!nombre || nombre.toLowerCase() === 'usuario' || nombre.toLowerCase() === 'comandante' || nombre.toLowerCase() === 'null') {
+        nombre = document.getElementById('nombreCadete').value.trim();
+        if (!nombre) return;
+        localStorage.setItem('mision1_respuesta', nombre);
+      }
+      localStorage.setItem('nombreCadete', nombre);
+      localStorage.setItem('puntos', '0');
+      localStorage.setItem('nivelDesbloqueado', '1');
+      document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
+      mostrarPantalla('instrucciones');
+      animarInstrucciones();
+    }
+
+    function mostrarPantalla(id) {
+      document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+      document.getElementById(id).classList.add('activa');
+    }
+
+    function mostrarPantallaNiveles() {
+      const nombre = localStorage.getItem('nombreCadete') || 'Cadete';
+      const puntos = parseInt(localStorage.getItem('puntos')) || 0;
+      const nivelDesbloqueado = parseInt(localStorage.getItem('nivelDesbloqueado')) || 1;
+
+      document.getElementById('nombrePanel').textContent = nombre;
+      document.getElementById('puntosPanel').textContent = puntos;
+
+      if (puntos >= 100) {
+        document.getElementById('botonDiploma').style.display = 'inline-block';
+      }
+
+      const contenedor = document.getElementById('botonesNiveles');
+      contenedor.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const boton = document.createElement('button');
+        boton.className = 'boton-nivel';
+        boton.textContent = `Nivel ${i}`;
+        if (i <= nivelDesbloqueado) {
+          boton.onclick = () => {
+            localStorage.setItem('volverANiveles', '1');
+            localStorage.setItem('nivelDesbloqueado', (i + 1).toString());
+            localStorage.setItem('puntos', (i * 20).toString());
+            window.location.href = `Nivel${i}/index.html`;
+          };
+        } else {
+          boton.disabled = true;
+        }
+        contenedor.appendChild(boton);
+      }
+      mostrarPantalla('niveles');
+    }
+
+    function verDiploma() {
+      const nombre = prompt('¡Felicidades, Centinela! Has completado todos los niveles y activado el Protocolo Centinela.\n\nPor favor, ingresa tu nombre completo para generar tu diploma de Defensor del Saber:');
+      if (nombre && nombre.trim().length > 0) {
+        window.location.href = 'Diploma.html?nombre=' + encodeURIComponent(nombre.trim());
+      }
+    }
+
+    window.onload = () => {
+      const nombre = localStorage.getItem('nombreCadete');
+      const nivel = parseInt(localStorage.getItem('nivelDesbloqueado')) || 1;
+      const volver = localStorage.getItem('volverANiveles');
+
+      if (!nombre) {
+        mostrarPantalla('bienvenida');
+      } else if (volver === '1') {
+        localStorage.removeItem('volverANiveles');
+        mostrarPantallaNiveles();
+      } else {
+        document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
+        animarInstrucciones();
+        mostrarPantalla('instrucciones');
+      }
+    };
+  </script>
+</body>
+</html>

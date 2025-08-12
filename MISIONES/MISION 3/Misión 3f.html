@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sistema EPRE — Misión 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --neon:#00ffff; --panel:#0e2730; --radius:14px; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#000;color:var(--neon);font-family:'Orbitron',sans-serif}
+  [hidden]{display:none!important;}
+
+  .wrap{ max-width:860px; margin:72px auto 60px; padding:0 18px; }
+
+  .titulo{
+    text-align:center; font-weight:800; font-size:clamp(24px,4vw,40px);
+    margin:0 0 18px; letter-spacing:.5px; text-shadow:0 0 12px var(--neon);
+  }
+
+  .panel{
+    background:linear-gradient(180deg,#0a1d24 0%, var(--panel) 100%);
+    border:2px solid var(--neon); border-radius:var(--radius);
+    box-shadow:0 0 20px rgba(0,255,255,.35), inset 0 0 24px rgba(0,255,255,.08);
+    padding:22px 26px;
+  }
+  .panel p{ color:#bafcfc; line-height:1.65; font-size:clamp(14px,2.2vw,16px); margin:.7rem 0; text-shadow:0 0 6px rgba(0,255,255,.25); }
+
+  .btn-row{ display:flex; gap:12px; flex-wrap:wrap; justify-content:flex-start; }
+  .btn{
+    padding:10px 22px; border:2px solid var(--neon); border-radius:10px; background:transparent; color:var(--neon);
+    cursor:pointer; box-shadow:0 0 10px var(--neon); transition:transform .08s ease, box-shadow .2s ease;
+  }
+  .btn:hover{ transform:translateY(-1px); box-shadow:0 0 18px var(--neon) }
+
+  .iframe-box{ display:flex; justify-content:center; margin-top:14px }
+  iframe{
+    width:min(100%,820px); aspect-ratio:16/9; border:3px solid var(--neon); border-radius:12px; background:#000;
+    box-shadow:0 0 20px rgba(0,255,255,.35), inset 0 0 24px rgba(0,255,255,.08);
+  }
+
+  /* Modal diagnóstico */
+  .modal{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.6); backdrop-filter:blur(2px); padding:20px; z-index:50;
+  }
+  .card{
+    width:min(560px,94vw); background:linear-gradient(180deg,#06181f 0%, var(--panel) 100%);
+    border:2px solid var(--neon); border-radius:var(--radius);
+    box-shadow:0 0 20px rgba(0,255,255,.35), inset 0 0 24px rgba(0,255,255,.08);
+    padding:18px;
+  }
+  .card h3{ margin:0 0 10px; text-align:center; text-shadow:0 0 10px var(--neon) }
+  .field{ display:flex; flex-direction:column; gap:6px; margin:10px 0 }
+  .field label{ color:#bafcfc; }
+  .field input{
+    padding:10px 12px; border-radius:8px; border:1px solid var(--neon); background:#03141a; color:var(--neon);
+    outline:none; box-shadow:inset 0 0 12px rgba(0,255,255,.15);
+  }
+  .msg{ color:#ffbdbd; margin-top:6px; min-height:1.2em }
+  .ok{ color:#b9ffd9 }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <!-- PANTALLA 1: INSTRUCCIONES -->
+    <section id="intro" class="panel">
+      <h1 id="saludo" class="titulo">Bienvenido Cadete</h1>
+      <p>
+        <b>Misión 3: Sincronizando la Red Sensorial</b><br>
+        Ahora que EPRE funciona, necesita reconectarse con su red sensorial, pero está desincronizada:
+        algunos sensores entregan datos incorrectos, otros no envían señal o la información llega fuera de tiempo.
+      </p>
+      <p><b>Misión:</b> Verificar los dispositivos conectados y asegurar que entreguen datos correctos.</p>
+      <div class="btn-row">
+  <button id="btnIniciar" class="btn" onclick="mostrarScratch()">Iniciar Desafío</button>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2: SISTEMA EPRE + SCRATCH + TEXTO + DIAGNÓSTICO -->
+    <section id="epre" class="panel" hidden>
+      <h2 class="titulo">Sistema EPRE</h2>
+      <div class="iframe-box">
+  <iframe id="scratch-iframe" src="https://scratch.mit.edu/projects/1195196313/embed" allowtransparency="true" frameborder="0" scrolling="no" allowfullscreen style="width:min(100%,820px); aspect-ratio:16/9; border:3px solid var(--neon); border-radius:12px; background:#000;"></iframe>
+      </div>
+      <p style="margin-top:20px">
+        Al terminar el juego toma una captura y envíala a tu superior para recibir el código secreto.
+      </p>
+      <div class="btn-row" style="margin-top:8px">
+        <button id="btnDiag" class="btn">Diagnóstico :</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL DIAGNÓSTICO -->
+  <div id="modalDiag" class="modal" hidden>
+    <div class="card">
+      <h3>Diagnóstico de cierre</h3>
+      <div id="paso1">
+        <div class="field">
+          <label for="puntos">¿Cuántos puntos obtuviste?</label>
+          <input id="puntos" type="number" min="0" placeholder="Ingresa un número" />
+        </div>
+        <div class="msg" id="msg1"></div>
+        <div class="btn-row">
+          <button id="next1" class="btn">Continuar</button>
+          <button id="cancel" class="btn">Cancelar</button>
+          <button id="btnMenuMisiones" class="btn" style="display:none;">Ir al menú de misiones</button>
+        </div>
+      </div>
+
+      <div id="paso2" hidden>
+        <div class="field">
+          <label for="codigo">Código de encendido</label>
+          <input id="codigo" type="password" inputmode="numeric" maxlength="4" placeholder="0000" />
+        </div>
+        <div class="msg" id="msg2"></div>
+        <div class="btn-row">
+          <button id="finish" class="btn">Finalizar</button>
+          <button id="back" class="btn">Volver</button>
+        </div>
+      </div>
+
+      <div id="pasoOk" hidden>
+        <div class="msg ok" id="okText"></div>
+        <div class="btn-row" style="margin-top:12px">
+          <button id="closeOk" class="btn">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Mostrar botón dinámico al ingresar puntos
+  document.getElementById('puntos').addEventListener('input', function() {
+    const valor = this.value;
+    const btnMenu = document.getElementById('btnMenuMisiones');
+    if (valor && !isNaN(valor) && Number(valor) > 0) {
+      btnMenu.style.display = 'inline-block';
+    } else {
+      btnMenu.style.display = 'none';
+    }
+  });
+
+  document.getElementById('btnMenuMisiones').addEventListener('click', function() {
+  window.location.href = '../../INGRESO/Index.html';
+  });
+  function mostrarScratch() {
+    document.getElementById('intro').hidden = true;
+    document.getElementById('epre').hidden = false;
+    window.scrollTo({ top: document.getElementById('epre').offsetTop, behavior: 'smooth' });
+  }
+  // ====== Nombre y regreso ======
+  const qs = new URLSearchParams(location.search);
+  let nombre = (qs.get('nombre') || '').trim();
+  if (!nombre || nombre.toLowerCase() === 'null') {
+    // Intentar recuperar el nombre desde localStorage
+    nombre = localStorage.getItem('mision1_respuesta') || 'Cadete';
+  }
+  document.getElementById('saludo').textContent = 'Bienvenido Cadete ' + nombre;
+
+  const ingresoFallback = '../../INGRESO/Index.html?nombre=' + encodeURIComponent(nombre);
+  const returnUrl = ingresoFallback;
+
+  // ====== Navegación ======
+  document.getElementById('btnIniciar').addEventListener('click', () => {
+    document.getElementById('intro').hidden = true;
+    document.getElementById('epre').hidden = false;
+  });
+
+  // ====== Diagnóstico ======
+  const modal = document.getElementById('modalDiag');
+  const paso1 = document.getElementById('paso1');
+  const paso2 = document.getElementById('paso2');
+  const pasoOk = document.getElementById('pasoOk');
+
+  document.getElementById('btnDiag').addEventListener('click', () => {
+    document.getElementById('puntos').value = '';
+    document.getElementById('codigo').value = '';
+    document.getElementById('msg1').textContent = '';
+    document.getElementById('msg2').textContent = '';
+    paso1.hidden = false; paso2.hidden = true; pasoOk.hidden = true;
+    modal.hidden = false;
+  });
+
+  document.getElementById('cancel').addEventListener('click', () => modal.hidden = true);
+  document.getElementById('back').addEventListener('click', () => {
+    paso2.hidden = true; paso1.hidden = false; document.getElementById('msg2').textContent = '';
+  });
+
+  document.getElementById('next1').addEventListener('click', () => {
+    const v = parseInt(document.getElementById('puntos').value, 10);
+    if (Number.isNaN(v)) { document.getElementById('msg1').textContent = 'Ingresa un número válido.'; return; }
+    if (v < 5) { document.getElementById('msg1').textContent = 'Debes obtener 5 o más para continuar.'; return; }
+    document.getElementById('msg1').textContent = '';
+    paso1.hidden = true; paso2.hidden = false;
+  });
+
+  document.getElementById('finish').addEventListener('click', () => {
+    const code = (document.getElementById('codigo').value || '').trim();
+    if (code !== '0000') { document.getElementById('msg2').textContent = 'Código incorrecto. Prueba con 0000.'; return; }
+
+    const ahora = new Date();
+    const fin = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString();
+
+    // Mensaje con saltos de línea por punto (evita salto final)
+    const mensaje = `¡Felicitaciones, Cadete ${nombre}!.` +
+                    `Has sincronizado la red sensorial de EPRE correctamente. Te certificas como Administrador de Sistemas Conectados` +
+                    `Fecha: ${fin}.`;
+    document.getElementById('okText').innerHTML = mensaje.replace(/\.(?!$)/g, '.<br>');
+
+    // Desbloquea Misión 4
+    try { localStorage.setItem('andina_mision4_unlocked', '1'); } catch(e){}
+
+    paso2.hidden = true; pasoOk.hidden = false;
+
+    // Regreso tras 10s con ?m4=1
+  setTimeout(() => { location.href = appendParam(returnUrl, 'm3', '1'); }, 10000);
+  });
+
+  document.getElementById('closeOk').addEventListener('click', () => {
+  location.href = appendParam(returnUrl, 'm3', '1');
+  });
+
+  function appendParam(url, key, val){
+    try{
+      const u = new URL(url);
+      u.searchParams.set(key, val);
+      return u.toString();
+    }catch(_){
+      return ingresoFallback + '&' + key + '=' + val;
+    }
+  }
+</script>
+
+</body>
+</html>

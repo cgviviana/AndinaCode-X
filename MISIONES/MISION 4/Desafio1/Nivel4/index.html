@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nivel 2: Firewall Defensivo</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+    body { 
+      margin: 0;
+      padding: 0;
+      background: #000;
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffff;
+      overflow: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 32px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    #panel-juego {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 12px 10px 18px 10px;
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+      box-shadow: 0 0 12px #00ffff;
+      background: rgba(0, 0, 0, 0.85);
+      text-align: center;
+      position: relative;
+    }
+
+    /* Modal de instrucciones */
+    #modalInstrucciones {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #modalInstrucciones .contenido {
+      background: #011b1b;
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      box-shadow: 0 0 18px #00ffff;
+      padding: 32px 32px 24px 32px;
+      max-width: 420px;
+      color: #00ffff;
+      text-align: center;
+      font-size: 18px;
+      position: relative;
+    }
+    #modalInstrucciones .contenido h2 {
+      margin-top: 0;
+      font-size: 1.5em;
+      color: #00ff88;
+      text-shadow: 0 0 8px #00ff88;
+    }
+    #modalInstrucciones .contenido button {
+      margin-top: 18px;
+      font-size: 1em;
+      padding: 8px 24px;
+      border-radius: 8px;
+      border: 2px solid #00ffff;
+      background: #000;
+      color: #00ffff;
+      cursor: pointer;
+      box-shadow: 0 0 8px #00ffff;
+      transition: background 0.2s, color 0.2s;
+    }
+    #modalInstrucciones .contenido button:hover {
+      background: #00ffff;
+      color: #000;
+    }
+
+    #temporizador {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+
+    #zonaJuego {
+  position: relative;
+  width: 90%;
+  min-width: 700px;
+  max-width: 900px;
+  height: 340px;
+  border: 2px dashed #00ffff;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  margin-bottom: 10px;
+    }
+
+    .paquete {
+      position: absolute;
+      font-size: 16px;
+      padding: 12px 22px;
+      border-radius: 10px;
+      border: 2.5px solid #00ffff;
+      color: #00ffff;
+      background: rgba(0, 0, 0, 0.85);
+      animation: bajar 10s linear forwards;
+      cursor: pointer;
+      text-shadow: 0 0 8px #00ffff;
+      box-shadow: 0 0 14px #00ffff;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      z-index: 2;
+    }
+
+    .explosion {
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ff0, #f00);
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: explotar 0.3s ease-out forwards;
+    }
+
+    .alerta {
+      border-color: red;
+      color: #fff;
+      background: rgba(255,0,0,0.7);
+      text-shadow: 0 0 8px #fff, 0 0 12px red;
+      box-shadow: 0 0 20px red;
+    }
+
+    .icono-virus {
+      font-size: 50px;
+      color: red;
+      text-shadow: 0 0 10px red;
+      margin: 10px auto;
+      display: block;
+    }
+
+    @keyframes bajar {
+      from { top: 0; }
+      to { top: 100%; }
+    }
+
+    @keyframes explotar {
+      from { transform: scale(0.5); opacity: 1; }
+      to { transform: scale(2); opacity: 0; }
+    }
+
+    button {
+      background: transparent;
+      color: #00ffff;
+      border: 2px solid #00ffff;
+      padding: 10px 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      text-shadow: 0 0 5px #00ffff;
+    }
+
+    button:hover {
+      background: #00ffff;
+      color: #000;
+    }
+
+    #mensajeFinal {
+      margin-top: 20px;
+      display: none;
+      font-size: 22px;
+      font-weight: bold;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    /* Modal de derrota */
+    #modalDerrota {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #modalDerrota .contenido {
+      background: #2a0d18;
+      border: 2px solid #c94f6d;
+      border-radius: 12px;
+      box-shadow: 0 0 12px #c94f6d;
+      padding: 32px 32px 24px 32px;
+      max-width: 420px;
+      color: #fff;
+      text-align: center;
+      font-size: 18px;
+      position: relative;
+    }
+    #modalDerrota .contenido h2 {
+      margin-top: 0;
+      font-size: 1.5em;
+      color: #c94f6d;
+      text-shadow: 0 0 6px #c94f6d;
+    }
+    #modalDerrota .contenido button {
+      margin-top: 18px;
+      font-size: 1em;
+      padding: 8px 24px;
+      border-radius: 8px;
+      border: 2px solid #c94f6d;
+      background: #1a0a12;
+      color: #c94f6d;
+      cursor: pointer;
+      box-shadow: 0 0 6px #c94f6d;
+      transition: background 0.2s, color 0.2s;
+      margin-right: 12px;
+    }
+    #modalDerrota .contenido button:last-child { margin-right: 0; }
+    #modalDerrota .contenido button:hover {
+      background: #c94f6d;
+      color: #fff;
+    }
+
+    #barraProgreso {
+      width: 100%;
+      height: 18px;
+      background: #022;
+      border: 1.5px solid #00ffff;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 8px #00ffff;
+      display: none;
+    }
+    #progreso {
+      height: 100%;
+      background: linear-gradient(90deg, #00ffff, #00ff88);
+      width: 100%;
+      transition: width 0.3s;
+    }
+    #franja-superior {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      width: 100%;
+    }
+    #contadores {
+      display: flex;
+      gap: 18px;
+      font-size: 16px;
+      text-shadow: 0 0 6px #00ffff;
+      background: rgba(0,0,0,0.3);
+      border-radius: 6px;
+      padding: 2px 10px;
+    }
+    #barraProgreso {
+      min-width: 120px;
+      max-width: 200px;
+      margin-bottom: 0;
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .vidas {
+      color: #ff375f;
+      font-weight: bold;
+      text-shadow: 0 0 8px #ff375f;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="mensajeVidaPerdida" style="display:none;">¡Perdiste una vida!</div>
+
+  <h1>Nivel 2: Firewall Defensivo</h1>
+
+  <div id="panel-juego">
+    <!-- Modal de victoria -->
+    <div id="modalVictoria" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:1200; align-items:center; justify-content:center;">
+      <div class="contenido" style="background:#0d2a18; border:2px solid #00ff88; border-radius:12px; box-shadow:0 0 18px #00ff88; padding:32px 32px 24px 32px; max-width:420px; color:#fff; text-align:center; font-size:18px; position:relative; margin:auto;">
+    <h2 style="font-weight:normal; color:#00ff88; text-shadow:0 0 8px #00ff88;">¡Nivel completado!</h2>
+    <p>¡Defensor, has blindado el firewall de la nave EPRE!<br>Tu rango asciende a <b>Defensor Centinela</b>.<br>Prepárate para el reto final y alcanzar el máximo rango informático.</p>
+        
+        <button onclick="continuarSiguienteNivel()" style="margin-top:18px; font-size:1em; padding:8px 24px; border-radius:8px; border:2px solid #00ff88; background:#0d2a18; color:#00ff88; cursor:pointer; box-shadow:0 0 8px #00ff88; transition:background 0.2s, color 0.2s;">Continuar</button>
+      </div>
+    </div>
+    <div id="franja-superior">
+      <div id="contadores">
+        <span>Bloqueados: <span id="bloqueados">0</span></span>
+        <span>Escapados: <span id="escapados">0</span></span>
+        <span>Errores: <span id="errores">0</span></span>
+  <span>Vidas: <span class="vidas" id="vidas">5</span></span>
+      </div>
+      <div id="barraProgreso"><div id="progreso"></div></div>
+    </div>
+  <p id="temporizador" style="display:none;">Tiempo restante: <span id="tiempoRestante">30</span> segundos</p>
+    <button id="botonIniciar" onclick="iniciarNivel2()">Iniciar</button>
+    <div id="zonaJuego"></div>
+    <p id="mensajeFinal"></p>
+    <div id="iconoAmenaza" class="icono-virus" style="display:none;">☣</div>
+    <!-- Modal de derrota -->
+    <div id="modalDerrota">
+      <div class="contenido">
+        <h2>¡Perdiste!</h2>
+        <p id="mensajeDerrota">Se acabaron tus vidas o dejaste pasar demasiadas amenazas.<br>¿Deseas reiniciar?</p>
+  <button onclick="window.location.reload()">Reintentar</button>
+  <button onclick="window.location.href='../index.html#niveles'">Salir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de instrucciones -->
+  <div id="modalInstrucciones">
+    <div class="contenido">
+      <h2>Instrucciones</h2>
+      <p>
+        Haz clic <b>solo en los archivos maliciosos</b> antes de que lleguen al fondo.<br>
+  ¡No dejes pasar más de <span class="vidas">5</span> amenazas ni cometas 5 errores!<br>
+  Tienes <b>30 segundos</b> para proteger el sistema.<br>
+        <span style="color:#00ff88">Los archivos maliciosos tienen nombres sospechosos o extensiones inusuales.</span><br><br>
+        <b>¿Cómo ganas?</b><br>
+        Si logras terminar el tiempo sin perder todas tus vidas ni cometer 3 errores, ¡ganas el nivel y avanzas automáticamente.<br>
+        Si pierdes todas tus vidas o cometes 3 errores, deberás intentarlo de nuevo.
+      </p>
+      <button onclick="cerrarInstrucciones()">Entendido</button>
+    </div>
+  </div>
+
+  <!-- Audios -->
+  <audio id="audioAcierto" src="Audio/../../success.mp3" preload="auto"></audio>
+  <audio id="audioError" src="Audio/../../error.mp3" preload="auto"></audio>
+
+  <script>
+    let amenazasBloqueadas = 0;
+    let amenazasActivas = [];
+    let amenazasEscapadas = 0;
+    let errores = 0;
+  let vidas = 5; // Más vidas para menor dificultad
+  let tiempo = 90; // Más tiempo para menor dificultad
+    let intervaloPaquetes;
+    let intervaloTiempo;
+
+    const zonaJuego = document.getElementById("zonaJuego");
+    const successSound = document.getElementById("audioAcierto");
+    const errorSound = document.getElementById("audioError");
+    const iconoAmenaza = document.getElementById("iconoAmenaza");
+    const barraProgreso = document.getElementById("barraProgreso");
+    const progresoBar = document.getElementById("progreso");
+    const bloqueadosSpan = document.getElementById("bloqueados");
+    const escapadosSpan = document.getElementById("escapados");
+    const erroresSpan = document.getElementById("errores");
+    const vidasSpan = document.getElementById("vidas");
+    const vidasMaxSpan = document.getElementById("vidasMax");
+    const tiempoTotalSpan = document.getElementById("tiempoTotal");
+
+    const archivosSeguros = [
+      "fotoPerfil.jpg", "TrabajoGrado.doc", "informeFinal2024.pdf",
+      "resumenNotas.xlsx", "clase1.pptx", "documentoIdentidad.png",
+      "videoClase.mp4", "calendarioEventos.ics", "propuestaEmpresarial.docx", "miMascota.jpg"
+    ];
+
+    const amenazas = [
+      "phishing-alert.html", "keylogger.exe", "troyanoFiscal2024.scr",
+      "malware2023.bat", "spywareUpdate.zip", "ransomware-locker.jar",
+      "crypminerTool.js", "adwarePopper.exe", "hack-tool-v3.1.exe", "fakeBankAccess.pdf"
+    ];
+
+    function actualizarContadores() {
+      bloqueadosSpan.textContent = amenazasBloqueadas;
+      escapadosSpan.textContent = amenazasEscapadas;
+      erroresSpan.textContent = errores;
+      vidasSpan.textContent = vidas;
+    }
+
+    function iniciarNivel2() {
+      amenazasBloqueadas = 0;
+      amenazasActivas = [];
+      amenazasEscapadas = 0;
+      errores = 0;
+      vidas = 5; // 5 vidas desde el inicio
+      tiempo = 30; // 30 segundos desde el inicio
+      actualizarContadores();
+      barraProgreso.style.display = "block";
+      progresoBar.style.width = "100%";
+      document.getElementById("botonIniciar").style.display = "none";
+      document.getElementById("temporizador").style.display = "block";
+      zonaJuego.style.display = "block";
+      document.getElementById("tiempoRestante").textContent = tiempo;
+      document.getElementById("mensajeFinal").style.display = "none";
+      iconoAmenaza.style.display = "none";
+      zonaJuego.innerHTML = "";
+      intervaloPaquetes = setInterval(crearPaquete, 700); // más rápido
+      intervaloTiempo = setInterval(() => {
+        tiempo--;
+        document.getElementById("tiempoRestante").textContent = tiempo;
+        progresoBar.style.width = (tiempo/30*100)+"%";
+        if (tiempo <= 0) finalizarNivel2();
+      }, 1000);
+    }
+
+    // Limitar paquetes simultáneos y espaciar más
+  const MAX_PAQUETES = 9; // Ahora permite hasta 9 objetivos simultáneos
+    let posicionesOcupadas = [];
+    function crearPaquete() {
+      // Limitar cantidad de paquetes simultáneos
+      if (zonaJuego.querySelectorAll('.paquete').length >= MAX_PAQUETES) return;
+
+      // Obtener el ancho real del recuadro
+      const zonaRect = zonaJuego.getBoundingClientRect();
+      const paqueteWidth = 120; // Ancho estimado del paquete (ajustable)
+      // Generar posiciones horizontales posibles dentro del recuadro para 7 columnas
+      const margen = 10;
+      const columnas = 9;
+      const maxLeft = zonaRect.width - paqueteWidth - margen;
+      const posiblesPos = Array.from({length: columnas}, (_, i) => {
+        return Math.round(margen + i * (maxLeft) / (columnas - 1));
+      });
+      // Buscar posiciones libres
+      const ocupadas = Array.from(zonaJuego.querySelectorAll('.paquete')).map(p=>parseInt(p.dataset.posicion));
+      const libres = posiblesPos.filter(p=>!ocupadas.includes(p));
+      if (libres.length === 0) return;
+      const pos = libres[Math.floor(Math.random()*libres.length)];
+
+      const paquete = document.createElement("div");
+      paquete.classList.add("paquete");
+      paquete.dataset.posicion = pos;
+
+      // Hacer amenazas más obvias visualmente
+      const esAmenaza = Math.random() < 0.4; // Menos amenazas
+      const nombreArchivo = esAmenaza
+        ? '⚠️ ' + amenazas[Math.floor(Math.random() * amenazas.length)]
+        : archivosSeguros[Math.floor(Math.random() * archivosSeguros.length)];
+
+      paquete.textContent = nombreArchivo;
+      paquete.style.left = pos + "px";
+
+      if (esAmenaza) {
+        amenazasActivas.push(paquete);
+        // Mismo color que los demás, pero borde rojo muy suave
+        paquete.style.background = 'rgba(0, 0, 0, 0.85)';
+        paquete.style.color = '#00ffff';
+        paquete.style.borderColor = 'rgba(255, 0, 0, 0.18)'; // rojo muy suave
+        paquete.style.fontWeight = 'bold';
+      }
+
+      paquete.onclick = function () {
+        if (esAmenaza) {
+          amenazasBloqueadas++;
+          successSound.currentTime = 0;
+          successSound.play();
+          mostrarExplosion(paquete.offsetLeft, paquete.offsetTop);
+          amenazasActivas = amenazasActivas.filter(p => p !== paquete);
+        } else {
+          errores++;
+          errorSound.currentTime = 0;
+          errorSound.play();
+          paquete.classList.add("alerta");
+          setTimeout(()=>paquete.classList.remove("alerta"), 500);
+        }
+        actualizarContadores();
+        paquete.remove();
+        if (errores >= 3) {
+          vidas = 0;
+          actualizarContadores();
+          finalizarNivel2(true);
+        }
+      };
+
+      zonaJuego.appendChild(paquete);
+
+      setTimeout(() => {
+        if (zonaJuego.contains(paquete)) {
+          if (esAmenaza) {
+            paquete.classList.add("alerta");
+            amenazasEscapadas++;
+            vidas--;
+            actualizarContadores();
+            mostrarMensajeVidaPerdida();
+            if (vidas <= 0) {
+              setTimeout(()=>finalizarNivel2(true), 1200); // esperar a mostrar el mensaje
+            }
+          }
+          zonaJuego.removeChild(paquete);
+        }
+      }, 12000); // más tiempo para reaccionar
+    function mostrarMensajeVidaPerdida() {
+      const msg = document.getElementById('mensajeVidaPerdida');
+      msg.style.display = 'block';
+      msg.textContent = '¡Perdiste una vida!';
+      msg.classList.remove('animando');
+      void msg.offsetWidth; // reiniciar animación
+      msg.classList.add('animando');
+      setTimeout(()=>{ msg.style.display = 'none'; }, 1800);
+    }
+    }
+
+    function mostrarExplosion(x, y) {
+      const explosion = document.createElement("div");
+      explosion.classList.add("explosion");
+      explosion.style.left = `${x}px`;
+      explosion.style.top = `${y}px`;
+      zonaJuego.appendChild(explosion);
+      setTimeout(() => explosion.remove(), 300);
+    }
+
+    function finalizarNivel2(perdio=false) {
+      clearInterval(intervaloPaquetes);
+      clearInterval(intervaloTiempo);
+      barraProgreso.style.display = "none";
+      if (!perdio && amenazasEscapadas === 0 && amenazasBloqueadas > 0) {
+        // Desbloquear nivel 4 y 5 en localStorage
+        let progreso = JSON.parse(localStorage.getItem('desafio1_progreso') || '{"nivel1":false,"nivel2":false,"nivel3":false,"nivel4":false,"nivel5":false}');
+        progreso.nivel4 = true;
+        progreso.nivel5 = true;
+        localStorage.setItem('desafio1_progreso', JSON.stringify(progreso));
+        // Mostrar modal de victoria personalizado
+        document.getElementById('modalVictoria').style.display = 'flex';
+      } else {
+        // Mostrar modal de derrota
+        document.getElementById('modalDerrota').style.display = 'flex';
+      }
+    }
+
+    function continuarSiguienteNivel() {
+      window.location.href = '../index.html#niveles';
+    }
+
+    function reiniciarNivel() {
+      zonaJuego.innerHTML = "";
+      iniciarNivel2();
+    }
+    // Inicializar valores visibles
+    vidasMaxSpan && (vidasMaxSpan.textContent = 3);
+    tiempoTotalSpan && (tiempoTotalSpan.textContent = 60);
+    actualizarContadores();
+
+    // Modal instrucciones
+    function cerrarInstrucciones() {
+      document.getElementById('modalInstrucciones').style.display = 'none';
+    }
+    window.onload = function() {
+      document.getElementById('modalInstrucciones').style.display = 'flex';
+      // Permitir iniciar solo cuando se cierra el modal de instrucciones
+      document.getElementById('botonIniciar').disabled = true;
+    }
+    function cerrarInstrucciones() {
+      document.getElementById('modalInstrucciones').style.display = 'none';
+      document.getElementById('botonIniciar').disabled = false;
+    }
+  </script>
+
+</body>
+</html>
+

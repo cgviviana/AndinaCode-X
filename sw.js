@@ -1,3 +1,9 @@
+// Instalación del Service Worker
+// Activación del Service Worker
+// Estrategia Cache First para assets estáticos
+// Manejo de mensajes del cliente
+
+// Service Worker para Galaxia AndinaCode X
 // Service Worker para Galaxia AndinaCode X
 const CACHE_NAME = 'galaxia-andinacode-v2.0.0';
 const STATIC_ASSETS = [
@@ -98,3 +104,4 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Desafío Centinela - Nivel 2: Protección del Sistema</title>
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: #000;
+      color: #00ffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+    h1 {
+      text-shadow: 0 0 10px #00ffff;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .contenedor-juego {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .panel {
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 10px #00ffff;
+      width: 400px;
+      min-height: 400px;
+      font-size: 14px;
+    }
+    #panel-orden {
+      width: 500px;
+    }
+    .panel h3 {
+      text-align: center;
+      text-shadow: 0 0 10px #00ffff;
+      margin-bottom: 10px;
+    }
+    .tarjeta {
+      background: #111;
+      border: 1px solid #00ffff;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: grab;
+      text-align: left;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .orden {
+      border: 2px dashed #00ffff;
+      border-radius: 10px;
+      margin: 10px 0;
+      padding: 10px;
+      min-height: 60px;
+    }
+    .numero {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+    .explicacion {
+      font-size: 13px;
+      color: #00ff88;
+      margin-top: 5px;
+      text-shadow: 0 0 5px #00ff88;
+    }
+    #mensaje-final {
+      margin-top: 20px;
+      font-size: 18px;
+      text-shadow: 0 0 10px #00ffff;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Nivel 2: Protección del Sistema</h1>
+  <h2 style="font-weight:normal; color:#00ff88; text-shadow:0 0 8px #00ff88;">Rango actual: <span id="rangoUsuario">Defensor Vigilante</span></h2>
+
+  <div class="contenedor-juego">
+    <div class="panel" id="panel-tarjetas">
+  <h3>Fragmentos del Protocolo Centinela</h3>
+      <!-- Tarjetas generadas aleatoriamente -->
+    </div>
+
+    <div class="panel" id="panel-orden">
+  <h3>Organiza el Protocolo Centinela</h3>
+  <div class="numero">1</div>
+  <div class="orden" id="o1" ondrop="soltar(event, 'o1')" ondragover="permitirSoltar(event)"></div>
+  <div class="numero">2</div>
+  <div class="orden" id="o2" ondrop="soltar(event, 'o2')" ondragover="permitirSoltar(event)"></div>
+  <div class="numero">3</div>
+  <div class="orden" id="o3" ondrop="soltar(event, 'o3')" ondragover="permitirSoltar(event)"></div>
+  <div class="numero">4</div>
+  <div class="orden" id="o4" ondrop="soltar(event, 'o4')" ondragover="permitirSoltar(event)"></div>
+  <div class="numero">5</div>
+  <div class="orden" id="o5" ondrop="soltar(event, 'o5')" ondragover="permitirSoltar(event)"></div>
+  <p style="color:#00ff88; margin-top:10px;">¡Cada fragmento bien colocado refuerza el escudo digital de la nave EPRE!</p>
+    </div>
+  </div>
+
+  <p id="mensaje-final" style="display:none; color:#00ff88; font-size:1.2em; text-shadow:0 0 10px #00ff88;">
+    ¡Misión cumplida, Defensor! Has ensamblado el Protocolo Centinela y tu rango asciende a <b>Defensor Operativo</b>.<br>
+    La nave EPRE está más protegida gracias a ti. Prepárate para el siguiente desafío espacial.
+  </p>
+
+  <audio id="audioSuccess" src="../../success.mp3" preload="auto"></audio>
+  <audio id="audioError" src="../../error.mp3" preload="auto"></audio>
+
+  <script>
+    const respuestas = {
+      o1: 't1',
+      o2: 't2',
+      o3: 't3',
+      o4: 't4',
+      o5: 't5'
+    };
+
+    const tarjetasData = [
+      { id: 't1', texto: 'Validar credenciales del usuario.', explicacion: '💡 Verifica quién entra al sistema.' },
+      { id: 't2', texto: 'Cifrar la información transmitida.', explicacion: '💡 Protege los datos de miradas externas.' },
+      { id: 't3', texto: 'Establecer la conexión segura.', explicacion: '💡 Asegura un canal confiable.' },
+      { id: 't4', texto: 'Verificar integridad de los datos.', explicacion: '💡 Detecta si la información fue alterada.' },
+      { id: 't5', texto: 'Actualizar las políticas de acceso.', explicacion: '💡 Refuerza los permisos según amenazas.' },
+    ];
+
+    function permitirSoltar(ev) {
+      ev.preventDefault();
+    }
+
+    function generarTarjetasAleatorias() {
+      const panel = document.getElementById('panel-tarjetas');
+      const mezcladas = tarjetasData.sort(() => Math.random() - 0.5);
+      mezcladas.forEach(({ id, texto }) => {
+        const div = document.createElement('div');
+        div.className = 'tarjeta';
+        div.id = id;
+        div.draggable = true;
+        div.textContent = texto;
+        div.addEventListener('dragstart', ev => {
+          ev.dataTransfer.setData('text/plain', ev.target.id);
+        });
+        panel.appendChild(div);
+      });
+    }
+
+    function soltar(ev, zona) {
+      ev.preventDefault();
+      const id = ev.dataTransfer.getData('text');
+      const tarjeta = document.getElementById(id);
+      const zonaEl = document.getElementById(zona);
+      zonaEl.innerHTML = '';
+      zonaEl.appendChild(tarjeta);
+
+      const esCorrecto = respuestas[zona] === id;
+      tarjeta.style.border = esCorrecto ? '2px solid lime' : '2px solid red';
+
+      const audio = document.getElementById(esCorrecto ? 'audioSuccess' : 'audioError');
+      audio.currentTime = 0;
+      audio.play();
+
+      if (esCorrecto) {
+        const explicacion = document.createElement('div');
+        explicacion.className = 'explicacion';
+        explicacion.textContent = tarjetasData.find(t => t.id === id).explicacion;
+        zonaEl.appendChild(explicacion);
+      }
+
+      verificarNivel();
+    }
+
+    function verificarNivel() {
+      const completado = Object.keys(respuestas).every(zona => {
+        const zonaEl = document.getElementById(zona);
+        const hijo = zonaEl.querySelector('.tarjeta');
+        return hijo && hijo.id === respuestas[zona];
+      });
+
+      if (completado) {
+        document.getElementById('mensaje-final').style.display = 'block';
+        // Subir de rango visualmente
+        document.getElementById('rangoUsuario').textContent = 'Defensor Operativo';
+        // Desbloquear nivel 2 y 3 en localStorage
+        let progreso = JSON.parse(localStorage.getItem('desafio1_progreso') || '{"nivel1":false,"nivel2":false,"nivel3":false,"nivel4":false,"nivel5":false}');
+        progreso.nivel2 = true;
+        progreso.nivel3 = true;
+        localStorage.setItem('desafio1_progreso', JSON.stringify(progreso));
+        setTimeout(() => {
+          window.location.href = '../index.html#niveles';
+        }, 3500);
+      }
+    }
+
+    window.onload = generarTarjetasAleatorias;
+  </script>
+</body>
+</html>
+

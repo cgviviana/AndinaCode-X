@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Desafío Centinela - Nivel 5: Fortaleza Cibernética</title>
+<style>
+  :root{
+    --neon:#0ff; --neon2:#39ff14; --danger:#ff375f; --wall:#08f;
+  }
+  body{font-family:Arial, sans-serif;background:#000;color:var(--neon);text-align:center;margin:0}
+  h1,h2,h3,p,button{text-shadow:0 0 10px var(--neon),0 0 20px var(--neon)}
+  .screen{display:none;padding:20px}
+  .active{display:block}
+  button{
+    padding:10px 20px;background:transparent;color:var(--neon);
+    border:2px solid var(--neon);border-radius:8px;cursor:pointer;
+    box-shadow:0 0 10px var(--neon)
+  }
+  button:hover{background:rgba(0,255,255,.15)}
+  .grid{display:grid;grid-template-columns:repeat(3, 220px);gap:10px;justify-content:center;margin:20px auto;max-width:720px}
+  .piece{
+    background:rgba(0,255,255,.08);border:2px solid var(--neon);border-radius:8px;
+    padding:12px;cursor:grab;user-select:none;box-shadow:0 0 10px var(--neon);
+    transition:border-color .15s, box-shadow .15s, color .15s
+  }
+  .piece.good{
+    border-color:var(--neon2);
+    box-shadow:0 0 12px var(--neon2), 0 0 24px rgba(57,255,20,.5);
+    color:var(--neon2);
+  }
+  .piece.bad{
+    border-color:var(--danger);
+    box-shadow:0 0 12px var(--danger), 0 0 24px rgba(255,55,95,.5);
+    color:var(--danger);
+  }
+  .zones{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+  .dropwrap{min-width:260px}
+  .dropzone{
+    min-height:90px;padding:10px;border:2px dashed var(--neon);border-radius:10px;
+    background:rgba(255,255,255,.05);box-shadow:0 0 10px var(--neon)
+  }
+  .keys button{margin:6px}
+  table{border-collapse:collapse;margin:14px auto;color:var(--neon)}
+  th,td{border:1px solid var(--neon);padding:6px 10px}
+  .hint{opacity:.85;font-size:.95rem}
+  canvas{display:block;margin:14px auto;background:#000}
+  .msg{margin-top:10px;min-height:24px}
+  .ok{color:var(--neon2)}
+  .err{color:var(--danger)}
+</style>
+</head>
+<body>
+
+<h1>Nivel 5: Fortaleza Cibernética</h1>
+<h2 style="font-weight:normal; color:#00ff88; text-shadow:0 0 8px #00ff88;">Rango actual: <span id="rangoUsuario">Defensor Centinela</span></h2>
+
+<!-- Inicio -->
+<div id="startScreen" class="screen active">
+  <h2>Prepárate para proteger la fortaleza</h2>
+  <p>Completa las 3 secciones para asegurar el sistema.</p>
+  <button onclick="showScreen('game1')">Comenzar</button>
+</div>
+
+<!-- Sección 1: Filtrar contraseñas (validación por color, sin reiniciar) -->
+<div id="game1" class="screen">
+  <h2>Clasifica las contraseñas</h2>
+  <p class="hint">Arrastra <b>solo</b> las contraseñas fuertes a <b>Contraseña Validada</b> <span style="color:#39ff14">(verde)</span> y las débiles a <b>Contraseña Descartada</b> <span style="color:#ff375f">(rojo suave)</span>.</p>
+  <p class="hint">Criterios de contraseña fuerte: mínimo 8 caracteres, mayúsculas, minúsculas, números y símbolos.</p>
+
+  <div id="poolTitle"><h3 style="font-weight:normal; color:#00ffff; text-shadow:0 0 6px #00ffff;">Lista de contraseñas</h3></div>
+  <div class="grid" id="passwordPool"></div>
+
+  <div class="zones">
+    <div class="dropwrap">
+      <h3 style="color:#39ff14; text-shadow:0 0 6px #39ff14;">Contraseña Validada</h3>
+      <div class="dropzone" id="safeBox" style="border-color:#39ff14; background:rgba(57,255,20,0.07);"></div>
+    </div>
+    <div class="dropwrap">
+      <h3 style="color:#ff375f; text-shadow:0 0 6px #ff375f;">Contraseña Descartada</h3>
+      <div class="dropzone" id="unsafeBox" style="border-color:#ff375f; background:rgba(255,55,95,0.07);"></div>
+    </div>
+  </div>
+
+  <div id="msg1" class="msg"></div>
+</div>
+
+<!-- Sección 2: Código binario (reintento; feedback verde/rojo) -->
+<div id="game2" class="screen">
+  <h2>Código binario</h2>
+  <p class="hint">Selecciona la clave que otorgue <b>Acceso total</b>. Puedes reintentar si fallas.</p>
+  <table>
+    <tr><th>Binario</th><th>Significado</th></tr>
+    <tr><td>11</td><td>Acceso total</td></tr>
+    <tr><td>10</td><td>Acceso parcial</td></tr>
+    <tr><td>01</td><td>Lectura solo</td></tr>
+    <tr><td>00</td><td>Bloqueo total</td></tr>
+  </table>
+  <div class="keys" id="binKeys">
+    <button data-k="10">10</button>
+    <button data-k="11">11</button>
+    <button data-k="01">01</button>
+    <button data-k="00">00</button>
+  </div>
+  <div id="msg2" class="msg"></div>
+</div>
+
+<!-- Sección 3: Laberinto con virus -->
+<div id="game3" class="screen">
+  <h2>Llega al servidor evitando los virus</h2>
+  <canvas id="mazeCanvas" width="400" height="300"></canvas>
+  <p class="hint">Flechas para moverte. Si un virus te toca, vuelves al inicio.</p>
+</div>
+
+<!-- Final -->
+<div id="endScreen" class="screen">
+  <h2>¡Misión cumplida!</h2>
+  <p>¡Has defendido la Fortaleza Cibernética y alcanzado el rango máximo de <b>Comandante Informático</b>!<br>
+  Eres un ejemplo para toda la flota EPRE. Redirigiendo al panel de logros…</p>
+  <p class="hint">Redirigiendo…</p>
+</div>
+
+<script>
+/* ====== Sonidos ====== */
+const sndOK = new Audio('acierto.mp3');
+const sndError = new Audio('error.mp3');
+const sndWin = new Audio('victoria.mp3');
+
+/* ====== Pantallas ====== */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ====== Sección 1: Filtrar contraseñas (color en cada drop) ====== */
+const PASSWORDS_DATA = [
+  {text:'S3gur@2025', safe:true},
+  {text:'123456', safe:false},
+  {text:'R0bust@Clave!', safe:true},
+  {text:'password', safe:false},
+  {text:'qwerty', safe:false},
+  {text:'M1Fort@!', safe:true},
+  {text:'Contra2025', safe:false},   // sin símbolo
+  {text:'$uperSegura', safe:false},  // sin número
+  {text:'K1tt3n$7', safe:true}
+];
+
+const pool   = document.getElementById('passwordPool');
+const safeBox   = document.getElementById('safeBox');
+const unsafeBox = document.getElementById('unsafeBox');
+const msg1 = document.getElementById('msg1');
+let dragged = null;
+
+function createPiece(p){
+  const el = document.createElement('div');
+  el.className='piece';
+  el.draggable=true;
+  el.textContent=p.text;
+  el.dataset.safe = p.safe ? 'true':'false';
+  el.addEventListener('dragstart', ()=> { dragged = el; });
+  return el;
+}
+function renderPasswords(list){
+  pool.innerHTML='';
+  list.forEach(p=> pool.appendChild(createPiece(p)));
+}
+function addDnD(zone){
+  zone.addEventListener('dragover', e=>e.preventDefault());
+  zone.addEventListener('drop', e=>{
+    e.preventDefault();
+    if(!dragged) return;
+    // mover
+    zone.appendChild(dragged);
+    // limpiar estado previo
+    dragged.classList.remove('good','bad');
+    // validar contra destino
+    validatePiece(dragged, zone.id);
+    // comprobar si todas están correctas
+    checkAllPlaced();
+  });
+}
+addDnD(pool); addDnD(safeBox); addDnD(unsafeBox);
+
+function validatePiece(piece, zoneId){
+  const shouldBeSafe = (zoneId === 'safeBox');
+  if(zoneId === 'passwordPool'){
+    // en la piscina no se califica
+    piece.classList.remove('good','bad');
+    return;
+  }
+  const isSafe = (piece.dataset.safe === 'true');
+  if( (shouldBeSafe && isSafe) || (!shouldBeSafe && !isSafe) ){
+    piece.classList.add('good'); piece.classList.remove('bad');
+    sndOK.currentTime=0; sndOK.play();
+  }else{
+    piece.classList.add('bad'); piece.classList.remove('good');
+    sndError.currentTime=0; sndError.play();
+  }
+}
+
+function allClassified(){
+  return pool.children.length===0;
+}
+function anyBad(){
+  return [...safeBox.querySelectorAll('.piece.bad'), ...unsafeBox.querySelectorAll('.piece.bad')].length>0;
+}
+function checkAllPlaced(){
+  if(!allClassified()){
+  msg1.textContent='Por favor, clasifica todas las contraseñas en el buzón correspondiente.';
+  msg1.className='msg err';
+    return false;
+  }
+  if(anyBad()){
+  msg1.textContent='Hay contraseñas mal clasificadas (en rojo). Corrige su ubicación.';
+  msg1.className='msg err';
+    return false;
+  }
+  // Todo bien => avanzar automático
+  msg1.textContent='¡Clasificación correcta! Avanzando…';
+  msg1.className='msg ok';
+  setTimeout(()=>{ showScreen('game2'); }, 700);
+  return true;
+}
+
+// Inicializar y mezclar
+renderPasswords(PASSWORDS_DATA);
+// Mezcla simple
+(function shuffle(){
+  const arr = Array.from(pool.children);
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    pool.appendChild(arr[j]);
+  }
+})();
+
+/* Permitir que al devolver al pool se quite el color y se pueda corregir */
+pool.addEventListener('drop', ()=>{
+  if(dragged){
+    dragged.classList.remove('good','bad');
+    msg1.textContent='';
+    msg1.className='msg';
+  }
+});
+
+/* ====== Sección 2: Binario (feedback verde/rojo; reintento) ====== */
+const msg2 = document.getElementById('msg2');
+const binKeys = document.getElementById('binKeys');
+binKeys.querySelectorAll('button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    // reset visual
+    binKeys.querySelectorAll('button').forEach(b=>{
+      b.style.borderColor='var(--neon)';
+      b.style.color='var(--neon)';
+      b.style.boxShadow='0 0 10px var(--neon)';
+    });
+    if(btn.dataset.k==='11'){
+      btn.style.borderColor='var(--neon2)'; btn.style.color='var(--neon2)'; btn.style.boxShadow='0 0 12px var(--neon2)';
+      msg2.textContent='Clave correcta: Acceso total.';
+      msg2.className='msg ok';
+      sndOK.play();
+      setTimeout(()=>{ showScreen('game3'); startMaze(); }, 700);
+    }else{
+      btn.style.borderColor='var(--danger)'; btn.style.color='var(--danger)'; btn.style.boxShadow='0 0 12px var(--danger)';
+      msg2.textContent='Clave incorrecta. Intenta de nuevo.';
+      msg2.className='msg err';
+      sndError.play();
+    }
+  });
+});
+
+/* ====== Sección 3: Laberinto con virus móviles ====== */
+function startMaze(){
+  const canvas = document.getElementById('mazeCanvas');
+  const ctx = canvas.getContext('2d');
+  const tile = 20;
+
+  const maze = [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1],
+    [1,0,1,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1,0,1],
+    [1,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,1],
+    [1,0,1,0,1,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+  ];
+
+  const playerStart = {x:1,y:1};
+  let player = { x: playerStart.x, y: playerStart.y, color:'#0ff' };
+  const goal = { x:18, y:5, color:'#39ff14' };
+
+  let viruses = [
+    { x:5, y:1, dir:1, axis:'x', speed:1 },
+    { x:10, y:4, dir:-1, axis:'x', speed:1 },
+    { x:3, y:5, dir:1, axis:'x', speed:1 },
+    { x:15, y:3, dir:-1, axis:'x', speed:1 },
+  ];
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(let y=0;y<maze.length;y++){
+      for(let x=0;x<maze[y].length;x++){
+        ctx.fillStyle = maze[y][x]===1 ? '#08f' : '#000';
+        ctx.fillRect(x*tile, y*tile, tile, tile);
+        if(maze[y][x]===1){
+          ctx.strokeStyle='#0ff';
+          ctx.strokeRect(x*tile+0.5, y*tile+0.5, tile-1, tile-1);
+        }
+      }
+    }
+    // goal
+    ctx.fillStyle = goal.color;
+    ctx.fillRect(goal.x*tile, goal.y*tile, tile, tile);
+    // player
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x*tile, player.y*tile, tile, tile);
+    // viruses
+    ctx.fillStyle = 'red';
+    viruses.forEach(v=> ctx.fillRect(v.x*tile, v.y*tile, tile, tile));
+  }
+
+  function canMove(nx,ny){
+    return maze[ny] && maze[ny][nx]===0;
+  }
+
+  function collide(a,b){ return a.x===b.x && a.y===b.y; }
+
+  function onKey(e){
+    let nx=player.x, ny=player.y;
+    if(e.key==='ArrowUp') ny--;
+    if(e.key==='ArrowDown') ny++;
+    if(e.key==='ArrowLeft') nx--;
+    if(e.key==='ArrowRight') nx++;
+    if(canMove(nx,ny)){ player.x=nx; player.y=ny; }
+    if(player.x===goal.x && player.y===goal.y){
+  document.removeEventListener('keydown', onKey);
+  sndWin.play();
+  showScreen('endScreen');
+  // Marcar todos los niveles como completados en localStorage
+  let progreso = JSON.parse(localStorage.getItem('desafio1_progreso') || '{"nivel1":false,"nivel2":false,"nivel3":false,"nivel4":false,"nivel5":false}');
+  progreso.nivel1 = true;
+  progreso.nivel2 = true;
+  progreso.nivel3 = true;
+  progreso.nivel4 = true;
+  progreso.nivel5 = true;
+  localStorage.setItem('desafio1_progreso', JSON.stringify(progreso));
+  // Guardar rango final
+  localStorage.setItem('rangoFinal', 'Comandante Informático');
+  setTimeout(()=>{ window.location.href="../index.html#niveles"; }, 2200);
+    }
+    draw();
+  }
+  document.addEventListener('keydown', onKey);
+
+  function stepViruses(){
+    viruses.forEach(v=>{
+      let nx=v.x, ny=v.y;
+      if(v.axis==='x'){ nx = v.x + v.dir*v.speed; ny = v.y; }
+      else { ny = v.y + v.dir*v.speed; nx = v.x; }
+      if(!canMove(nx,ny)){ v.dir *= -1; }
+      else { v.x = nx; v.y = ny; }
+      if(collide(v, player)){
+        sndError.play();
+        player.x = playerStart.x; player.y = playerStart.y;
+      }
+    });
+  }
+
+  draw();
+  setInterval(()=>{ stepViruses(); draw(); }, 280);
+}
+</script>
+
+</body>
+</html>

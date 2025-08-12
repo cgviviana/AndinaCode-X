@@ -98,6 +98,26 @@ PROYECTO SRA VIVIANA/
 - **Insignia Galáctica**: Recompensa por completar todas las misiones
 - **Ascenso de Rango**: De Comandante a Almirante Galáctico
 
+### **Sistema de Rangos y Personalización**
+- El nombre del usuario se solicita y valida al inicio, y persiste en todas las misiones y desafíos.
+- El rango del usuario progresa de forma consistente: Comandante → Capitán → General → Almirante Galáctico, según el avance.
+- El progreso y el nombre se almacenan en localStorage para mantener la experiencia personalizada.
+
+### **Manual Técnico (MOT) Limpio y Accesible**
+- Los MOTs de cada misión contienen únicamente información técnica y manuales, sin narrativa ni instrucciones de juego.
+- Acceso rápido a MOT desde cada misión para consulta técnica.
+
+### **Validación y Experiencia de Usuario Mejorada**
+- Validación robusta del nombre de usuario: no se permite avanzar sin ingresar un nombre válido.
+- El nombre se muestra en la interfaz de usuario en todas las pantallas y misiones.
+- Instrucciones y paneles de arrastrar y soltar mejorados para mayor claridad y usabilidad.
+- Las vidas y temporizadores en los desafíos reflejan fielmente la lógica del juego y la interfaz.
+
+### **Mejoras de Jugabilidad y Accesibilidad**
+- Paneles de desafíos reordenados para mejor experiencia visual y de interacción.
+- Instrucciones actualizadas y consistentes con la lógica real de cada nivel.
+- Accesibilidad reforzada en todos los niveles y misiones.
+
 ### **Características Educativas**
 - **Aprendizaje Interactivo**: Conceptos enseñados a través de gamificación
 - **Progreso Persistente**: LocalStorage mantiene el progreso del usuario
@@ -266,3 +286,13 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 ### 🌟 **¡Únete a la aventura galáctica del aprendizaje!**
 
 *Versión 2.0.0 - Completamente renovado con las mejores prácticas de desarrollo web*
+
+## 📝 Notas de Navegación y Redirección
+
+- Todas las rutas de redirección entre misiones y el menú de ingreso han sido revisadas y corregidas para ser relativas y válidas dentro del proyecto.
+- El nombre del usuario se transmite por la URL en cada avance de misión, garantizando que la personalización se mantenga en todo el flujo.
+- Si el nombre en la URL no es el esperado, el sistema lo mostrará tal cual; se recomienda verificar el parámetro `nombre` en la URL para asegurar la experiencia personalizada.
+- Se prioriza el nombre de la URL sobre el almacenado en localStorage para evitar arrastrar valores incorrectos de sesiones anteriores.
+- El flujo de avance entre misiones es: ENTORNO → INGRESO → MISIONES/MISION 1/MOT1 → DESAFIO1 → DESAFIO2 → DESAFIO3, etc., siempre transmitiendo el nombre por la URL.
+
+---

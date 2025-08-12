@@ -6,90 +6,60 @@
   <title>Centro de Misiones Galácticas - Bitnarys</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body { 
-      font-family: 'Orbitron', sans-serif; 
-      background: #000 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="bg" cx="50%" cy="50%"><stop offset="0%" stop-color="%23001a33"/><stop offset="50%" stop-color="%23000811"/><stop offset="100%" stop-color="%23000000"/></radialGradient></defs><rect width="100" height="100" fill="url(%23bg)"/></svg>'); 
-      background-size: cover;
-      background-attachment: fixed;
-      color: #00ffff; 
-      min-height: 100vh; 
-      padding: 20px;
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      min-height: 100vh;
     }
-    
-    .commander-greeting { 
-      text-align: center; 
-      font-size: 2.5em; 
-      margin: 30px 0; 
-      color: #00ffff; 
-      text-shadow: 0 0 15px #00ffff, 0 0 25px rgba(0, 255, 255, 0.5);
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes glow {
-      from { text-shadow: 0 0 15px #00ffff; }
-      to { text-shadow: 0 0 25px #00ffff, 0 0 35px #00ffff; }
-    }
-    
-    .mission-header {
-      margin-top: 20px;
-      font-size: 1.8em;
-      color: #00ffff;
-      text-shadow: 0 0 10px #00ffff;
-      font-weight: bold;
+    .commander-greeting {
       text-align: center;
-      margin-bottom: 30px;
+      font-size: 2em;
+      margin: 30px 0;
+      color: #4a90e2;
+      text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
     }
-    .mission-container { 
-      display: flex; 
-      flex-direction: column; 
-      width: 95%; 
-      max-width: 1200px; 
-      background: rgba(0, 255, 255, 0.1); 
-      border-radius: 20px; 
-      margin: 20px auto; 
-      box-shadow: 0 0 30px rgba(0, 255, 255, 0.4); 
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(0, 255, 255, 0.4);
+    .mission-container {
+      display: flex;
+      flex-direction: column;
+      width: 95%;
+      max-width: 1200px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 20px;
+      margin: 20px auto;
+      box-shadow: 0 0 25px rgba(74, 144, 226, 0.2);
+      border: 1px solid rgba(74, 144, 226, 0.2);
     }
-    
-    @media (min-width: 768px) { 
-      .mission-container { flex-direction: row; } 
+    @media (min-width: 768px) {
+      .mission-container {
+        flex-direction: row;
+      }
     }
-    
-    .story-section, .missions-panel { 
-      padding: 30px; 
+    .story-section, .missions-panel {
+      padding: 30px;
     }
-
     .story-section {
       flex: 2;
-      background-color: rgba(0, 255, 255, 0.05);
-      border-radius: 20px 0 0 20px;
+      background: rgba(255,255,255,0.05);
     }
-
-    .story-section h2 {
-      color: #00ffff;
-      font-size: 1.5em;
-      margin-bottom: 20px;
-      text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+    .insignia-section {
+      margin-top: 30px;
+      text-align: center;
+      padding: 20px;
+      background: rgba(74, 144, 226, 0.1);
+      border-radius: 15px;
     }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     .story-section p {
-      font-size: 1.1em;
-      line-height: 1.6;
-      margin-bottom: 15px;
       color: #e0e0e0;
       text-align: justify;
     }
-
     .missions-panel {
       flex: 1;
       background-color: rgba(0, 255, 255, 0.08);
       border-left: 2px solid rgba(0, 255, 255, 0.4);
       border-radius: 0 20px 20px 0;
     }
-
     .missions-panel h2 {
       text-align: center;
       font-size: 1.8em;
@@ -97,14 +67,12 @@
       margin-bottom: 30px;
       text-shadow: 0 0 10px #00ffff;
     }
-
     .missions-list {
       list-style: none;
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
-
     .mission-item {
       background: linear-gradient(135deg, #003d4d, #00ffff);
       border: 2px solid #00ffff;
@@ -122,245 +90,98 @@
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
       box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
     }
-
     .mission-item:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(0, 255, 255, 0.6);
       background: linear-gradient(135deg, #00bfff, #003d4d);
       border-color: #00bfff;
     }
-
-    .mission-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.6s ease;
-    }
-
-    .mission-item:hover::before {
-      left: 100%;
-    }
-
-    .mission-item:focus {
-      outline: 3px solid #00bfff;
-      outline-offset: 2px;
-    }
-
-    .mission-item.blocked {
-      background: linear-gradient(135deg, #2a1a1a, #3e1616);
-      border-color: #666;
-      color: #999;
-      cursor: not-allowed;
-    }
-
-    .mission-item.blocked:hover {
-      transform: none;
-      box-shadow: none;
-      background: linear-gradient(135deg, #2a1a1a, #3e1616);
-    }
-
-    .mission-item.completed {
-      background: linear-gradient(135deg, #004d26, #00ff7f);
-      color: #ffffff;
-      box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
-      border: 2px solid #00ff7f;
-    }
-
-    .mission-item.completed:hover {
-      background: linear-gradient(135deg, #00ff7f, #004d26);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(0, 255, 127, 0.4);
-    }
-
-    .star-board {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-
-    .star-image {
-      width: 40px;
-      height: 40px;
-      opacity: 0.3;
-      transition: all 0.5s ease;
-      font-size: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      filter: grayscale(100%);
-    }
-
-    .star-image.active {
-      opacity: 1;
-      filter: grayscale(0%) drop-shadow(0 0 10px #ffd700);
-      transform: scale(1.1);
-    }
-
-    .insignia-section {
-      margin-top: 30px;
-      text-align: center;
-      padding: 20px;
-      background: rgba(0, 255, 255, 0.1);
-      border-radius: 15px;
-      border: 2px solid rgba(0, 255, 255, 0.3);
-    }
   </style>
 </head>
-
 <body>
-  <main class="container">
-    <header class="header">
-      <h1 class="commander-greeting">Bienvenido Comandante</h1>
-      <p class="mission-header">Centro de Misiones Galácticas</p>
-    </header>
-
+  <main>
+    <h1 class="commander-greeting">Bienvenido Comandante</h1>
     <div class="mission-container">
       <section class="story-section">
-        <h2>🌟 Planeta Bitnarys - Reconstrucción del Saber</h2>
-        <p>
-          Comandante, has llegado al misterioso <strong>Planeta Bitnarys</strong>, un mundo donde la información es poder y los datos son la clave de la supervivencia.
-        </p>
-        <p>
-          Una catástrofe cósmica ha fragmentado las <strong>Estrellas Sagradas del Conocimiento</strong> en cuatro piezas, dispersándolas por todo el planeta. Estas estrellas contienen la sabiduría ancestral necesaria para restaurar el equilibrio del universo.
-        </p>
-        <p>
-          Tu misión es clara: debes superar cuatro desafíos únicos para recuperar cada una de las Estrellas Sagradas. Solo quien las reúna todas, podrá restaurar el equilibrio del universo y evitar la catástrofe.
-        </p>
-        <p>
-          Cada misión pondrá a prueba tu valentía, inteligencia y creatividad. ¡Prepárate, comandante!
-        </p>
+        <h2 style="color: #4a90e2; font-size: 1.5em; margin-bottom: 20px;">Planeta Bitnarys - Reconstrucción del Saber</h2>
+        <p>Comandante, has llegado al misterioso <strong>Planeta Bitnarys</strong>, un mundo donde la información es poder y los datos son la clave de la supervivencia.</p>
+        <p>Una catástrofe cósmica ha fragmentado las <strong>Estrellas Sagradas del Conocimiento</strong> en cuatro piezas, dispersándolas por todo el planeta.</p>
+        <p>Tu misión es clara: debes superar cuatro desafíos únicos para recuperar cada una de las Estrellas Sagradas.</p>
+        <p>Cada misión pondrá a prueba tu valentía, inteligencia y creatividad. ¡Prepárate, comandante!</p>
       </section>
-      
       <section class="missions-panel">
-        <div class="star-board">
-          <div id="star1" class="star-image">⭐</div>
-          <div id="star2" class="star-image">⭐</div>
-          <div id="star3" class="star-image">⭐</div>
-          <div id="star4" class="star-image">⭐</div>
-        </div>
-        
         <h2>Misiones</h2>
         <ul class="missions-list">
-          <li>
-            <button id="mission1" class="mission-item">
-              🚀 Misión 1: El Despertar
-            </button>
-          </li>
-          <li>
-            <button id="mission2" class="mission-item blocked">
-              🔒 Misión 2: Los Datos Perdidos
-            </button>
-          </li>
-          <li>
-            <button id="mission3" class="mission-item blocked">
-              🔒 Misión 3: El Código Sagrado
-            </button>
-          </li>
-          <li>
-            <button id="mission4" class="mission-item blocked">
-              🔒 Misión 4: La Unión Final
-            </button>
-          </li>
+          <li><button id="mission1" class="mission-item">Misión 1: El Despertar</button></li>
+          <li><button id="mission2" class="mission-item">Misión 2: Los Datos Perdidos</button></li>
+          <li><button id="mission3" class="mission-item">Misión 3: El Código Sagrado</button></li>
+          <li><button id="mission4" class="mission-item">Misión 4: La Unión Final</button></li>
         </ul>
-        
         <div class="insignia-section">
-          <p style="font-size: 1.3em; color: #00f0ff; text-shadow: 0 0 10px #00f0ff;">
-            🎖️ Felicitaciones, has ganado la Insignia Galáctica del Planeta 1
-          </p>
-          <p style="font-size: 1.1em; color: #ffffff; margin-top: 10px;">
-            🚀 ¡Has ascendido de rango! Ahora eres oficialmente un <strong>Almirante Galáctico</strong>.
-          </p>
-          <p style="font-size: 1.1em; color: #00f0ff; margin-top: 10px;">
-            Bien hecho, <span id="admiral-name"></span> 👨‍🚀
-          </p>
+          <p style="font-size: 1.3em; color: #6bb6ff;">Felicitaciones, has ganado la Insignia Galáctica del Planeta 1</p>
+          <p style="font-size: 1.1em; color: #ffffff; margin-top: 10px;">¡Has ascendido de rango! Ahora eres oficialmente un <strong>Almirante Galáctico</strong>.</p>
+          <p style="font-size: 1.1em; color: #4a90e2; margin-top: 10px;">Bien hecho, <span id="admiral-name"></span></p>
         </div>
       </section>
     </div>
   </main>
-
-  <!-- Background music -->
-  <audio id="background-music" preload="auto" loop aria-label="Música de fondo de la misión">
-    <source src="Audio/Mision.mp3" type="audio/mpeg">
-    Tu navegador no soporta el elemento de audio.
-  </audio>
-
-  <!-- Scripts - SIMPLIFICADO -->
   <script>
-    // Variables globales
     let commanderName = "";
-
-    // Obtener nombre del comandante
     function loadCommanderName() {
       const params = new URLSearchParams(window.location.search);
       commanderName = params.get("nombre");
-      
       if (commanderName) {
-        const greeting = document.querySelector('.commander-greeting');
-        if (greeting) {
-          greeting.textContent = `Bienvenido Comandante ${commanderName}`;
-        }
-        
+        document.querySelector('.commander-greeting').textContent = `Bienvenido Comandante ${commanderName}`;
         const admiralName = document.getElementById('admiral-name');
-        if (admiralName) {
-          admiralName.textContent = commanderName;
-        }
+        if (admiralName) admiralName.textContent = commanderName;
       }
     }
-
-    // Configurar audio de fondo
-    function setupAudio() {
-      const audio = document.getElementById("background-music");
-      if (audio) {
-        audio.volume = 0.2;
-        document.addEventListener('click', () => {
-          if (audio.paused) {
-            audio.play().catch(e => console.log('Audio prevented'));
-          }
-        }, { once: true });
-      }
+    function openMission(path) {
+      window.location.href = path + "?nombre=" + encodeURIComponent(commanderName);
+    }
+    // Guardar y validar datos de misiones
+    function guardarDatoMision1(respuesta) {
+      localStorage.setItem('mision1_respuesta', respuesta);
+    }
+    function guardarPuntuacionMision2(puntos) {
+      localStorage.setItem('mision2_puntos', puntos);
+    }
+    function obtenerDatoMision1() {
+      return localStorage.getItem('mision1_respuesta') || '';
+    }
+    function obtenerPuntuacionMision2() {
+      return localStorage.getItem('mision2_puntos') || '';
     }
 
-    // Abrir misión
-    function openMission(missionPath) {
-      const finalUrl = missionPath + "?nombre=" + encodeURIComponent(commanderName);
-      window.location.href = finalUrl;
-    }
-
-    // Configurar eventos de los botones
-    function setupMissionButtons() {
-      // Misión 1 - Disponible
-      document.getElementById("mission1").addEventListener('click', () => {
-        openMission("../MISIONES/MISION 1/MOT1/Index.html");
-      });
-
-      // Misión 2 - Bloqueada
-      document.getElementById("mission2").addEventListener('click', () => {
-        alert("Esta misión aún no está disponible. Completa la Misión 1 primero.");
-      });
-
-      // Misión 3 - Bloqueada  
-      document.getElementById("mission3").addEventListener('click', () => {
-        alert("Esta misión aún no está disponible. Completa las misiones anteriores primero.");
-      });
-
-      // Misión 4 - Bloqueada
-      document.getElementById("mission4").addEventListener('click', () => {
-        alert("Esta misión aún no está disponible. Completa las misiones anteriores primero.");
-      });
-    }
-
-    // Inicializar cuando se carga la página
     document.addEventListener('DOMContentLoaded', () => {
       loadCommanderName();
-      setupAudio();
-      setupMissionButtons();
-      
-      console.log("Página de misiones cargada para:", commanderName);
+      document.getElementById("mission1").onclick = () => {
+        alert("Serás redireccionado a la Misión 1: El Despertar");
+        openMission("../MISIONES/MISION 1/MOT1/Index.html");
+      };
+      document.getElementById("mission2").onclick = () => {
+        if (commanderName && commanderName.trim().length > 0) {
+          openMission("../MISIONES/MISION 2/MOT2/index.html");
+        } else {
+          alert("Debes ingresar tu nombre para continuar.");
+        }
+      };
+      document.getElementById("mission3").onclick = () => {
+        const puntosGuardados = obtenerPuntuacionMision2();
+        const puntosIngresados = prompt("¿Cuántos puntos lograste en la Misión 2?");
+        if (puntosIngresados && puntosGuardados && parseInt(puntosIngresados.trim(), 10) === parseInt(puntosGuardados.trim(), 10)) {
+          openMission("../MISIONES/MISION 3/MOT3/index.html");
+        } else {
+          alert("La puntuación ingresada no coincide con la registrada en la Misión 2. No puedes acceder.");
+        }
+      };
+      document.getElementById("mission4").onclick = () => {
+        if (commanderName && commanderName.trim().length > 0) {
+          openMission("../MISIONES/MISION 4/MOT4/index.html");
+        } else {
+          alert("Debes ingresar tu nombre para continuar.");
+        }
+      };
     });
   </script>
 </body>

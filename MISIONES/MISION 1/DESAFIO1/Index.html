@@ -324,35 +324,33 @@ function iniciarMision() {
 }
 
 // Al cargar, revisar si hay nombre en URL o guardado
+
 window.addEventListener('DOMContentLoaded', () => {
-  // Primero verificar si viene nombre por URL
+  // Usar siempre el nombre de localStorage si existe
+  let nombre = localStorage.getItem('nombreCadete');
+  // Si viene por URL, actualizar localStorage
   const params = new URLSearchParams(window.location.search);
-  let nombre = params.get('nombre');
-  
-  // Si no viene por URL, verificar localStorage
-  if (!nombre) {
-    nombre = localStorage.getItem('nombreCadete');
-  } else {
-    // Si viene por URL, guardarlo en localStorage para uso posterior
-    localStorage.setItem('nombreCadete', nombre);
+  const nombreUrl = params.get('nombre');
+  if (nombreUrl) {
+    nombre = nombreUrl;
+    localStorage.setItem('nombreCadete', nombreUrl);
   }
-  
   const bienvenida = document.getElementById('bienvenida');
   const input = document.getElementById('nombreCadete');
   const btn = document.getElementById('btnIniciar');
   const textoBienvenida = document.getElementById('textoBienvenida');
-  
   if (nombre) {
-    // Saltar pantalla de bienvenida y pasar directamente a instrucciones
-    bienvenida.classList.remove('activa');
+    // Ocultar completamente la pantalla de bienvenida si ya hay nombre
+    bienvenida.style.display = 'none';
     document.getElementById('instrucciones').classList.add('activa');
     document.getElementById('nombreCadeteInstrucciones').textContent = nombre;
     animarParrafos();
   } else {
-    // Solo mostrar input si no hay nombre
+    // Solo mostrar input si no hay nombre en localStorage ni en URL
     textoBienvenida.textContent = 'Ingresa tu nombre para iniciar el desafío:';
     input.style.display = 'inline-block';
     btn.style.display = 'inline-block';
+    bienvenida.style.display = 'flex';
   }
 });
 
@@ -454,9 +452,11 @@ function mostrarLineaTiempoFinal() {
 }
 
 function continuarMision2() {
-  const nombre = localStorage.getItem('nombreCadete');
+  const params = new URLSearchParams(window.location.search);
+  const nombreUrl = params.get('nombre');
+  const nombreFinal = nombreUrl || localStorage.getItem('nombreCadete');
   mostrarPantallaNegra(() => {
-    window.location.href = `../DESAFIO2/index.html?nombre=${encodeURIComponent(nombre)}`;
+    window.location.href = `../DESAFIO2/index.html?nombre=${encodeURIComponent(nombreFinal)}`;
   });
 }
 </script>

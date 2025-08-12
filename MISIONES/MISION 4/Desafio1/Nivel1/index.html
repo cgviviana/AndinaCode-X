@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Desafío Centinela - Nivel 1: Alerta Digital</title>
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: #000;
+      color: #00ffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+    h1 {
+      text-shadow: 0 0 10px #00ffff;
+      margin: 20px 0;
+    }
+    .contenedor-juego {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+    }
+    .bandeja, .mensajes {
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 10px #00ffff;
+    }
+    .mensajes {
+      min-width: 200px;
+      min-height: 300px;
+    }
+    .bandeja {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 200px;
+      min-height: 300px;
+    }
+    .mensaje {
+      background: #111;
+      border: 1px solid #00ffff;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: grab;
+      text-align: left;
+    }
+    .zona-drop {
+      min-height: 100px;
+      padding: 10px;
+      border: 2px dashed #00ffff;
+      border-radius: 10px;
+      margin-top: 10px;
+      width: 180px;
+    }
+    #mensaje-final {
+      margin-top: 20px;
+      font-size: 20px;
+      text-shadow: 0 0 10px #00ffff;
+      display: none;
+    }
+    .bandeja:nth-child(2) .zona-drop {
+      animation: parpadeoVerde 1s infinite;
+    }
+    .bandeja:nth-child(3) .zona-drop {
+      animation: parpadeoRojo 1s infinite;
+    }
+    @keyframes parpadeoVerde {
+      0%, 100% { box-shadow: 0 0 10px lime; }
+      50% { box-shadow: 0 0 20px lime; }
+    }
+    @keyframes parpadeoRojo {
+      0%, 100% { box-shadow: 0 0 10px red; }
+      50% { box-shadow: 0 0 20px red; }
+    }
+    .titulo-cuadro {
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Nivel 1: Alerta Digital</h1>
+  <h2 style="font-weight:normal; color:#00ff88; text-shadow:0 0 8px #00ff88;">Rango actual: <span id="rangoUsuario">Defensor Novato</span></h2>
+
+  <div class="contenedor-juego">
+    <div class="mensajes" id="mensajes">
+  <div class="titulo-cuadro">Instrucciones</div>
+  <p>¡Bienvenido Defensor del Saber!<br>
+  Tu misión es identificar y separar los mensajes seguros de los sospechosos para proteger el conocimiento de EPRE.<br>
+  Arrastra cada mensaje al buzón correspondiente.<br>
+  <span style="color:#00ff88">Cada acierto te acerca al rango de Defensor Vigilante.</span></p>
+      <div class="mensaje" draggable="true" id="m1">Gana un premio haciendo clic aquí: http://falso-sorteo.xyz</div>
+      <div class="mensaje" draggable="true" id="m2">Actualiza tu software desde el portal oficial.</div>
+      <div class="mensaje" draggable="true" id="m3">Tu cuenta ha sido bloqueada. Inicia sesión ahora mismo: http://urgente-solucion.com</div>
+    </div>
+
+    <div class="bandeja">
+      <h3>Buzón Seguro</h3>
+      <div class="zona-drop" id="seguro" ondrop="soltar(event, 'seguro')" ondragover="permitirSoltar(event)"></div>
+    </div>
+
+    <div class="bandeja">
+      <h3>Buzón Sospechoso</h3>
+      <div class="zona-drop" id="sospechoso" ondrop="soltar(event, 'sospechoso')" ondragover="permitirSoltar(event)"></div>
+    </div>
+  </div>
+
+  <p id="mensaje-final" style="display:none; color:#00ff88; font-size:1.2em; text-shadow:0 0 10px #00ff88;">
+    ¡Excelente, Defensor! Has detectado todas las amenazas y tu rango avanza a <b>Defensor Vigilante</b>.<br>
+    Prepárate para el siguiente reto en tu camino hacia Centinela.
+  </p>
+
+  <audio id="audioSuccess" src="../Audio/success.mp3" preload="auto"></audio>
+  <audio id="audioError" src="../Audio/error.mp3" preload="auto"></audio>
+
+  <script>
+    const respuestas = {
+      m1: 'sospechoso',
+      m2: 'seguro',
+      m3: 'sospechoso'
+    };
+
+    function permitirSoltar(ev) {
+      ev.preventDefault();
+    }
+
+    document.querySelectorAll('.mensaje').forEach(m => {
+      m.addEventListener('dragstart', ev => {
+        ev.dataTransfer.setData('text/plain', ev.target.id);
+      });
+    });
+
+    function soltar(ev, zona) {
+      ev.preventDefault();
+      const id = ev.dataTransfer.getData('text');
+      const mensaje = document.getElementById(id);
+      ev.target.appendChild(mensaje);
+
+      const esCorrecto = respuestas[id] === zona;
+      mensaje.style.border = esCorrecto ? '2px solid lime' : '2px solid red';
+
+      const audio = document.getElementById(esCorrecto ? 'audioSuccess' : 'audioError');
+      audio.currentTime = 0;
+      audio.play();
+
+      verificarNivel();
+    }
+
+    function verificarNivel() {
+      const zonas = Object.keys(respuestas);
+      const completado = zonas.every(id => {
+        const mensaje = document.getElementById(id);
+        const padre = mensaje.parentElement.id;
+        return respuestas[id] === padre;
+      });
+      if (completado) {
+        document.getElementById('mensaje-final').style.display = 'block';
+        // Subir de rango visualmente
+        document.getElementById('rangoUsuario').textContent = 'Defensor Vigilante';
+        // Desbloquear Nivel 2 en localStorage
+        let progreso = JSON.parse(localStorage.getItem('desafio1_progreso') || '{"nivel1":false,"nivel2":false,"nivel3":false,"nivel4":false,"nivel5":false}');
+        progreso.nivel1 = true;
+        progreso.nivel2 = true;
+        localStorage.setItem('desafio1_progreso', JSON.stringify(progreso));
+        setTimeout(() => {
+          window.location.href = "../index.html#niveles";
+        }, 3500);
+      }
+    }
+  </script>
+</body>
+</html>

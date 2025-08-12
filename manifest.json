@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "Galaxia AndinaCode X",
   "short_name": "GalaxiaX",
@@ -53,3 +54,60 @@
     }
   ]
 }
+=======
+{
+  "name": "Galaxia AndinaCode X",
+  "short_name": "GalaxiaX",
+  "description": "Plataforma educativa interactiva para aprender ciencia de datos y programación",
+  "start_url": "./ENTORNO/index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00f0ff",
+  "orientation": "any",
+  "scope": "./",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "./assets/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/images/icon-512.png",
+      "sizes": "512x512", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "games", "productivity"],
+  "screenshots": [
+    {
+      "src": "./assets/images/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "./assets/images/screenshot-narrow.png", 
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ir a Misiones",
+      "short_name": "Misiones",
+      "description": "Acceso directo a las misiones disponibles",
+      "url": "./INGRESO/Index.html",
+      "icons": [
+        {
+          "src": "./assets/images/mission-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
+>>>>>>> 503400abb1314641efd43b99fae51dde952dceff

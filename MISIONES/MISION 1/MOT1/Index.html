@@ -101,16 +101,12 @@
       </div>
    </article>
 
-   <!-- Modal de redirección -->
+   <!-- Modal de redirección simplificado -->
    <div id="redirect-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); z-index: 10000; justify-content: center; align-items: center; flex-direction: column;">
      <div style="background: linear-gradient(135deg, #1e3c72, #2a5298); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; border: 2px solid #4a90e2; box-shadow: 0 0 30px rgba(74, 144, 226, 0.5);">
-       <h2 style="color: #ffffff; font-family: 'Orbitron', sans-serif; font-size: 1.8em; margin-bottom: 20px; text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);">Manual Completado</h2>
-       <p style="color: #ffffff; font-family: 'Orbitron', sans-serif; font-size: 1.2em; margin-bottom: 25px; line-height: 1.6;">¡Felicitaciones! Has terminado de leer el manual.</p>
-       <p style="color: #6bb6ff; font-family: 'Orbitron', sans-serif; font-size: 1.1em; margin-bottom: 30px;">En <span id="countdown">5</span> segundos comenzará la misión...</p>
-       <div style="display: flex; gap: 15px; justify-content: center;">
-         <button id="start-now" style="background: linear-gradient(135deg, #4a90e2, #6bb6ff); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 1em; cursor: pointer; transition: all 0.3s ease;">Comenzar Ahora</button>
-         <button id="cancel-redirect" style="background: linear-gradient(135deg, #5a6c7d, #7a8c9d); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 1em; cursor: pointer; transition: all 0.3s ease;">Cancelar</button>
-       </div>
+  <h2 style="color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.8em; margin-bottom: 20px; text-shadow: 0 0 4px #4a90e2;">Manual Completado</h2>
+  <p style="color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.2em; margin-bottom: 25px; line-height: 1.6;">¡Felicitaciones! Has terminado de leer el manual.</p>
+  <p style="color: #6bb6ff; font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.1em; margin-bottom: 30px;">Serás redireccionado al menú de misiones.</p>
      </div>
    </div>
 
@@ -171,54 +167,42 @@
      function showRedirectModal() {
        const modal = document.getElementById("redirect-modal");
        modal.style.display = "flex";
-       
-       let countdown = 5;
-       const countdownElement = document.getElementById("countdown");
-       
-       countdownTimer = setInterval(() => {
-         countdown--;
-         countdownElement.textContent = countdown;
-         
-         if (countdown <= 0) {
-           clearInterval(countdownTimer);
-           redirectToMission();
-         }
-       }, 1000);
-       
-       // Auto-redirect después de 5 segundos
-       redirectTimer = setTimeout(redirectToMission, 5000);
      }
 
      // Redirigir a la primera misión
-     function redirectToMission() {
-       window.location.href = "../DESAFIO1/Index.html?nombre=" + encodeURIComponent(commanderName);
+     function desbloquearMision2(nombreCompleto) {
+       localStorage.setItem('andina_nombre_completo', nombreCompleto);
+       localStorage.setItem('andina_mision3_unlocked', '1');
+     }
+
+     function redirectToMenuMisiones() {
+  const params = new URLSearchParams(window.location.search);
+  const nombreUrl = params.get('nombre');
+  const nombreFinal = nombreUrl || localStorage.getItem('andina_nombre_completo') || commanderName;
+  window.location.href = "../DESAFIO1/Index.html?nombre=" + encodeURIComponent(nombreFinal);
      }
 
      // Eventos de botones
      document.addEventListener('DOMContentLoaded', function() {
        getCommanderName();
-       
-       // Esperar a que el booklet se inicialice
        setTimeout(() => {
          setupBookletEvents();
-         // Verificar páginas cada 2 segundos como respaldo
          setInterval(detectLastPage, 2000);
        }, 1000);
-       
-       // Botón "Comenzar Ahora"
-       document.getElementById("start-now").addEventListener('click', function() {
-         clearInterval(countdownTimer);
-         clearTimeout(redirectTimer);
-         redirectToMission();
-       });
-       
-       // Botón "Cancelar"
-       document.getElementById("cancel-redirect").addEventListener('click', function() {
-         clearInterval(countdownTimer);
-         clearTimeout(redirectTimer);
-         document.getElementById("redirect-modal").style.display = "none";
-         hasShownRedirect = false; // Permitir que se muestre nuevamente
-       });
+
+       // Redirección automática al menú de misiones después de mostrar el modal
+       function autoRedirectToMenu() {
+         setTimeout(() => {
+           document.getElementById("redirect-modal").style.display = "none";
+           redirectToMenuMisiones();
+         }, 2500);
+       }
+       // Mostrar el modal y redirigir automáticamente
+       const originalShowRedirectModal = showRedirectModal;
+       showRedirectModal = function() {
+         originalShowRedirectModal();
+         autoRedirectToMenu();
+       };
      });
    </script>
 </body></html>

@@ -180,37 +180,54 @@
 
   <script>
     let commanderName = "";
-    
     function loadCommanderName() {
       const params = new URLSearchParams(window.location.search);
-      commanderName = params.get("nombre");
+      commanderName = params.get("nombre") || localStorage.getItem('nombreMision1');
+      if (!commanderName) {
+        commanderName = prompt("Por favor, ingresa tu nombre para continuar:");
+        if (commanderName) {
+          localStorage.setItem('nombreMision1', commanderName);
+        }
+      }
       if (commanderName) {
         document.querySelector('.commander-greeting').textContent = `Bienvenido Comandante ${commanderName}`;
         document.getElementById('admiral-name').textContent = commanderName;
       }
     }
-    
     function openMission(path) {
       window.location.href = path + "?nombre=" + encodeURIComponent(commanderName);
     }
     
     document.addEventListener('DOMContentLoaded', () => {
       loadCommanderName();
-      
       document.getElementById("mission1").onclick = () => {
         openMission("../MISIONES/MISION 1/MOT1/Index.html");
       };
-      
       document.getElementById("mission2").onclick = () => {
-        alert("Esta misión aún no está disponible.");
+        const nombreAnterior = localStorage.getItem('nombreMision1');
+        if (commanderName && nombreAnterior && commanderName.trim() === nombreAnterior.trim()) {
+          openMission("../MISIONES/MISION 2/MOT2/index.html");
+        } else {
+          alert("Nombre incorrecto. No puedes acceder a la Misión 2.");
+        }
       };
-      
       document.getElementById("mission3").onclick = () => {
-        alert("Esta misión aún no está disponible.");
+        const puntajeAnterior = localStorage.getItem('puntajeMision2');
+        const puntajeIngresado = prompt("Ingresa el puntaje obtenido en la Misión 2:");
+        if (puntajeIngresado && puntajeAnterior && Number(puntajeIngresado) === Number(puntajeAnterior)) {
+          openMission("../MISIONES/MISION 3/MOT3/index.html");
+        } else {
+          alert("Puntaje incorrecto. No puedes acceder a la Misión 3.");
+        }
       };
-      
       document.getElementById("mission4").onclick = () => {
-        alert("Esta misión aún no está disponible.");
+        const codigoAnterior = localStorage.getItem('codigoMision3');
+        const codigoIngresado = prompt("Ingresa el código sagrado obtenido en la Misión 3:");
+        if (codigoIngresado && codigoAnterior && codigoIngresado.trim() === codigoAnterior.trim()) {
+          openMission("../MISIONES/MISION 4/MOT4/index.html");
+        } else {
+          alert("Código incorrecto. No puedes acceder a la Misión 4.");
+        }
       };
     });
   </script>

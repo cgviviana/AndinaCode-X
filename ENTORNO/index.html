@@ -98,6 +98,13 @@
       aria-label="Nombre del comandante"
     >
     <button 
+      id="btnIniciar" 
+      style="margin-top:20px;padding:10px 30px;font-size:1.1em;border-radius:8px;border:none;background:#00f0ff;color:#222;font-family:'Orbitron',sans-serif;cursor:pointer;"
+      aria-label="Iniciar misión"
+    >
+      Iniciar
+    </button>
+    <button 
       id="btnVolver" 
       style="display:none;margin-top:20px;padding:10px 30px;font-size:1.1em;border-radius:8px;border:none;background:#00f0ff;color:#222;font-family:'Orbitron',sans-serif;cursor:pointer;"
       aria-label="Volver al menú principal"
@@ -230,7 +237,7 @@
       document.getElementById('nombreCadete').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') continuar();
       });
-
+      document.getElementById('btnIniciar').onclick = continuar;
       document.getElementById('btnVolver').onclick = volverAtras;
 
       // Cerrar modal con ESC
