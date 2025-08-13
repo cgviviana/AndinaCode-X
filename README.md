@@ -1,4 +1,4 @@
-# Galaxia AndinaCode X - Proyecto Educativo Mejorado
+# Galaxia AndinaCode X - Proyecto Educativo 
 
 ## Descripción
 
