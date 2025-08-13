@@ -86,7 +86,7 @@
 └── README.md                      # Documentación completa
 ```
 
-## 🎮 Características Principales
+## Características Principales
 
 ### **Sistema de Navegación Planetaria**
 - **Planeta Bitnarys**: Disponible - Misiones introductorias sobre datos y programación
@@ -94,7 +94,6 @@
 - **Planeta Tekron**: Bloqueado - Tecnologías emergentes y AI
 
 ### **Sistema de Progreso**
-- **4 Estrellas Sagradas**: Una por cada misión completada
 - **Insignia Galáctica**: Recompensa por completar todas las misiones
 - **Ascenso de Rango**: De Comandante a Almirante Galáctico
 
@@ -133,8 +132,7 @@
 ### **Instalación**
 1. Clona o descarga el repositorio
 2. Abre `ENTORNO/index.html` en tu navegador
-3. ¡Comienza tu aventura galáctica!
-
+3. Comienza el juego
 ### **Configuración**
 El archivo `assets/js/config.js` contiene todas las configuraciones modificables:
 - Volúmenes de audio
@@ -260,13 +258,12 @@ El archivo `assets/js/config.js` contiene todas las configuraciones modificables
 
 1. Descarga o clona este repositorio.
 2. Abre el archivo `ENTORNO/index.html` en tu navegador web moderno (Chrome, Firefox, Edge, Safari).
-3. ¡Comienza tu aventura galáctica!
+  
 
 No se requieren instalaciones adicionales ni dependencias externas.
 
 ## Contribución
 
-¿Quieres mejorar el proyecto? Puedes:
 - Sugerir mejoras o reportar bugs creando un Issue.
 - Proponer cambios mediante Pull Request (edita archivos HTML, CSS o JS según la estructura real).
 - Compartir feedback educativo o ideas para nuevas misiones.
@@ -277,18 +274,18 @@ Este proyecto está bajo la Licencia MIT.
 
 ## Agradecimientos
 
-- **FUAA Educación Transformadora-Informática Educativa **: Por la visión educativa original
+- **FUAA Grupo Inv: Educación Transformadora-Informática Educativa **: Por la visión educativa original
 
 
 ---
 
-###  **Aventura galáctica del aprendizaje**
-
-*Versión 2.0.0 - Completamente renovado con las mejores prácticas de desarrollo web*
+###  **AndinaCode-X**
+_
+*Versión 2.0.0 - 
 
 ## Notas de Navegación y Redirección
 
-- Todas las rutas de redirección entre misiones y el menú de ingreso han sido revisadas y corregidas para ser relativas y válidas dentro del proyecto.
+- Todas las rutas de redirección entre misiones y el menú de ingreso han sido revisadas dentro del proyecto.
 - El nombre del usuario se transmite por la URL en cada avance de misión, garantizando que la personalización se mantenga en todo el flujo.
 - Si el nombre en la URL no es el esperado, el sistema lo mostrará tal cual; se recomienda verificar el parámetro `nombre` en la URL para asegurar la experiencia personalizada.
 - Se prioriza el nombre de la URL sobre el almacenado en localStorage para evitar arrastrar valores incorrectos de sesiones anteriores.
