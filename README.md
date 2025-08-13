@@ -53,7 +53,7 @@
 ## 🗂️ Estructura del Proyecto
 
 ```
-PROYECTO SRA VIVIANA/
+
 │
 ├── assets/                          # Recursos organizados
 │   ├── css/                        # Estilos modulares
@@ -207,7 +207,7 @@ El archivo `assets/js/config.js` contiene todas las configuraciones modificables
 ## � Estructura Real del Proyecto
 
 ```
-PROYECTO SRA VIVIANA/
+
 ├── assets/
 │   ├── css/
 │   │   ├── variables.css
