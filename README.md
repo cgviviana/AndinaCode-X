@@ -1,56 +1,56 @@
 # Galaxia AndinaCode X - Proyecto Educativo Mejorado
 
-## 🚀 Descripción
+## Descripción
 
 **Galaxia AndinaCode X** es una plataforma educativa interactiva que combina aprendizaje sobre ciencia de datos y programación con una experiencia de juego inmersiva. Los estudiantes navegan por planetas alienígenas completando misiones que enseñan conceptos fundamentales de tecnología y análisis de datos.
 
-## ✨ Mejoras Implementadas
+## Mejoras Implementadas
 
-### 🎯 **1. Arquitectura de Código Modular**
+### **1. Arquitectura de Código Modular**
 - **Separación de Responsabilidades**: CSS, JavaScript y HTML ahora están separados en módulos especializados
 - **Estructura de Assets Organizada**: Nuevas carpetas `assets/css/`, `assets/js/`, `assets/images/`, `assets/audio/`
 - **Sistema de Configuración Centralizada**: Archivo `config.js` para manejar todas las constantes y configuraciones
 
-### 🎨 **2. CSS Modularizado con Variables**
+### **2. CSS Modularizado con Variables**
 - **`variables.css`**: Paleta de colores, tipografía y espaciado consistentes usando CSS Custom Properties
 - **`base.css`**: Reset CSS moderno con mejoras de accesibilidad
 - **`layout.css`**: Sistema de layout responsivo y componentes de diseño
 - **`animations.css`**: Animaciones optimizadas con soporte para `prefers-reduced-motion`
 - **`components.css`**: Componentes reutilizables (modales, botones, tarjetas)
 
-### 🧠 **3. JavaScript Orientado a Objetos**
+###  **3. JavaScript Orientado a Objetos**
 - **`config.js`**: Configuración centralizada y constantes de la aplicación
 - **`utils.js`**: Funciones utilitarias para manejo de localStorage, validaciones y helpers del DOM
 - **`audio-manager.js`**: Sistema completo de gestión de audio con preloader y efectos
 - **`animation-manager.js`**: Manejo de efectos visuales y sistema de partículas
 - **`app.js`**: Controlador principal de la aplicación con manejo de estado
 
-### ♿ **4. Mejoras de Accesibilidad**
+### **4. Mejoras de Accesibilidad**
 - **Semántica HTML5**: Uso correcto de elementos `<main>`, `<section>`, `<header>` con roles ARIA
 - **Navegación por Teclado**: Soporte completo para navegación con Tab y Enter
 - **Lectores de Pantalla**: Etiquetas ARIA, texto alternativo descriptivo y elementos `aria-live`
 - **Enlaces de Salto**: "Saltar al contenido principal" para navegación rápida
 - **Contraste Mejorado**: Colores que cumplen con WCAG 2.1 AA
 
-### 📱 **5. Responsive Design Mejorado**
+### **5. Responsive Design Mejorado**
 - **Mobile-First**: Diseño optimizado para dispositivos móviles
 - **Breakpoints Consistentes**: Sistema de responsive design uniforme
 - **Imágenes Optimizadas**: Lazy loading y formatos optimizados
 - **Touch-Friendly**: Botones y áreas de interacción apropiadas para dispositivos táctiles
 
-### ⚡ **6. Optimización de Rendimiento**
+### **6. Optimización de Rendimiento**
 - **Preload de Recursos Críticos**: Fuentes y assets importantes se cargan prioritariamente
 - **Lazy Loading**: Imágenes se cargan bajo demanda
 - **Audio Optimizado**: Sistema de pooling de audio y precarga inteligente
 - **Animaciones Hardware-Accelerated**: Uso de CSS transforms para mejor rendimiento
 
-### 🛡️ **7. Manejo de Errores y Robustez**
+### **7. Manejo de Errores y Robustez**
 - **Error Boundaries**: Manejo graceful de errores en JavaScript
 - **Fallbacks**: Alternativas cuando recursos no cargan
 - **Validación de Datos**: Validación robusta de entrada de usuario
 - **Logging Inteligente**: Sistema de debugging configurable
 
-## 🗂️ Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 
@@ -123,7 +123,7 @@
 - **Progreso Persistente**: LocalStorage mantiene el progreso del usuario
 - **Retroalimentación Inmediata**: Modales accesibles reemplazan alerts básicos
 
-## 🚀 Instalación y Uso
+##  Instalación y Uso
 
 ### **Requisitos**
 - Navegador web moderno (Chrome 90+, Firefox 88+, Safari 14+)
@@ -142,7 +142,7 @@ El archivo `assets/js/config.js` contiene todas las configuraciones modificables
 - Rutas de recursos
 - Mensajes de la aplicación
 
-## 🔧 Tecnologías Utilizadas
+##  Tecnologías Utilizadas
 
 ### **Frontend**
 - **HTML5**: Semántica moderna y accesibilidad
@@ -158,22 +158,22 @@ El archivo `assets/js/config.js` contiene todas las configuraciones modificables
 - **Media Queries**: Responsive design
 - **ARIA Standards**: Accesibilidad web
 
-## 📱 Compatibilidad
+## Compatibilidad
 
 ### **Navegadores Soportados**
-- ✅ Chrome 90+
-- ✅ Firefox 88+  
-- ✅ Safari 14+
-- ✅ Edge 90+
-- ⚠️ Internet Explorer: No soportado
+- Chrome 90+
+- Firefox 88+  
+- Safari 14+
+- Edge 90+
+- Internet Explorer: No soportado
 
 ### **Dispositivos**
-- ✅ Desktop (1920x1080 hasta 1366x768)
-- ✅ Tablet (1024x768, iPad, Android tablets)
-- ✅ Mobile (iPhone SE hasta iPhone Pro Max, Android phones)
-- ✅ TV/Large displays (4K ready)
+- Desktop (1920x1080 hasta 1366x768)
+- Tablet (1024x768, iPad, Android tablets)
+- Mobile (iPhone SE hasta iPhone Pro Max, Android phones)
+- TV/Large displays (4K ready)
 
-## 🎯 Mejoras Futuras Planeadas
+##  Mejoras Futuras Planeadas
 
 ### **Próximas Funcionalidades**
 1. **PWA (Progressive Web App)**: Instalación offline y service workers
@@ -256,7 +256,7 @@ El archivo `assets/js/config.js` contiene todas las configuraciones modificables
 └── (otros archivos)
 ```
 
-## 🚀 Instalación y Uso Rápido
+##  Instalación y Uso Rápido
 
 1. Descarga o clona este repositorio.
 2. Abre el archivo `ENTORNO/index.html` en tu navegador web moderno (Chrome, Firefox, Edge, Safari).
@@ -264,30 +264,29 @@ El archivo `assets/js/config.js` contiene todas las configuraciones modificables
 
 No se requieren instalaciones adicionales ni dependencias externas.
 
-## 👥 Contribución
+## Contribución
 
 ¿Quieres mejorar el proyecto? Puedes:
 - Sugerir mejoras o reportar bugs creando un Issue.
 - Proponer cambios mediante Pull Request (edita archivos HTML, CSS o JS según la estructura real).
 - Compartir feedback educativo o ideas para nuevas misiones.
 
-## �📄 Licencia
+##  Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
+Este proyecto está bajo la Licencia MIT. 
 
-## 🙏 Agradecimientos
+## Agradecimientos
 
-- **Prof. Viviana**: Por la visión educativa original
-- **Comunidad Educativa**: Por el feedback y testing
-- **Desarrolladores**: Por las contribuciones técnicas
+- **FUAA Educación Transformadora-Informática Educativa **: Por la visión educativa original
+
 
 ---
 
-### 🌟 **¡Únete a la aventura galáctica del aprendizaje!**
+###  **Aventura galáctica del aprendizaje**
 
 *Versión 2.0.0 - Completamente renovado con las mejores prácticas de desarrollo web*
 
-## 📝 Notas de Navegación y Redirección
+## Notas de Navegación y Redirección
 
 - Todas las rutas de redirección entre misiones y el menú de ingreso han sido revisadas y corregidas para ser relativas y válidas dentro del proyecto.
 - El nombre del usuario se transmite por la URL en cada avance de misión, garantizando que la personalización se mantenga en todo el flujo.
