@@ -1,45 +1,61 @@
-const CACHE_NAME = "andina-codex-v1";
-
+const CACHE_NAME = "andina-cache-v2";
 const urlsToCache = [
   "/AndinaCode-X/ENTORNO/index.html",
   "/AndinaCode-X/ENTORNO/styles-original.css",
-  "/AndinaCode-X/ENTORNO/IMAGENES/Bitnarys.png",
-  "/AndinaCode-X/ENTORNO/IMAGENES/Codara.png",
-  "/AndinaCode-X/ENTORNO/IMAGENES/Tekron.png",
-  "/AndinaCode-X/ENTORNO/AUDIO/Space.mp3",
-  "/AndinaCode-X/ENTORNO/AUDIO/Viaje.mp3",
-  "/AndinaCode-X/ENTORNO/AUDIO/Texto.mp3"
+  "/AndinaCode-X/ENTORNO/original-style.css",
+  "/AndinaCode-X/ENTORNO/manifest.json"
 ];
 
-// Instalar Service Worker y guardar archivos en caché
-self.addEventListener("install", event => {
+// INSTALAR: guarda los archivos iniciales
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
+    caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache);
     })
   );
+  self.skipWaiting();
 });
 
-// Activar Service Worker y limpiar cachés viejos
-self.addEventListener("activate", event => {
+// ACTIVAR: limpia caches viejos
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
           }
         })
       );
     })
   );
+  self.clients.claim();
 });
 
-// Interceptar las peticiones y responder desde caché o red
-self.addEventListener("fetch", event => {
+// FETCH: primero busca en caché, si no existe lo descarga y lo guarda dinámicamente
+self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
+    caches.match(event.request).then((response) => {
+      if (response) {
+        return response; // usar lo que está en caché
+      }
+      return fetch(event.request).then((networkResponse) => {
+        // Guardar en caché dinámico solo si es válido
+        if (
+          networkResponse &&
+          networkResponse.status === 200 &&
+          networkResponse.type === "basic"
+        ) {
+          let responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(() => {
+        // Aquí puedes mostrar una página offline personalizada si quieres
+        return caches.match("/AndinaCode-X/ENTORNO/index.html");
+      });
     })
   );
 });
