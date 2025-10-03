@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "description": "Plataforma educativa gamificada para pensamiento computacional",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "AndinaCodex",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "ACodex",
+  "start_url": "https://cgviviana.github.io/AndinaCode-X/ENTORNO/index.html",
+  "theme_color": "#18286a"
+}
