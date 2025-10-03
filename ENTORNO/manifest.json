@@ -8,5 +8,17 @@
   "scope": "/",
   "short_name": "ACodex",
   "start_url": "https://cgviviana.github.io/AndinaCode-X/ENTORNO/index.html",
-  "theme_color": "#18286a"
+  "theme_color": "#18286a",
+  "icons": [
+    {
+      "src": "android-launchericon-96-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "android-launchericon-512-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
